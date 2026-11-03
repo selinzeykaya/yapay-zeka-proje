@@ -14,6 +14,9 @@ RANDOM_STATE = 42
 GEE_PROJECT = "yapay-zeka-proje-2026"
 GEE_MONTHLY_EECU_HOURS = 150
 PILOT_CITY = "Artvin"              # export'lar önce bu ilde test edilir, kota kullanımı gösterilir
+# Pilot sonrası kalan illerin kaba kota tahmini aylık kotanın bu oranını aşarsa otomatik devam edilmez
+PILOT_MAX_QUOTA_FRACTION = 0.30
+BASEMAP = "Esri.WorldImagery"      # geemap haritaları (OpenStreetMap Colab'da 403 veriyor)
 
 # Colab'da projenin Google Drive'daki yeri
 DRIVE_PROJECT_DIR = "/content/drive/MyDrive/yapay-zeka-proje"

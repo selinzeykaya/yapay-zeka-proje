@@ -49,6 +49,26 @@ def list_turkey_provinces():
     return sorted(_turkey_gaul().aggregate_array("ADM1_NAME").getInfo())
 
 
+def make_map(center=(39.0, 35.0), zoom=6):
+    """Etkileşimli harita. OpenStreetMap karoları Colab'da 403 verdiği için
+    varsayılan arka plan Esri uydu görüntüsü, ek seçenek Google Hybrid."""
+    import geemap.foliumap as gf
+    try:
+        m = gf.Map(center=list(center), zoom=zoom, basemap=config.BASEMAP)
+    except Exception:
+        m = gf.Map(center=list(center), zoom=zoom)
+        m.add_basemap(config.BASEMAP)
+    # OSM katmanı yine de eklendiyse kaldır (boş/403 karo göstermesin)
+    for key, child in list(m._children.items()):
+        if "openstreetmap" in str(getattr(child, "tiles", "")).lower():
+            del m._children[key]
+    try:
+        m.add_basemap("HYBRID")
+    except Exception:
+        pass
+    return m
+
+
 # ---------------------------------------------------------------------------
 # Landsat: bulut maskesi, ölçekleme, indeksler, kompozit
 # ---------------------------------------------------------------------------
