@@ -37,5 +37,8 @@
 - Kentsel ısı adası tanımı eşiklere bağlı (kentsel > %50 yapı, kırsal < %5 yapı, ±200 m rakım).
 
 ## İDA
-- Kendi İDA görüntümüz yok. Model açık FloW-Img veri seti (toplandığı yer ve ortam Faz 5'te veri setinin makalesinden doğrulanıp buraya yazılacak) üzerinde eğitilip değerlendirildi; Türkiye kıyı verisi DEĞİLDİR.
+- Kendi İDA görüntümüz yok. Model açık veri setiyle eğitilip değerlendirildi; Türkiye kıyı verisi DEĞİLDİR.
+- Kullanılan veri seti: *Floating Waste and Aquatic Vegetation Image Dataset from Turbid Rivers* (Radam ve ark., Mendeley Data, DOI 10.17632/j26w4m645z.2, CC BY 4.0): Banjarmasin (Endonezya) bulanık nehirleri; çekim platformu (İDA / drone / el kamerası) veri sayfasında belirtilmemiş → "İDA görüntüsü" diye nitelendirilmemeli, "su yüzeyi görüntüleri" denmeli.
+- Nehir ortamı ≠ deniz kıyısı (dalga, yansıma, tuzlu su köpüğü farklı) → İstanbul/İzmir kıyılarına aktarılabilirlik belirsiz.
+- FloW-Img (gerçek İDA görüntüleri) indirme için başvuru gerektiriyor; onaylanırsa ana veri olarak kullanılacak. MMOS (95.5 GB, drone) boyut ve platform nedeniyle kullanılmadı.
 - Gelecek çalışma: İstanbul/İzmir kıyılarından İDA görüntüsü toplanıp modelin bu verilerle doğrulanması.

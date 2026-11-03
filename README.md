@@ -2,7 +2,7 @@
 
 Yapay Zekâ dersi projesi. Türkiye'deki 7 ilde (İstanbul, İzmir, Artvin, Samsun, Konya, Van, Şanlıurfa) arazi örtüsü değişimini makine öğrenmesiyle sınıflandırıyoruz. Bu değişimin yüzey sıcaklığı (LST) ve nem göstergeleriyle ilişkisini inceliyoruz. Ayrıca açık bir İDA veri setiyle yüzen atık tespiti yapıyoruz.
 
-> **İDA notu:** Kendi çektiğimiz İDA görüntüsü yoktur. İDA modülü açık **FloW-Img** veri setiyle geliştirilmiş ve değerlendirilmiştir. Bu veri **Türkiye kıyı verisi değildir**. Türkiye kıyılarında (ör. İstanbul, İzmir) doğrulama gelecek çalışmadır.
+> **İDA notu:** Kendi çektiğimiz İDA görüntüsü yoktur. İDA modülü açık veri setleriyle geliştirilmiş ve değerlendirilmiştir: şu an *Floating Waste and Aquatic Vegetation* (Mendeley Data, Endonezya nehirleri); başvuru onaylanırsa **FloW-Img**. Bu veriler **Türkiye kıyı verisi değildir**. Türkiye kıyılarında (ör. İstanbul, İzmir) doğrulama gelecek çalışmadır.
 
 ## Klasör yapısı
 ```
@@ -50,6 +50,9 @@ presentation/        Sunum iskeleti ve olası sorular
 ### 4. Çalıştırma
 Colab → **Dosya → Not defteri aç → GitHub** sekmesi → "Özel depoları dahil et" kutusunu işaretleyin → `selinzeykaya/yapay-zeka-proje` → notebook'u seçin. Sonra **Çalışma zamanı → Tümünü çalıştır** deyin. Sırayla 00, 01, 02... çalıştırın. Faz 5 (YOLO) için önce **Çalışma zamanı → Çalışma zamanı türünü değiştir → T4 GPU** seçin.
 
+### FloW-Img onaylanırsa
+İndirilen zip'i Drive'da `Drive'ım/yapay-zeka-proje/data/raw/FloW-Img.zip` olarak koyun ve `config.py` içinde `IDA_DATASET = "flow"` yapın. 05 notebook'u dönüştürmeyi (Pascal VOC → YOLO) kendisi yapar.
+
 GitHub'dan açılan notebook'taki değişiklikler (çıktılar dahil) otomatik kaydedilmez. Sonuçlar zaten Drive'a yazıldığı için bu sorun değil.
 
 ## Veri kaynakları ve lisanslar
@@ -63,7 +66,8 @@ GitHub'dan açılan notebook'taki değişiklikler (çıktılar dahil) otomatik k
 | Su yüzeyi | `JRC/GSW1_4/YearlyHistory` | 1984–2021; 2024 için Landsat MNDWI |
 | Yağış | `UCSB-CHG/CHIRPS/PENTAD` | Kamu malı |
 | Rakım | `USGS/SRTMGL1_003` | NASA/USGS, kamu malı |
-| İDA atık tespiti | FloW-Img (github.com/ORCA-Uboat/FloW-Dataset) | Cheng ve ark., ICCV 2021. Lisans koşulları Faz 5'te kontrol edilecek |
+| İDA atık tespiti (şu an) | Floating Waste and Aquatic Vegetation Image Dataset from Turbid Rivers — Radam ve ark., Mendeley Data v2, DOI 10.17632/j26w4m645z.2 | CC BY 4.0; 1.577 görüntü, 2 sınıf, YOLO formatı; çekim platformu belirtilmemiş |
+| İDA atık tespiti (başvuruyla) | FloW-Img — Cheng ve ark., ICCV 2021 (github.com/ORCA-Uboat/FloW-Dataset) | orca-tech.cn → Customer Support → Dataset → FloW üzerinden başvuru; sayfada lisans belirtilmemiş |
 
 ## Tekrarlanabilirlik
 Her yerde `RANDOM_STATE = 42` kullanılır. Bütün parametreler `config.py` dosyasındadır.
