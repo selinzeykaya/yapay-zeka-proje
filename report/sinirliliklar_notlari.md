@@ -25,6 +25,7 @@
 - Örnekler 3×3 piksel penceresinde homojen olan alanlardan alındı (karışık kenar pikselleri hariç). Bu yüzden test doğruluğu, gerçek haritanın karışık piksellerindeki doğruluğundan biraz yüksek olabilir.
 - WorldCover'ın kendisi de hatasız değil; etiket hatası modele aynen geçer.
 - **Su/Sulak alan sınıfı iki farklı yüzeyi birleştiriyor:** Kalıcı su (WorldCover 80) ve otsu sulak alan (90). 01 çıktısında 90 kodlu noktalar yaz kompozitinde NDVI ~0.7 ve negatif MNDWI ile sudan çok bitki gibi görünüyor. Sulak alan hidrolojik bir tanım (yılın bir kısmında su basması); tek bir yaz kompozitinde spektral olarak çayır/tarımdan ayrışmayabilir.
+  - 02 sonucu: otsu sulak alan toplam 133 nokta (Su/Sulak'ın %6); büyük kısmı **Samsun**'da (110 nokta, Samsun Su/Sulak'ının %33'ü; olası: Kızılırmak/Yeşilırmak deltaları — doğrulanmalı), İzmir'de 17 (%5), diğer illerde ≤ 3. Ortalama NDVI: kalıcı su −0.04, otsu sulak alan **0.63**; ortalama MNDWI: kalıcı su +0.39, otsu sulak alan **−0.36** → otsu sulak alan spektral olarak bitki gibi.
   - Kanıt: `results/tables/su_sulak_alt_tip_istatistik.csv` (02), `results/tables/su_sulak_alt_tip_tahminleri.csv` ve `results/figures/su_sulak_alt_tip_tahminleri.png` (03) → **[Faz 3 sonrası: 80 ve 90 için recall ve en çok karıştığı sınıf yazılacak]**
   - AS3 için sonuç: Açık su alanı değişimi (MNDWI) daha güvenilir; sulak alan değişimi tek mevsim optik veriyle sınırlı ölçülebilir.
   - Gelecek çalışma: çok mevsimli (ilkbahar + yaz) kompozit veya Sentinel-1 radar verisiyle sulak alan ayrımı.
