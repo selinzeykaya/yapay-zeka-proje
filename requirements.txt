@@ -1,0 +1,13 @@
+# Colab'da pandas, numpy, scikit-learn, matplotlib, seaborn, geopandas zaten yüklü.
+earthengine-api>=0.1.400
+geemap>=0.32
+pandas
+numpy
+scikit-learn
+xgboost
+shap
+pymannkendall
+matplotlib
+seaborn
+geopandas
+ultralytics

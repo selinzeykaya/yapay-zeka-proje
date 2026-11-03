@@ -1,0 +1,17 @@
+# Büyük veri ve model dosyaları GitHub'a gitmez
+data/raw/*
+data/processed/*.tif
+data/processed/*.zip
+!data/**/.gitkeep
+results/models/*.pt
+results/models/*.pkl
+results/models/*.joblib
+!results/models/.gitkeep
+runs/
+datasets/
+
+# Python / Colab / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.env
