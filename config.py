@@ -80,7 +80,11 @@ MAX_SCENE_CLOUD = 70               # sahne bulutluluğu %70 üstü olan görünt
 
 SR_BANDS = ["SR_B2", "SR_B3", "SR_B4", "SR_B5", "SR_B6", "SR_B7"]
 INDICES = ["NDVI", "NDBI", "MNDWI", "NDMI", "SAVI", "BSI"]
-FEATURES = SR_BANDS + INDICES
+FEATURES = SR_BANDS + INDICES     # örnek dosyalarındaki tüm sütunlar
+# Landsat'ta NDMI = (NIR-SWIR1)/(NIR+SWIR1) = -NDBI (aynı iki bant, ters işaret) → aynı bilgi.
+# Model girdisinde yalnızca NDBI tutulur (Yapılaşma sınıfını doğrudan temsil eder, literatürde yaygın).
+# NDMI veri dosyalarında ve Faz 4'teki 1 km nem analizinde kullanılmaya devam eder.
+MODEL_FEATURES = [f for f in FEATURES if f != "NDMI"]
 
 # ---------------------------------------------------------------------------
 # Sınıflar: WorldCover (11 sınıf) -> projenin 6 sınıfı
