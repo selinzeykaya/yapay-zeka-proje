@@ -194,6 +194,8 @@ MENDELEY_URL = ("https://data.mendeley.com/public-files/datasets/j26w4m645z/file
                 "fe81eec3-65c8-48c3-809b-9a9a3a359c82/file_downloaded")
 MENDELEY_SHA256 = "e43166dde54f82fa9dc00adc5f3943ea7a9083f4beda1490a774fcea6dc7d8b3"
 FLOW_ZIP = "data/raw/FloW-Img.zip"   # Drive'daki proje klasörüne göre
+# Mendeley doğrudan indirmeyi (Colab'dan) 403 ile reddediyor → tarayıcıdan indirilip Drive'a konur
+MENDELEY_ZIP = "data/raw/Floating Waste and River Vegetation Dataset.zip"
 IDA_VAL_FRACTION = 0.15            # FloW'da eğitim kümesinden ayrılan doğrulama payı
 IDA_CONF = 0.25                    # örnek görsellerde tahmin eşiği
 IDA_IOU_MATCH = 0.5                # TP/FP/FN eşleştirme eşiği
