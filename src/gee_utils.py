@@ -175,9 +175,6 @@ def wait_for_tasks(tasks, poll_seconds=30):
 
     usage = task_usage(tasks)
     log_usage(usage)
-    failed = usage[usage["state"] != "COMPLETED"]
-    if len(failed):
-        raise RuntimeError(f"Başarısız export'lar:\n{failed.to_string()}")
     return usage
 
 
@@ -226,8 +223,14 @@ def run_exports(exports, raw_dir, force=False):
     if not tasks:
         return None
     usage = wait_for_tasks(tasks)
-    for name in tasks:
+    # Önce başarılı olanları kopyala, sonra (varsa) hatayı göster
+    for name in usage.loc[usage["state"] == "COMPLETED", "task"]:
         fetch_export(name, raw_dir)
+    failed = usage[usage["state"] != "COMPLETED"]
+    if len(failed):
+        raise RuntimeError("Başarısız export'lar (başarılı olanlar kaydedildi; hücreyi tekrar "
+                           f"çalıştırınca yalnızca bunlar yeniden denenir):\n"
+                           f"{failed[['task', 'state', 'hata']].to_string()}")
     return usage
 
 
