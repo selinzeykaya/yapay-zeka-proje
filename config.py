@@ -169,6 +169,14 @@ PARAM_SPACES = {
 # ---------------------------------------------------------------------------
 GRID_SIZE_M = 1000
 GRID_CRS = "EPSG:3035"             # eşit alanlı projeksiyon (km² hesapları doğru olsun)
+TRANSITION_POINTS = 20000          # 2014→2024 geçiş matrisi için il başına rastgele piksel
+CLASS_COLORS = {0: "#1b7837", 1: "#f1a340", 2: "#d73027", 3: "#a6d96a", 4: "#bababa", 5: "#4575b4"}
+# Kentsel ısı adası (1 km hücre): kentsel = yapılaşma oranı > 0.5; kırsal = yapılaşma < 0.05,
+# su < 0.1 ve rakımı kentsel hücrelerin medyan rakımından en fazla 200 m farklı
+UHI_URBAN_MIN, UHI_RURAL_MAX, UHI_WATER_MAX, UHI_ELEV_TOL = 0.5, 0.05, 0.1, 200
+SPATIAL_BLOCK_M = 10000            # regresyonda mekânsal blok CV (10 km bloklar)
+GEE_VS_COLAB_WARN = 0.02           # macro-F1 farkı bundan büyükse uyarı
+
 # 1 km grid'de nem göstergesi = NDMI (ERA5-Land ~11 km olduğu için grid'de kullanılmaz).
 # ERA5-Land toprak nemi yalnızca şehir ölçeğindeki zaman serisinde kullanılır.
 GRID_MOISTURE_PROXY = "NDMI"

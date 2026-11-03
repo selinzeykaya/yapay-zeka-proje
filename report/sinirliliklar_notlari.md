@@ -28,6 +28,14 @@
 - Su alanı: MNDWI > 0 eşiği ile JRC'nin 2021 uyumu `results/tables/su_alani_karsilastirma.csv` → **[Faz 1 sonrası IoU değerleri yazılacak]**
 - Landsat LST eksik oranı: `results/tables/lst_eksik_orani.csv` → **[Faz 1 sonrası yazılacak]**
 
+## Faz 4 (değişim ve iklim analizi)
+- Haritalar Earth Engine'deki karşılık modelle üretildi (RF → smileRandomForest / XGBoost → smileGradientTreeBoost). Eşleme birebir değil; iki model aynı test noktalarında karşılaştırıldı: `results/tables/gee_vs_colab_karsilastirma.csv` → **[Faz 4 sonrası fark yazılacak]**
+- 2014→2024 geçiş matrisi il başına 20.000 rastgele pikselden tahmin edildi (oran başına hata payı ≲ ±0.7 puan).
+- Modelin 2014/2024 doğruluğu ölçülemiyor (etiket yok); yıllar arası atmosfer/fenoloji farkı sahte değişim üretebilir → küçük değişimler temkinli yorumlanmalı.
+- 1 km hücreler mekânsal olarak bağımsız değil (otokorelasyon) → Spearman p-değerleri olduğundan küçük; yorumda r'nin büyüklüğü/yönü esas alındı. Regresyonda mekânsal blok CV (10 km) kullanıldı.
+- ΔLST iki tek yaz kompozitinden (2014, 2024) hesaplandı; yıl-yıl hava farkı il genelinde sabit bir kayma yaratır (Spearman bundan etkilenmez, mutlak ΔLST değerleri etkilenir).
+- Kentsel ısı adası tanımı eşiklere bağlı (kentsel > %50 yapı, kırsal < %5 yapı, ±200 m rakım).
+
 ## İDA
 - Kendi İDA görüntümüz yok. Model açık FloW-Img veri seti (toplandığı yer ve ortam Faz 5'te veri setinin makalesinden doğrulanıp buraya yazılacak) üzerinde eğitilip değerlendirildi; Türkiye kıyı verisi DEĞİLDİR.
 - Gelecek çalışma: İstanbul/İzmir kıyılarından İDA görüntüsü toplanıp modelin bu verilerle doğrulanması.

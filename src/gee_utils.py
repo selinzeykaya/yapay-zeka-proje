@@ -121,6 +121,54 @@ def summer_composite(geom, year):
     return add_indices(comp).select(config.FEATURES + ["LST"])
 
 
+def classification_composite(geom, year):
+    """Sınıflandırma girdisi: model özellikleri, 32 bit (bellek dostu)."""
+    col = landsat_collection(geom, year).select(config.SR_BANDS).map(lambda i: i.toFloat())
+    return add_indices(col.median()).select(config.MODEL_FEATURES)
+
+
+def make_ee_classifier(model_name, params):
+    """Faz 3'te seçilen hiperparametrelerle Earth Engine sınıflandırıcısı kurar.
+
+    - RandomForest → ee.Classifier.smileRandomForest
+    - XGBoost      → ee.Classifier.smileGradientTreeBoost
+    Eşleme birebir değildir (ör. XGBoost'un colsample_bytree'si GEE'de yok);
+    bu yüzden Faz 4'te iki model aynı test noktalarında karşılaştırılır.
+    """
+    import math
+    n_feat = len(config.MODEL_FEATURES)
+    depth = params.get("max_depth")
+    max_nodes = None if depth in (None, "None") else int(2 ** int(depth))
+    if model_name == "RandomForest":
+        mf = params.get("max_features", "sqrt")
+        if mf == "sqrt":
+            vps = max(1, round(math.sqrt(n_feat)))
+        elif mf == "log2":
+            vps = max(1, round(math.log2(n_feat)))
+        elif mf in (None, "None"):
+            vps = n_feat
+        else:
+            vps = max(1, round(float(mf) * n_feat))
+        return ee.Classifier.smileRandomForest(
+            numberOfTrees=int(params.get("n_estimators", 300)), variablesPerSplit=vps,
+            minLeafPopulation=int(params.get("min_samples_leaf", 1)), bagFraction=1.0,
+            maxNodes=max_nodes, seed=config.RANDOM_STATE)
+    if model_name == "XGBoost":
+        return ee.Classifier.smileGradientTreeBoost(
+            numberOfTrees=int(params.get("n_estimators", 300)),
+            shrinkage=float(params.get("learning_rate", 0.1)),
+            samplingRate=float(params.get("subsample", 1.0)),
+            maxNodes=max_nodes, seed=config.RANDOM_STATE)
+    raise ValueError(f"GEE karşılığı tanımlı değil: {model_name}")
+
+
+def df_to_fc(df, columns):
+    """pandas tablosunu (geometrisiz) ee.FeatureCollection'a çevirir."""
+    feats = [ee.Feature(None, {c: (int(v) if c in ("class", "sample_id") else float(v)) for c, v in row.items()})
+             for row in df[columns].round(6).to_dict("records")]
+    return ee.FeatureCollection(feats)
+
+
 # ---------------------------------------------------------------------------
 # Etiket (ESA WorldCover 2021)
 # ---------------------------------------------------------------------------
