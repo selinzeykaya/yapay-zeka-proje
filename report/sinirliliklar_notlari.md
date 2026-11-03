@@ -2,6 +2,9 @@
 
 > Bu dosya rapordaki "Sınırlılıklar" ve "Gelecek Çalışmalar" bölümleri için ham madde listesidir. Metni kendi cümlelerinizle yazın.
 
+## GEE kota kullanımı
+- Faz 1 toplam ≈ **23.3 EECU-saat** (aylık 150'nin ≈ %15.5'i; `results/tables/gee_kota_kullanimi.csv`). En pahalı: Konya (7.1), Van (4.6), Şanlıurfa (3.6), İzmir (3.3). 2024 kompozitleri (Landsat 8+9) 2014'ün ~2 katı kota harcadı.
+
 ## Kapsam kararları
 - Değişim analizi yalnızca 2014 ve 2024 yıllarını kapsıyor (2019 hız için çıkarıldı).
 - Şehir başına 2.000 örnek nokta; hiperparametre araması n_iter=10, 3-katlı CV ile sınırlı.
@@ -17,7 +20,8 @@
 - Bulgular korelasyon/ilişki düzeyindedir; neden-sonuç iddiası yoktur.
 
 ## Etiket ve sınıf eşlemesi
-- WorldCover'ın Kar-buz (70), Mangrov (95) ve Yosun-liken (100) sınıfları örneklenmedi. Model 2014/2024 haritalarında bu pikselleri 6 sınıftan birine atar (yüksek dağlardaki kar büyük olasılıkla "Çıplak" olur). Şehir bazında alan oranları: `results/tables/worldcover_dislanan_siniflar.csv` → **[Faz 1 çalışınca sayılar buraya yazılacak]**
+- WorldCover'ın Kar-buz (70), Mangrov (95) ve Yosun-liken (100) sınıfları örneklenmedi. Model 2014/2024 haritalarında bu pikselleri 6 sınıftan birine atar (yüksek dağlardaki kar büyük olasılıkla "Çıplak" olur). Şehir bazında alan oranları (`results/tables/worldcover_dislanan_siniflar.csv`): yalnızca Artvin'de kayda değer — kar-buz 1.0 km² (%0.014) + yosun-liken 10.1 km² (%0.137) = **%0.15**; Van'da %0.001; diğer 5 ilde 0. Mangrov hiçbir ilde yok. → Etkisi ihmal edilebilir düzeyde.
+- Nihai örnek sayısı 13.251 (hedef 7 × ~2.000 = 13.986). Hedefin altında kalanlar (300 m mesafe filtresi sonrası, `results/tables/ornek_sayilari.csv`): **Artvin** Tarım 108, Yapılaşma 104, Su/Sulak 239 (toplam 1.450); Samsun Çıplak 167; İstanbul Çıplak 321; İzmir Çıplak 324. Bu sınıflar o illerde küçük ve dağınık alanlarda; Artvin'in sınıf bazında test sonuçları az örnekle hesaplanacağı için daha oynak olacak.
 - Örnekler 3×3 piksel penceresinde homojen olan alanlardan alındı (karışık kenar pikselleri hariç). Bu yüzden test doğruluğu, gerçek haritanın karışık piksellerindeki doğruluğundan biraz yüksek olabilir.
 - WorldCover'ın kendisi de hatasız değil; etiket hatası modele aynen geçer.
 - **Su/Sulak alan sınıfı iki farklı yüzeyi birleştiriyor:** Kalıcı su (WorldCover 80) ve otsu sulak alan (90). 01 çıktısında 90 kodlu noktalar yaz kompozitinde NDVI ~0.7 ve negatif MNDWI ile sudan çok bitki gibi görünüyor. Sulak alan hidrolojik bir tanım (yılın bir kısmında su basması); tek bir yaz kompozitinde spektral olarak çayır/tarımdan ayrışmayabilir.
@@ -25,8 +29,9 @@
   - AS3 için sonuç: Açık su alanı değişimi (MNDWI) daha güvenilir; sulak alan değişimi tek mevsim optik veriyle sınırlı ölçülebilir.
   - Gelecek çalışma: çok mevsimli (ilkbahar + yaz) kompozit veya Sentinel-1 radar verisiyle sulak alan ayrımı.
 - **NDMI model girdisinden çıkarıldı:** Landsat'ta NDMI = −NDBI (aynı NIR ve SWIR1 bantları). Model 11 özellikle eğitildi; NDMI yalnızca Faz 4 nem analizinde kullanıldı.
-- Su alanı: MNDWI > 0 eşiği ile JRC'nin 2021 uyumu `results/tables/su_alani_karsilastirma.csv` → **[Faz 1 sonrası IoU değerleri yazılacak]**
-- Landsat LST eksik oranı: `results/tables/lst_eksik_orani.csv` → **[Faz 1 sonrası yazılacak]**
+- Su alanı: MNDWI > 0 ile JRC'nin 2021 uyumu (`results/tables/su_alani_karsilastirma.csv`): IoU Şanlıurfa 0.94, Van 0.85, Samsun 0.82, Konya 0.81, İstanbul 0.81, İzmir 0.79, **Artvin 0.64**. MNDWI her ilde JRC'den daha az su buluyor (−%5 Şanlıurfa … −%24 Artvin). Olası neden: JRC'de mevsimsel su (waterClass 2) da su sayılıyor, yaz kompozitinde ise kuruyan kıyı şeritleri ve karışık kenar pikselleri su çıkmıyor; Artvin'de dar vadi barajları kenar piksel etkisini büyütüyor. → MNDWI değişimi yorumlanabilir, mutlak alanlar JRC'den düşük.
+- MNDWI su alanı değişimi 2014→2024: Artvin **+%78.9**, Van +%12.1, İstanbul +%9.8, Samsun +%9.0, Şanlıurfa +%1.9, Konya −%1.4, İzmir −%6.0. Artvin'deki büyük artış için olası açıklama yeni baraj göllerinin dolması (ör. Yusufeli) — kaynaktan doğrulanmalı. Van'daki +%12 dikkatle kontrol edilmeli (göl seviyesi mi, 2014 kompozit kalitesi mi?).
+- Landsat LST eksik oranı (`results/tables/lst_eksik_orani.csv`, kompozitte LST'siz piksel %): Artvin 2014 %5.6 → 2024 %0.4; Konya %2.6 (iki yılda da); Şanlıurfa %0.9 (iki yılda da); İstanbul 2014 %1.1; diğerleri < %0.4. Tamamen LST'siz 1 km hücre: Artvin 2014 %1.4, Konya %1.1, Şanlıurfa %0.2, diğerleri 0. Konya ve Şanlıurfa'da eksikliğin iki yılda **aynı** olması bulut değil sabit bir yüzey nedenine işaret ediyor (olası: Landsat ST ürününün dayandığı ASTER GED emisivite verisindeki boşluklar, ör. tuz gölü yüzeyi — doğrulanmalı). Artvin 2014'teki fazlalık büyük olasılıkla bulut kaynaklı (dağlık, bulutlu bölge, 2014'te yalnızca Landsat 8).
 
 ## Faz 4 (değişim ve iklim analizi)
 - Haritalar Earth Engine'deki karşılık modelle üretildi (RF → smileRandomForest / XGBoost → smileGradientTreeBoost). Eşleme birebir değil; iki model aynı test noktalarında karşılaştırıldı: `results/tables/gee_vs_colab_karsilastirma.csv` → **[Faz 4 sonrası fark yazılacak]**
