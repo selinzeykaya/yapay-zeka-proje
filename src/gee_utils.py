@@ -208,10 +208,20 @@ def run_exports(exports, raw_dir, force=False):
     """exports = {ad: (FeatureCollection, sütunlar)}. Var olan dosyaları atlar,
     kalanları başlatır, bekler ve Drive'dan raw_dir'e kopyalar."""
     tasks = {}
+    active = {} if force else _active_tasks()
     for name, (fc, cols) in exports.items():
-        if os.path.exists(os.path.join(raw_dir, f"{name}.csv")) and not force:
-            print("zaten var, atlandı:", name)
-            continue
+        if not force:
+            if os.path.exists(os.path.join(raw_dir, f"{name}.csv")):
+                print("zaten var, atlandı:", name)
+                continue
+            if os.path.exists(_drive_export_path(name)):   # önceki oturumda bitmiş, sadece kopyala
+                fetch_export(name, raw_dir)
+                print("Drive'da hazır bulundu, kopyalandı:", name)
+                continue
+            if name in active:                              # hâlâ çalışıyor: yeniden başlatma, bekle
+                print("zaten çalışıyor, bekleniyor:", name)
+                tasks[name] = active[name]
+                continue
         tasks[name] = start_table_export(fc, name, cols)
     if not tasks:
         return None
@@ -221,9 +231,25 @@ def run_exports(exports, raw_dir, force=False):
     return usage
 
 
+def _drive_export_path(name):
+    return os.path.join("/content/drive/MyDrive", config.GEE_EXPORT_FOLDER, f"{name}.csv")
+
+
+def _active_tasks():
+    """Earth Engine'de hâlâ bekleyen/çalışan görevler {açıklama: Task}."""
+    out = {}
+    for t in ee.batch.Task.list():
+        if getattr(t, "state", "READY") not in ("READY", "RUNNING"):   # biten görevler için API çağrısı yapma
+            continue
+        s = t.status()
+        if s.get("state") in ("READY", "RUNNING"):
+            out[s.get("description")] = t
+    return out
+
+
 def fetch_export(name, dest_dir, timeout_seconds=900):
     """Drive'a düşen CSV'yi proje klasörüne kopyalar (Drive senkronu gecikebilir)."""
-    src = os.path.join("/content/drive/MyDrive", config.GEE_EXPORT_FOLDER, f"{name}.csv")
+    src = _drive_export_path(name)
     waited = 0
     while not os.path.exists(src):
         if waited >= timeout_seconds:
