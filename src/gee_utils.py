@@ -250,24 +250,37 @@ def log_usage(df, path=None):
 
 
 def run_exports(exports, raw_dir, force=False):
-    """exports = {ad: (FeatureCollection, sütunlar)}. Var olan dosyaları atlar,
-    kalanları başlatır, bekler ve Drive'dan raw_dir'e kopyalar."""
-    tasks = {}
-    active = {} if force else _active_tasks()
+    """exports = {ad: (FeatureCollection, sütunlar)}. Yarıda kalan çalıştırmalar için güvenli:
+    - proje klasöründe dosyası olanları atlar,
+    - Earth Engine'de hâlâ çalışanları yeniden başlatmaz, bekler,
+    - önceki oturumda bitmiş olanları (Drive'da dosyası olan ya da Earth Engine'de COMPLETED görünen)
+      yeniden başlatmaz, yalnızca Drive'dan kopyalar,
+    - notebook kapalıyken biten görevlerin kotasını da kayda ekler (kayıtta yoksa).
+    Yalnızca hiç başlatılmamış ya da başarısız olmuş görevler yeniden başlatılır."""
+    tasks, to_log = {}, {}
+    active, done = ({}, {}) if force else _task_index(set(exports))
+    logged = set() if force else _logged_completed()
     for name, (fc, cols) in exports.items():
         if not force:
             if os.path.exists(os.path.join(raw_dir, f"{name}.csv")):
                 print("zaten var, atlandı:", name)
-                continue
-            if os.path.exists(_drive_export_path(name)):   # önceki oturumda bitmiş, sadece kopyala
-                fetch_export(name, raw_dir)
-                print("Drive'da hazır bulundu, kopyalandı:", name)
-                continue
-            if name in active:                              # hâlâ çalışıyor: yeniden başlatma, bekle
+            elif name in active:                            # hâlâ çalışıyor: yeniden başlatma, bekle
                 print("zaten çalışıyor, bekleniyor:", name)
                 tasks[name] = active[name]
                 continue
+            elif os.path.exists(_drive_export_path(name)) or name in done:   # önceki oturumda bitmiş
+                fetch_export(name, raw_dir)                 # Drive senkronu gecikirse bekler
+                print("önceki oturumda bitmiş, Drive'dan kopyalandı:", name)
+            else:
+                tasks[name] = start_table_export(fc, name, cols)
+                continue
+            if name in done and name not in logged:
+                to_log[name] = done[name]
+            continue
         tasks[name] = start_table_export(fc, name, cols)
+    if to_log:
+        log_usage(task_usage(to_log))
+        print(f"Notebook kapalıyken biten {len(to_log)} görevin kotası kayda eklendi.")
     if not tasks:
         return None
     usage = wait_for_tasks(tasks)
@@ -282,20 +295,39 @@ def run_exports(exports, raw_dir, force=False):
     return usage
 
 
+def _task_index(names):
+    """Earth Engine görev listesinden bu adlara ait {ad: Task} sözlükleri:
+    (hâlâ bekleyen/çalışan, en son tamamlanmış). Liste en yeni görevden başlar."""
+    active, done = {}, {}
+    for t in ee.batch.Task.list():
+        state = getattr(t, "state", None)
+        if state not in ("READY", "RUNNING", "COMPLETED"):
+            continue
+        desc = (getattr(t, "config", None) or {}).get("description")
+        if desc is None:                                    # eski API sürümleri: açıklama status() içinde
+            s = t.status()
+            desc, state = s.get("description"), s.get("state")
+        if desc not in names:
+            continue
+        if state in ("READY", "RUNNING"):
+            active.setdefault(desc, t)
+        elif state == "COMPLETED":
+            done.setdefault(desc, t)
+    return active, done
+
+
+def _logged_completed(path=None):
+    """Kota kaydında COMPLETED olarak zaten bulunan görev adları."""
+    import pandas as pd
+    path = path or os.path.join(config.TABLES_DIR, "gee_kota_kullanimi.csv")
+    if not os.path.exists(path):
+        return set()
+    k = pd.read_csv(path)
+    return set(k.loc[k["state"] == "COMPLETED", "task"])
+
+
 def _drive_export_path(name):
     return os.path.join("/content/drive/MyDrive", config.GEE_EXPORT_FOLDER, f"{name}.csv")
-
-
-def _active_tasks():
-    """Earth Engine'de hâlâ bekleyen/çalışan görevler {açıklama: Task}."""
-    out = {}
-    for t in ee.batch.Task.list():
-        if getattr(t, "state", "READY") not in ("READY", "RUNNING"):   # biten görevler için API çağrısı yapma
-            continue
-        s = t.status()
-        if s.get("state") in ("READY", "RUNNING"):
-            out[s.get("description")] = t
-    return out
 
 
 def fetch_export(name, dest_dir, timeout_seconds=900):
