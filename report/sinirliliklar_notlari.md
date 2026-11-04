@@ -47,5 +47,8 @@
 - Kendi İDA görüntümüz yok. Model açık veri setiyle eğitilip değerlendirildi; Türkiye kıyı verisi DEĞİLDİR.
 - Kullanılan veri seti: *Floating Waste and Aquatic Vegetation Image Dataset from Turbid Rivers* (Radam ve ark., Mendeley Data, DOI 10.17632/j26w4m645z.2, CC BY 4.0): Banjarmasin (Endonezya) bulanık nehirleri; çekim platformu (İDA / drone / el kamerası) veri sayfasında belirtilmemiş → "İDA görüntüsü" diye nitelendirilmemeli, "su yüzeyi görüntüleri" denmeli.
 - Nehir ortamı ≠ deniz kıyısı (dalga, yansıma, tuzlu su köpüğü farklı) → İstanbul/İzmir kıyılarına aktarılabilirlik belirsiz.
-- FloW-Img (gerçek İDA görüntüleri) indirme için başvuru gerektiriyor; onaylanırsa ana veri olarak kullanılacak. MMOS (95.5 GB, drone) boyut ve platform nedeniyle kullanılmadı.
+- FloW-Img (gerçek İDA görüntüleri, Cheng ve ark., ICCV 2021) KULLANILMADI: indirme başvuru gerektiriyor ve başvuru sitesi (orca-tech.cn) Türkiye'den açılmadı → Faz 5 yalnızca Mendeley verisiyle yapıldı.
+- Sonuç: Modelimiz gerçek bir İDA kamerasından çekilmiş görüntülerle eğitilmedi/test edilmedi.
+- Literatürdeki FloW sonuçları (mAP vb.) yalnızca "farklı veri setinde raporlanan değerler" olarak verilir; veri, sınıflar, görüntü koşulları ve değerlendirme protokolü farklı olduğu için bizim sonuçlarımızla DOĞRUDAN KARŞILAŞTIRMA YAPILMAZ.
+- MMOS (95.5 GB, drone) boyut ve platform nedeniyle kullanılmadı.
 - Gelecek çalışma: İstanbul/İzmir kıyılarından İDA görüntüsü toplanıp modelin bu verilerle doğrulanması.

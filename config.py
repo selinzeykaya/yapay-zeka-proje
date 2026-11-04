@@ -187,8 +187,8 @@ ERA5_BANDS = ["volumetric_soil_water_layer_1", "temperature_2m"]
 # ---------------------------------------------------------------------------
 # "mendeley": Floating Waste and Aquatic Vegetation (Radam ve ark., Mendeley Data, DOI 10.17632/j26w4m645z.2,
 #             CC BY 4.0) — hemen indirilebilir, şu anki ana veri
-# "flow":     FloW-Img (Cheng ve ark., ICCV 2021) — orca-tech.cn üzerinden başvuruyla; onay gelirse
-#             zip'i Drive'a koyup bu değeri "flow" yapın
+# "flow":     FloW-Img (Cheng ve ark., ICCV 2021) — KULLANILMADI: başvuru sitesi (orca-tech.cn)
+#             Türkiye'den açılmadı. Kod yolu yalnızca ileride erişim olursa diye duruyor
 IDA_DATASET = "mendeley"
 MENDELEY_URL = ("https://data.mendeley.com/public-files/datasets/j26w4m645z/files/"
                 "fe81eec3-65c8-48c3-809b-9a9a3a359c82/file_downloaded")
