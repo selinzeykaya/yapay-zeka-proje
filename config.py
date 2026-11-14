@@ -169,7 +169,9 @@ PARAM_SPACES = {
 # ---------------------------------------------------------------------------
 GRID_SIZE_M = 1000
 GRID_CRS = "EPSG:3035"             # eşit alanlı projeksiyon (km² hesapları doğru olsun)
-TRANSITION_POINTS = 20000          # 2014→2024 geçiş matrisi için il başına rastgele piksel
+# Faz 4 örneklem tabanlı sınıflandırma: her 1 km hücrede 3 × 3 = 9 düzenli nokta (~333 m arayla).
+# Hücre oranları ve geçiş matrisi bu noktalardan (tüm ili GEE'de sınıflandırmak kotayı aştı).
+LC_POINTS_PER_CELL_SIDE = 3
 CLASS_COLORS = {0: "#1b7837", 1: "#f1a340", 2: "#d73027", 3: "#a6d96a", 4: "#bababa", 5: "#4575b4"}
 # Kentsel ısı adası (1 km hücre): kentsel = yapılaşma oranı > 0.5; kırsal = yapılaşma < 0.05,
 # su < 0.1 ve rakımı kentsel hücrelerin medyan rakımından en fazla 200 m farklı

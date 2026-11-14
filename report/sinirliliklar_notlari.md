@@ -36,8 +36,11 @@
 - Landsat LST eksik oranı (`results/tables/lst_eksik_orani.csv`, kompozitte LST'siz piksel %): Artvin 2014 %5.6 → 2024 %0.4; Konya %2.6 (iki yılda da); Şanlıurfa %0.9 (iki yılda da); İstanbul 2014 %1.1; diğerleri < %0.4. Tamamen LST'siz 1 km hücre: Artvin 2014 %1.4, Konya %1.1, Şanlıurfa %0.2, diğerleri 0. Konya ve Şanlıurfa'da eksikliğin iki yılda **aynı** olması bulut değil sabit bir yüzey nedenine işaret ediyor (olası: Landsat ST ürününün dayandığı ASTER GED emisivite verisindeki boşluklar, ör. tuz gölü yüzeyi — doğrulanmalı). Artvin 2014'teki fazlalık büyük olasılıkla bulut kaynaklı (dağlık, bulutlu bölge, 2014'te yalnızca Landsat 8).
 
 ## Faz 4 (değişim ve iklim analizi)
-- Haritalar Earth Engine'deki karşılık modelle üretildi (RF → smileRandomForest / XGBoost → smileGradientTreeBoost). Eşleme birebir değil; iki model aynı test noktalarında karşılaştırıldı: `results/tables/gee_vs_colab_karsilastirma.csv` → **[Faz 4 sonrası fark yazılacak]**
-- 2014→2024 geçiş matrisi il başına 20.000 rastgele pikselden tahmin edildi (oran başına hata payı ≲ ±0.7 puan).
+- **Tam harita yerine örneklem tabanlı tahmin:** Tüm ili 30 m'de GEE'de sınıflandırmak kotayı aştı (Artvin 2014 tek görev 5,56 EECU-saat; 2024 "Computation timed out"; geçiş görevi "out of memory"). Bunun yerine her 1 km hücrede 3 × 3 = 9 düzenli nokta (~333 m) alındı, noktalar Colab'da Faz 3'ün en iyi modeliyle sınıflandırıldı.
+  - Hücre oranları 9 noktadan → 1/9'luk adımlar, tek hücre düzeyinde gürültülü (Spearman korelasyonlarını zayıflatabilir).
+  - İl alanları ve geçiş matrisi tüm noktalardan (il başına on binlerce) → il düzeyinde kararlı.
+  - Nokta sayıları ve eşleşme kontrolü: `results/tables/lc_nokta_ozet.csv` → **[Faz 4 sonrası yazılacak]**
+- Değişim haritası görselleri (`degisim_haritalari.png`) GEE karşılık modeliyle (XGBoost → smileGradientTreeBoost, birebir değil) kaba çözünürlükte üretildi; yalnızca görsel amaçlı. İki model test noktalarında karşılaştırıldı: `results/tables/gee_vs_colab_karsilastirma.csv`.
 - Modelin 2014/2024 doğruluğu ölçülemiyor (etiket yok); yıllar arası atmosfer/fenoloji farkı sahte değişim üretebilir → küçük değişimler temkinli yorumlanmalı.
 - 1 km hücreler mekânsal olarak bağımsız değil (otokorelasyon) → Spearman p-değerleri olduğundan küçük; yorumda r'nin büyüklüğü/yönü esas alındı. Regresyonda mekânsal blok CV (10 km) kullanıldı.
 - ΔLST iki tek yaz kompozitinden (2014, 2024) hesaplandı; yıl-yıl hava farkı il genelinde sabit bir kayma yaratır (Spearman bundan etkilenmez, mutlak ΔLST değerleri etkilenir).
