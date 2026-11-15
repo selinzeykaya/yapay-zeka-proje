@@ -61,7 +61,16 @@
   - LOCO'da eğitim verisi aynı-şehir düzeninden **fazla** (≈11 250 vs 9 275 nokta) → düşüş veri azlığından değil, şehirler arası farktan.
   - Aynı-şehir test kümeleri küçük (217–300 nokta) → tek bir F1 değerinin belirsizliği yaklaşık ±0.05; küçük farklar (ör. Artvin vs Samsun) yorumlanmamalı.
   - Şanlıurfa'da "tüm noktalar" (n = 1 998) F1 = 0.542, yalnızca test noktalarında (n = 300) 0.626 → küçük test kümesi başarıyı iyimser göstermiş olabilir; LOCO için "tüm noktalar" satırı daha güvenilir.
-- Sınıf bazında hangi sınıfların genellenemediği: `genelleme_sinif_bazinda.csv` → **[eklenecek]**
+- Sınıf bazında (`genelleme_sinif_bazinda.csv`, XGBoost F1 aynı şehir → LOCO):
+  - Ortalama düşüş: Tarım −0.13, Yapılaşma −0.13, Çayır/Çalı −0.11, Orman −0.10, Su/Sulak −0.10 (medyan −0.02), Çıplak −0.09.
+  - **Tarım** başka şehirde en zayıf sınıf (LOCO F1 0.30–0.56; İstanbul 0.61 → 0.30). Tarımın görünümü ürün, sulama ve ekim takvimine göre ilden ile değişiyor.
+  - En büyük tekil düşüşler: Konya Su/Sulak 0.89 → 0.39 (−0.50), İstanbul Tarım −0.31, Şanlıurfa Yapılaşma 0.69 → 0.39 (−0.30), Konya Çıplak −0.25, Van Çayır/Çalı −0.22, İzmir Çayır/Çalı −0.21.
+  - Konya'daki su düşüşü için olası açıklama: tuzlu/sığ göl yüzeyleri (ör. Tuz Gölü) başka illerdeki sudan spektral olarak farklı → `[DOĞRULANMADI]`, haritayla kontrol edilmeli.
+  - Sınıf başına test noktası il başına ~50 → tek sınıf F1 değerleri çok oynak; tekil değerler değil genel örüntü yorumlanmalı.
+- Düşüşün olası nedenleri (`genelleme_neden_gostergeleri.csv`): 7 il üzerinde F1 düşüşü ile göstergeler arasında Spearman sıra korelasyonu (tablodan elle hesaplandı, notebook'ta yok):
+  - Yıllık yağış ρ ≈ −0.96, yaz toprak nemi ρ ≈ −0.86, MODIS yaz LST ρ ≈ +0.93 → **kurak ve sıcak illerde düşüş daha büyük**.
+  - Spektral kayma ρ ≈ +0.36 (Konya en yüksek: 1.05, en büyük düşüş); sınıf dağılımı farkı açıklamıyor (Artvin en farklı dağılım 0.197 ama en küçük düşüş).
+  - n = 7 il ve göstergeler birbiriyle ilişkili (hepsi kuraklığı ölçüyor) → bu bir **örüntü**, kanıt değil; tek bir neden ayrıştırılamaz.
 
 ## İDA
 - Kendi İDA görüntümüz yok. Model açık veri setiyle eğitilip değerlendirildi; Türkiye kıyı verisi DEĞİLDİR.
