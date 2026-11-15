@@ -5,6 +5,20 @@
 > Tablolar: `Drive'ım/yapay-zeka-proje/results/tables/` · Şekiller: `.../results/figures/` · Sınırlılıklar ham listesi: `report/sinirliliklar_notlari.md`
 >
 > Tüm sayılar Colab çıktılarından alınmıştır. Raporda yazmadan önce ilgili CSV'den bir kez kontrol edin.
+>
+> **Bölüm yapısı hocanın kurallarına göre:** Özet · Giriş · Literatür Taraması · Deneysel Yöntemler · Bulgular · Tartışma · Sonuç (sınırlılıklar ve gelecek çalışmalar dahil) · Kaynakça. Başlıkları bu sırayla ve bu adlarla kullanın.
+>
+> **Hocanın özellikle istedikleri → raporda nerede:**
+> | İstek | Yer |
+> |---|---|
+> | 20–30 akademik çalışma, yöntem + bulgu özeti | 2. Literatür Taraması (tablo) |
+> | Veri kaynağı, özellikler, örnek sayısı, sınıf dağılımı, ortalama/medyan/mod | 3.3 + 4.1 |
+> | Algoritmalar ve tercih nedenleri | 3.4 |
+> | Hiperparametreler ve yapılan değişiklikler | 3.8 |
+> | Accuracy, Precision, Recall, F1, ROC-AUC tablo + grafik | 4.2 |
+> | Literatürle karşılaştırma | 5 (Tartışma) + `literatur_karsilastirma.csv` |
+> | Güçlü yönler ve sınırlılıklar | 6.2, 6.3 |
+> | Turnitin YZ oranı < %40 | Tüm paragrafları kendiniz yazın; bu dosyadaki maddeleri kopyalamayın |
 
 ---
 
@@ -12,7 +26,7 @@
 - Başlık: *Türkiye'de Coğrafi Değişimlerin İklimsel Etkilerinin Uydu ve İDA Görüntüleriyle Yapay Zekâ Destekli Analizi*
 - Ders, öğrenciler, tarih
 
-## Özet (≈200–250 kelime) — `[SEN YAZ]`, en son yazın
+## Özet (Abstract) (≈200–250 kelime) — `[SEN YAZ]`, en son yazın
 Sırayla değinilecek noktalar:
 - Problem: arazi örtüsü değişimi ↔ yüzey sıcaklığı/nem; 7 il, 2014 → 2024
 - Veri: Landsat 8/9, ESA WorldCover 2021 etiketi, MODIS, ERA5-Land, CHIRPS; GEE
@@ -24,7 +38,7 @@ Sırayla değinilecek noktalar:
   - YOLOv8n mAP50 **0.388** (Endonezya nehir veri seti — Türkiye verisi değil)
 - Bir cümle sınırlılık: ilişki, neden-sonuç değil
 
-## 1. Giriş
+## 1. Giriş (Introduction)
 ### 1.1 Problem ve motivasyon — `[SEN YAZ]`
 - Arazi örtüsü değişimi (kentleşme, orman/tarım değişimi, su alanları) yerel iklimi etkiler → L26, L27, L29
 - Türkiye'de farklı iklim bölgeleri → tek bir model her yerde çalışır mı? (AS5)
@@ -47,8 +61,17 @@ Tablo olarak verin:
 
 ### 1.3 Raporun düzeni — tek cümle `[SEN YAZ]`
 
-## 2. Literatür
-- Tablo: `literature/literatur_karsilastirma.csv` (bizim değerler dolu, literatür değerleri `[MAKALEDEN DOLDUR]`)
+## 2. Literatür Taraması (Literature Review)
+- **Hoca 20–30 çalışmanın incelenmesini, yöntem ve bulgularının özetlenmesini istiyor.** Şu an `literatur_matrisi.csv`'de hiçbir çalışma "okundu" değil → **en büyük açık iş bu**.
+- Önerilen 25 çalışma (veri/yazılım ve özgün algoritma makaleleri hariç; onlar yalnızca yöntem bölümünde atıf alır):
+  - Sınıflandırma / LULC (5): L01, L02, L04, L32, L41
+  - LST – arazi örtüsü / kentsel ısı adası (11): L26, L27, L28, L29, L30, L34, L35, L37, L39, L40, L38
+  - İllere özel (2): L43 (Artvin/Yusufeli), L44 (Şanlıurfa)
+  - Mekânsal doğrulama / genelleme (3): L21, L22, L46
+  - Yüzen atık tespiti (4): L48, L50, L51, L54
+- Rapordaki tablo (her çalışma 1 satır): Yazar (yıl) · Bölge · Veri/sensör · Yöntem · Metrik ve değer · Ana bulgu · Bizimle ilişkisi → `literatur_matrisi.csv` sütunlarından
+- Tablonun altında 2–3 paragraf karşılaştırma `[SEN YAZ]`: hangi yöntemler yaygın, hangi değerler raporlanmış, bizim çalışma nerede duruyor
+- Karşılaştırma tablosu: `literature/literatur_karsilastirma.csv` (bizim değerler dolu, literatür değerleri `[MAKALEDEN DOLDUR]`)
 - Alt başlıklar ve kaynaklar:
   - 2.1 ML ile arazi örtüsü sınıflandırması → L01, L02, L04, L05 (Türkiye: L32, L41)
   - 2.2 Arazi örtüsü – LST ilişkisi ve kentsel ısı adası → L26–L29; Türkiye: L30, L31, L34–L40
@@ -58,7 +81,7 @@ Tablo olarak verin:
 - Bu çalışmanın farkı (madde): 7 il aynı yöntemle · iki yıl karşılaştırma + 22 yıllık iklim serisi · mekânsal blok CV · LOCO genelleme testi · SHAP — `[SEN YAZ]`
 - **Eksik:** 1. öncelikli makalelerin bulguları `literatur_matrisi.csv`'ye yazılmalı (sizden bekleniyor)
 
-## 3. Veri ve Yöntem
+## 3. Deneysel Yöntemler (Experimental Methods)
 ### 3.1 Çalışma alanı
 - 7 il, il sınırları FAO GAUL (L09 platform) — şekil: 00'daki il sınırları haritası (yoksa `rgb_kompozitler.png`)
 - Neden bu iller: alt soru tablosuna bağla
@@ -99,23 +122,40 @@ Tablo olarak verin:
 - Veri: Radam ve ark. (L47), 1 577 görüntü, 2 sınıf (floating_waste, river_vegetation), Endonezya nehirleri, CC BY 4.0
 - Model: YOLOv8n (L49), transfer öğrenme; metrikler P, R, F1, mAP50, mAP50-95 (L56)
 - FloW-Img kullanılamadı (erişim) → yalnızca "farklı veri setinde raporlanan değerler" (L48)
+- Hiperparametreler: YOLOv8n, görüntü boyutu ve epoch sayısı `config.py` (YOLO_*) değerlerinden; önceden eğitilmiş COCO ağırlıkları
 
-## 4. Bulgular
+### 3.8 Hiperparametreler ve yapılan değişiklikler
+- Tablo 1 — arama uzayı ve seçilen değerler: `hiperparametre_arama.csv` (model × parametre × aralık × seçilen); arama ayarları `config.py`
+- Tablo 2 — süreç içinde yapılan değişiklikler (neden + etkisi), maddeler:
+  - Kapsam daraltma: 2019 çıkarıldı, il başına 2 000 nokta, n_iter=10, 3-katlı CV (süre)
+  - NDMI modelden çıkarıldı (Landsat'ta NDMI = −NDBI, aynı bilgi)
+  - SAVI, BSI 1 km grid'den çıkarıldı (GEE bellek sınırı)
+  - Değişim analizi tam haritadan 9 nokta/hücre örneklemesine geçti (GEE zaman aşımı/bellek)
+  - FloW-Img yerine yalnızca Mendeley verisi (erişim)
+  - LST regresyonunda mekânsal blok tanımı düzeltildi (ilk sürüm il bazlı CV yapıyordu; R² −0.26 → 0.921)
+  - Kaynak: `on_isleme_kararlari.csv`, `model_gerekceleri.csv`, `report/sinirliliklar_notlari.md`
+
+## 4. Bulgular (Results)
 > Her alt bölümde: 1 tablo + 1–2 şekil + 2–4 maddelik gözlem. Yorum/neden kısmı Tartışma'ya.
 
 ### 4.1 Veri seti tanıtımı (02)
 - Tablo: `veri_seti_ozeti.csv`, `sinif_dagilimi.csv`
+- **Tanımlayıcı istatistik (hoca: ortalama, medyan, mod):** `tanimlayici_istatistik.csv` (ortalama, std, medyan, mod vb. her özellik için); sınıf bazında `sinif_bazinda_ortalama.csv`, `sinif_bazinda_medyan.csv`; iklim `iklim_tanimlayici_istatistik.csv`
+- Grafikler: `sinif_dagilimi.png`, `histogramlar.png`, `kutu_grafikleri_indeksler.png`, `kutu_grafikleri_sehir.png`, `korelasyon_isi_haritasi.png`
+- Eksik ve aykırı değer: `eksik_deger.csv`, `aykiri_deger.csv`
 - Gözlem: Artvin'de Tarım (108) ve Yapılaşma (104) az örnek; otsu sulak alan Su/Sulak'ın %6'sı
 
 ### 4.2 Sınıflandırma sonuçları (03)
-- Tablo `model_karsilastirma.csv`:
+- **Hoca bu 5 metriği açıkça istiyor:** Accuracy, Precision, Recall, F1-Score, ROC-AUC. Tablo `model_karsilastirma.csv` (test kümesi) — eksik hücreleri CSV'den doldurun:
 
-| Model | Test macro-F1 |
-|---|---|
-| XGBoost (doğrulamada en iyi) | 0.783 (acc 0.785, Kappa 0.742, ROC-AUC 0.961) |
-| MLP | 0.789 |
-| SVM | 0.772 |
-| RF | 0.764 |
+| Model | Accuracy | Precision (macro) | Recall (macro) | F1 (macro) | ROC-AUC (macro, OvR) | Kappa |
+|---|---|---|---|---|---|---|
+| XGBoost (doğrulamada en iyi) | 0.785 | [CSV] | [CSV] | 0.783 | 0.961 | 0.742 |
+| MLP | [CSV] | [CSV] | [CSV] | 0.789 | [CSV] | [CSV] |
+| SVM | [CSV] | [CSV] | [CSV] | 0.772 | [CSV] | [CSV] |
+| RF | [CSV] | [CSV] | [CSV] | 0.764 | [CSV] | [CSV] |
+
+- Sınıf bazında Precision/Recall/F1: `sinif_raporu_XGBoost.csv`, `sinif_bazinda_f1.csv`; sınıf bazında ROC-AUC: `roc_auc_sinif_bazinda.csv`
 
 - Not: Model seçimi **doğrulama** kümesine göre yapıldı; testte MLP biraz önde ama fark küçük → `[SEN YAZ]` (neden test'e göre seçmediğimiz)
 - Şekiller: `model_karsilastirma.png`, `karisiklik_matrisi_XGBoost.png`, `sinif_bazinda_f1.png`, `roc_tumu.png`, `shap_XGBoost.png`
@@ -165,7 +205,8 @@ Tablo önerisi (rapor için kısaltılmış):
 - Şekiller: `ida_eda.png`, `ida_egitim_egrileri.png`, `ida_ornek_tespitler.png`, PR eğrisi
 - Literatür değerleri yalnızca "farklı veri setinde" (`ida_literatur_karsilastirma.csv`)
 
-## 5. Tartışma — `[SEN YAZ]` (her madde için 2–4 cümle, literatürle)
+## 5. Tartışma (Discussion) — `[SEN YAZ]` (her madde için 2–4 cümle, literatürle)
+- **Hoca: sonuçlar literatürle karşılaştırılmalı** → her maddede en az bir çalışmanın değeriyle yan yana koyun (`literatur_karsilastirma.csv`); veri/bölge/sınıf farkını mutlaka belirtin
 - Sınıflandırma başarısı literatürle nasıl? → L04, L32, L41 (değerler `literatur_karsilastirma.csv`)
 - NDVI–LST negatif ilişkisi literatürle uyumlu mu? → L26, L27, L34, L35
 - Şanlıurfa: tarım artışı + yaz LST düşüşü → sulama (GAP) ile tutarlı mı? → L44 (kaynakla destekleyin, neden-sonuç demeyin)
@@ -175,7 +216,19 @@ Tablo önerisi (rapor için kısaltılmış):
 - Genelleme: kurak illerde daha büyük düşüş; mekânsal doğrulama literatürüyle uyum → L22, L23, L46
 - İDA: mAP50 0.388 düşük/orta; küçük nesne, bulanık su, 2 sınıf karışması → L50, L51, L53
 
-## 6. Sınırlılıklar
+## 6. Sonuç (Conclusion)
+> Hocanın yapısında sınırlılıklar ve gelecek çalışmalar Sonuç bölümünün içinde.
+
+### 6.1 Genel değerlendirme — `[SEN YAZ]` (her alt soruya bir cümlelik cevap: AS1 … AS6)
+
+### 6.2 Güçlü yönler (madde → cümleye çevirin)
+- 7 il aynı yöntem ve aynı veriyle; 4 model karşılaştırması
+- Mekânsal blok CV ve LOCO ile gerçekçi başarı ölçümü (sızıntıya karşı)
+- SHAP ile açıklanabilirlik
+- 22 yıllık iklim serisi + iki yıllık değişim
+- Tamamen açık veri ve tekrarlanabilir kod (GitHub, RANDOM_STATE = 42)
+
+### 6.3 Sınırlılıklar
 - Ham liste: `report/sinirliliklar_notlari.md` — en önemli 6–8 maddeyi seçin:
   1. Etiket yalnızca 2021 → 2014/2024 doğruluğu ölçülemiyor
   2. İlişki ≠ neden-sonuç; n büyük, ρ küçük
@@ -186,16 +239,14 @@ Tablo önerisi (rapor için kısaltılmış):
   7. İDA verisi Türkiye verisi değil; FloW erişilemedi
   8. Kapsam daraltma: 2 yıl, 2 000 nokta/il, n_iter=10, yalnızca YOLOv8n
 
-## 7. Gelecek çalışmalar (madde)
+### 6.4 Gelecek çalışmalar (madde)
 - Çok mevsimli kompozit / Sentinel-1 ile sulak alan
 - 2019 ara yılı ve yıllık zaman serisi
 - Bağımsız referans verisiyle 2014/2024 doğruluk değerlendirmesi (L19)
 - Kurak iller için bölgesel model veya alan uyarlaması (L46)
 - Türkiye kıyılarında İDA görüntüsü toplama ve modeli yeniden değerlendirme
 
-## 8. Sonuç — `[SEN YAZ]` (her alt soruya bir cümlelik cevap: AS1 … AS6)
-
-## Kaynakça
+## Kaynakça (References)
 - `literature/aday_calismalar.md` tablolarından; yalnızca metinde atıf yaptıklarınız
 - Veri setleri ve yazılım (GEE, scikit-learn, XGBoost, Ultralytics, SHAP) künyeleri aynı dosyanın sonunda
 - `[DOĞRULANMADI]` olanları kullanmayın
