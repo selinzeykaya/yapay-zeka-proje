@@ -55,6 +55,14 @@
   - Model 2024 yazının tek bir kompozitini açıklıyor; başka yıllara/illere genellenebilirliği test edilmedi.
   - Not: İlk çalıştırmada blok tanımı hatalıydı (x, y hücre biriminde; 7 blok = il bazlı CV, R² = −0.26). Düzeltildi (commit d91c1de); raporda yalnızca düzeltilmiş değerler kullanılmalı.
 
+## Faz 6 (bölgeler arası genelleme, AS5)
+- XGBoost macro-F1, aynı şehir → başka şehir (LOCO, aynı test noktaları): İstanbul 0.812 → 0.729 (−0.083), İzmir 0.809 → 0.716 (−0.094), Artvin 0.728 → 0.668 (−0.059), Samsun 0.742 → 0.671 (−0.071), Konya 0.794 → 0.607 (**−0.187**), Van 0.770 → 0.645 (−0.125), Şanlıurfa 0.773 → 0.626 (−0.147). Ortalama düşüş ≈ −0.11.
+  - En büyük düşüş iç/kurak illerde (Konya, Şanlıurfa, Van); kıyı ve nemli illerde (Artvin, Samsun, İstanbul, İzmir) daha az. Olası neden: fenoloji/iklim farkı → nedenler `genelleme_neden_gostergeleri.csv` ile kontrol edilecek.
+  - LOCO'da eğitim verisi aynı-şehir düzeninden **fazla** (≈11 250 vs 9 275 nokta) → düşüş veri azlığından değil, şehirler arası farktan.
+  - Aynı-şehir test kümeleri küçük (217–300 nokta) → tek bir F1 değerinin belirsizliği yaklaşık ±0.05; küçük farklar (ör. Artvin vs Samsun) yorumlanmamalı.
+  - Şanlıurfa'da "tüm noktalar" (n = 1 998) F1 = 0.542, yalnızca test noktalarında (n = 300) 0.626 → küçük test kümesi başarıyı iyimser göstermiş olabilir; LOCO için "tüm noktalar" satırı daha güvenilir.
+- Sınıf bazında hangi sınıfların genellenemediği: `genelleme_sinif_bazinda.csv` → **[eklenecek]**
+
 ## İDA
 - Kendi İDA görüntümüz yok. Model açık veri setiyle eğitilip değerlendirildi; Türkiye kıyı verisi DEĞİLDİR.
 - Kullanılan veri seti: *Floating Waste and Aquatic Vegetation Image Dataset from Turbid Rivers* (Radam ve ark., Mendeley Data, DOI 10.17632/j26w4m645z.2, CC BY 4.0): Banjarmasin (Endonezya) bulanık nehirleri; çekim platformu (İDA / drone / el kamerası) veri sayfasında belirtilmemiş → "İDA görüntüsü" diye nitelendirilmemeli, "su yüzeyi görüntüleri" denmeli.
