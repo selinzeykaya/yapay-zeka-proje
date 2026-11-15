@@ -40,11 +40,20 @@
   - Hücre oranları 9 noktadan → 1/9'luk adımlar, tek hücre düzeyinde gürültülü (Spearman korelasyonlarını zayıflatabilir).
   - İl alanları ve geçiş matrisi tüm noktalardan (il başına on binlerce) → il düzeyinde kararlı.
   - Nokta sayıları ve eşleşme kontrolü: `results/tables/lc_nokta_ozet.csv` → **[Faz 4 sonrası yazılacak]**
-- Değişim haritası görselleri (`degisim_haritalari.png`) GEE karşılık modeliyle (XGBoost → smileGradientTreeBoost, birebir değil) kaba çözünürlükte üretildi; yalnızca görsel amaçlı. İki model test noktalarında karşılaştırıldı: `results/tables/gee_vs_colab_karsilastirma.csv`.
+- Değişim haritası görselleri (`degisim_haritalari.png`, `lc_maps/`): 2014 ve 2024 sınıf resimleri GEE karşılık modeliyle (XGBoost → smileGradientTreeBoost, birebir değil) kaba çözünürlükte (1024 px) üretildi; değişim resmi Colab'da bu iki resmin piksel farkından. Yalnızca görsel amaçlı; sayısal sonuçlar noktalardaki Colab modelinden.
+  - İki model aynı test noktalarında karşılaştırıldı (`results/tables/gee_vs_colab_karsilastirma.csv`): macro-F1 farkı **+0.0097** → görseller sayısal sonuçlarla büyük ölçüde tutarlı.
 - Modelin 2014/2024 doğruluğu ölçülemiyor (etiket yok); yıllar arası atmosfer/fenoloji farkı sahte değişim üretebilir → küçük değişimler temkinli yorumlanmalı.
 - 1 km hücreler mekânsal olarak bağımsız değil (otokorelasyon) → Spearman p-değerleri olduğundan küçük; yorumda r'nin büyüklüğü/yönü esas alındı. Regresyonda mekânsal blok CV (10 km) kullanıldı.
 - ΔLST iki tek yaz kompozitinden (2014, 2024) hesaplandı; yıl-yıl hava farkı il genelinde sabit bir kayma yaratır (Spearman bundan etkilenmez, mutlak ΔLST değerleri etkilenir).
 - Kentsel ısı adası tanımı eşiklere bağlı (kentsel > %50 yapı, kırsal < %5 yapı, ±200 m rakım).
+  - İstanbul UHI (+8.14 °C 2014, +8.00 °C 2024) İzmir'in (+1.18 / +1.49 °C) çok üstünde → fark kısmen tanımdan (kırsal referansın konumu, deniz/orman etkisi) kaynaklanıyor olabilir; `kentsel_isi_adasi.csv` ve haritayla kontrol edilmeli.
+- Spearman korelasyonlarının çoğu zayıf (|ρ| < 0.2); en güçlüler ΔNDVI–ΔLST (Şanlıurfa −0.65, Artvin −0.41) ve Δtarım–ΔNDMI (Konya +0.39). n çok büyük (5 166–38 855 hücre) olduğu için zayıf ilişkiler de p < 0.001 çıkıyor → "istatistiksel olarak anlamlı ama zayıf" diye raporlanmalı.
+- Sınıf payı değişimleri model hatasına duyarlı (test doğruluğu ~%78.5; iki yılın hataları birikebilir). Örn. Artvin orman +5.55 pp, Şanlıurfa tarım +4.13 pp — büyüklükler temkinli, yön daha güvenilir.
+- Şanlıurfa MODIS yaz gündüz LST trendi −1.44 °C/10 yıl (MK p = 0.0001) + tarım artışı → sulamayla (GAP) tutarlı bir ilişki; neden-sonuç iddiası yapılmamalı, kaynakla desteklenmeli `[DOĞRULANMADI]`.
+- **LST regresyonu** (`lst_regresyon_metrikleri.csv`, `lst_regresyon_shap.csv`): RF, 10 km mekânsal blok CV (1 435 blok, 111 950 hücre) → R² = 0.921, RMSE = 2.04 °C, MAE = 1.52 °C.
+  - SHAP: NDVI (4.81 °C) ve rakım (2.28 °C) baskın; arazi sınıfı oranlarının etkisi küçük (≤ 0.52 °C). NDVI sınıf oranlarıyla aynı bilgiyi taşıdığı için sınıf etkisi NDVI'ya "geçmiş" olabilir (ilişkili girdiler) → SHAP önemi neden-sonuç değildir.
+  - Model 2024 yazının tek bir kompozitini açıklıyor; başka yıllara/illere genellenebilirliği test edilmedi.
+  - Not: İlk çalıştırmada blok tanımı hatalıydı (x, y hücre biriminde; 7 blok = il bazlı CV, R² = −0.26). Düzeltildi (commit d91c1de); raporda yalnızca düzeltilmiş değerler kullanılmalı.
 
 ## İDA
 - Kendi İDA görüntümüz yok. Model açık veri setiyle eğitilip değerlendirildi; Türkiye kıyı verisi DEĞİLDİR.
