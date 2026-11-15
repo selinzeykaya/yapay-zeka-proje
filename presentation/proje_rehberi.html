@@ -1,0 +1,294 @@
+<title>Uydudan İklime: Proje Rehberi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: tek sütun okuma akışı, üstte yapışkan bölüm menüsü; arazi sınıfı renkleri projedeki haritalarla aynı */
+:root{
+  --bg:#f5f7f4; --surface:#ffffff; --fg:#17211c; --muted:#56635b; --line:#d7ded8;
+  --accent:#1f6f54; --accent-soft:#e2efe8; --warn:#9a5b00; --warn-soft:#fbefd9;
+  --c-orman:#1b7837; --c-tarim:#f1a340; --c-yapi:#d73027; --c-cayir:#a6d96a; --c-ciplak:#bababa; --c-su:#4575b4;
+  --bar-a:#1f6f54; --bar-b:#d98a2b;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1512; --surface:#17201b; --fg:#e6ece8; --muted:#9caaa2; --line:#2c3832;
+  --accent:#5cc49b; --accent-soft:#1b3329; --warn:#f0b35a; --warn-soft:#33270f;
+  --bar-a:#5cc49b; --bar-b:#f0a64a; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0f1512; --surface:#17201b; --fg:#e6ece8; --muted:#9caaa2; --line:#2c3832;
+  --accent:#5cc49b; --accent-soft:#1b3329; --warn:#f0b35a; --warn-soft:#33270f;
+  --bar-a:#5cc49b; --bar-b:#f0a64a; color-scheme:dark;}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:900px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2rem,5vw,3.1rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.65rem;font-weight:700;margin-bottom:.4em}
+h3{font-size:1.15rem;font-weight:700}
+p{margin:0}
+a{color:var(--accent)}
+code,.mono{font-family:var(--f-mono);font-size:.85em}
+code{background:var(--accent-soft);padding:.05em .35em;border-radius:4px;overflow-wrap:anywhere}
+.eyebrow{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin:0 calc(-1*max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav .wrap{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:.9rem}
+nav a{text-decoration:none;color:var(--muted)}
+nav a:hover,nav a:focus-visible{color:var(--accent);text-decoration:underline}
+section{padding-top:56px;display:grid;gap:18px;scroll-margin-top:60px}
+.hero{padding-top:40px;display:grid;gap:18px}
+.lede{font-size:1.2rem;max-width:62ch}
+.strip{display:flex;height:10px;border-radius:5px;overflow:hidden;max-width:420px}
+.strip span{flex:1}
+.note{background:var(--warn-soft);color:var(--fg);border-left:4px solid var(--warn);padding:12px 16px;border-radius:0 8px 8px 0;font-size:.95rem}
+.three{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:8px;align-content:start;min-width:0}
+.box h3{color:var(--accent)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.93rem;min-width:620px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:.75rem;padding:1px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.step{display:grid;grid-template-columns:64px 1fr;gap:16px;padding:18px 0;border-top:1px solid var(--line)}
+.step:first-child{border-top:0}
+.step .no{font-family:var(--f-mono);font-weight:600;font-size:1.1rem;color:var(--accent);padding-top:2px}
+.step .body{display:grid;gap:6px;min-width:0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:.92rem}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:4px;align-content:start}
+.stat .v{font-family:var(--f-display);font-size:2.1rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.stat .l{font-size:.9rem;color:var(--muted)}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:10px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-1px;margin-right:6px}
+.row{display:grid;grid-template-columns:90px 1fr 64px;gap:10px;align-items:center}
+.row .city{font-size:.92rem}
+.bars{display:grid;gap:3px}
+.bar{height:11px;border-radius:2px}
+.bar.a{background:var(--bar-a)} .bar.b{background:var(--bar-b)}
+.row .d{font-family:var(--f-mono);font-size:.85rem;text-align:right;font-variant-numeric:tabular-nums}
+.axis{display:grid;grid-template-columns:90px 1fr 64px;gap:10px;font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.axis .t{display:flex;justify-content:space-between}
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.gloss div{border-top:2px solid var(--accent);padding-top:8px;display:grid;gap:2px}
+.gloss b{font-family:var(--f-display)}
+.gloss span{font-size:.93rem;color:var(--muted)}
+ul.clean{margin:0;padding-left:1.2em;display:grid;gap:6px}
+.todo li{list-style:none;margin-left:-1.2em;padding-left:1.6em;position:relative}
+.todo li::before{content:"";position:absolute;left:0;top:.45em;width:12px;height:12px;border:2px solid var(--muted);border-radius:3px}
+.todo li.done::before{background:var(--accent);border-color:var(--accent)}
+footer{margin-top:56px;font-size:.85rem;color:var(--muted)}
+@media (max-width:520px){.step{grid-template-columns:1fr;gap:4px}.row,.axis{grid-template-columns:70px 1fr 52px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+html{scroll-behavior:smooth}
+</style>
+
+<nav aria-label="Bölümler"><div class="wrap">
+  <a href="#ozet">1 dakikada</a><a href="#sorular">Sorular</a><a href="#adimlar">Ne yaptık</a><a href="#sonuclar">Sonuçlar</a><a href="#gorseller">Ne gösterelim</a><a href="#nerede">Dosyalar</a><a href="#sozluk">Sözlük</a><a href="#dikkat">Dikkat</a><a href="#kalan">Kalan işler</a>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <p class="eyebrow">Yapay Zekâ dersi · ekip içi rehber · 16 Kasım 2026</p>
+  <h1>Türkiye'de coğrafi değişimlerin iklimsel etkileri</h1>
+  <p class="lede">7 ilde uydu görüntülerinden arazi örtüsünü yapay zekâyla sınıflandırdık. 2014 ile 2024 arasında neyin değiştiğini ölçtük. Bu değişimin yüzey sıcaklığı ve nemle ilişkisine baktık. Ayrıca açık bir veri setinde su yüzeyindeki atıkları tespit eden bir model eğittik.</p>
+  <div class="strip" aria-label="Projedeki 6 arazi sınıfının harita renkleri">
+    <span style="background:var(--c-orman)"></span><span style="background:var(--c-tarim)"></span><span style="background:var(--c-yapi)"></span><span style="background:var(--c-cayir)"></span><span style="background:var(--c-ciplak)"></span><span style="background:var(--c-su)"></span>
+  </div>
+  <p class="note"><b>Bu sayfa ekip içi bir rehberdir.</b> Cümlelerini rapora kopyalamayın. Rapor Turnitin'den geçecek ve yapay zekâ oranı %40'ı aşmamalı. Buradaki bilgiyi anlayın, raporu kendi cümlelerinizle yazın.</p>
+</header>
+
+<section id="ozet">
+  <p class="eyebrow">Projeyi 1 dakikada anlatmak</p>
+  <h2>Ne sorduk, nasıl yaptık, ne bulduk?</h2>
+  <div class="three">
+    <div class="box"><h3>Ne sorduk?</h3><p>Ormanlar, tarım alanları, şehirler ve göller 10 yılda nasıl değişti? Bu değişim olduğu yerde yer yüzeyi daha mı sıcak, daha mı kuru?</p><p>Bir ilde öğrenen model başka bir ilde de doğru çalışır mı?</p></div>
+    <div class="box"><h3>Nasıl yaptık?</h3><p>Google Earth Engine'den Landsat uydu görüntülerini aldık. ESA'nın hazır arazi haritasını (2021) "doğru cevap" olarak kullandık. 4 makine öğrenmesi modeli eğittik. En iyisiyle 2014 ve 2024'ü sınıflandırıp iklim verileriyle karşılaştırdık.</p></div>
+    <div class="box"><h3>Ne bulduk?</h3><p>Model arazi türünü yaklaşık %78 doğrulukla tanıyor. Yüzey sıcaklığını en çok bitki örtüsü (NDVI) ve rakım belirliyor. Model kurak illere iyi taşınmıyor. Değişim–iklim ilişkileri var ama çoğu zayıf.</p></div>
+  </div>
+</section>
+
+<section id="sorular">
+  <p class="eyebrow">Araştırma soruları</p>
+  <h2>6 alt soru ve kısa cevapları</h2>
+  <p>Her alt soru, o konuyu en iyi gösteren illerle çalışıldı. "AS" alt soru demek.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Kod</th><th>Soru</th><th>İller</th><th>Kısa cevap</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag">AS1</span></td><td>Orman/bitki örtüsü değişimi yüzey sıcaklığıyla ilişkili mi?</td><td>Artvin, Şanlıurfa</td><td>Evet. Bitki örtüsü artan yerde sıcaklık düşüyor (Şanlıurfa ρ = −0.65, Artvin −0.41).</td></tr>
+      <tr><td><span class="tag">AS2</span></td><td>Şehirleşme ısı adası yaratıyor mu?</td><td>İstanbul, İzmir</td><td>İstanbul kırsalından yaklaşık 8 °C sıcak, İzmir 1.2–1.5 °C. Yapılaşma artışı küçük (+0.6 puan).</td></tr>
+      <tr><td><span class="tag">AS3</span></td><td>Su alanı değişimi sıcaklık ve nemle ilişkili mi?</td><td>Konya, Van, Samsun</td><td>Su alanı Van'da +%12, Samsun'da +%9, Konya'da −%1.4. Sıcaklıkla ilişki çok zayıf.</td></tr>
+      <tr><td><span class="tag">AS4</span></td><td>Tarım değişimi nem ve sıcaklıkla ilişkili mi?</td><td>Konya, Şanlıurfa</td><td>Şanlıurfa'da tarım +4.1 puan ve yaz yüzey sıcaklığı 10 yılda 1.44 °C düşmüş. Sulamayla tutarlı, ama bu bir ilişki.</td></tr>
+      <tr><td><span class="tag">AS5</span></td><td>Model hiç görmediği bir ilde de çalışır mı?</td><td>7 il</td><td>Kısmen. Başarı ortalama 0.11 düşüyor. En çok düşen iller kurak olanlar: Konya, Şanlıurfa, Van.</td></tr>
+      <tr><td><span class="tag">AS6</span></td><td>Su yüzeyinde yüzen atık tespit edilebilir mi?</td><td>Açık veri (Endonezya)</td><td>YOLOv8n ile mAP50 = 0.388. <b>Türkiye verisi değil.</b></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="adimlar">
+  <p class="eyebrow">Adım adım ne yaptık</p>
+  <h2>Projenin akışı</h2>
+  <p>Her adım bir Colab notebook'u. Sıra önemli: her adım bir öncekinin çıktısını kullanıyor.</p>
+  <ol class="steps">
+    <li class="step"><span class="no">00</span><div class="body"><h3>Kurulum ve erişim kontrolü</h3><p>Google Earth Engine hesabını bağladık. 7 ilin sınırlarını ve verilerin erişilebilir olduğunu kontrol ettik.</p></div></li>
+    <li class="step"><span class="no">01</span><div class="body"><h3>Veri toplama</h3><p>Her il için yaz aylarının (Haziran–Ağustos) Landsat görüntülerini birleştirdik. İl başına yaklaşık 2.000 nokta seçtik, her noktanın etiketini ESA haritasından aldık. Sıcaklık (MODIS), toprak nemi (ERA5) ve yağış (CHIRPS) serilerini 2003–2024 için indirdik.</p><dl class="kv"><dt>Sonuç</dt><dd>13.251 nokta, 11 özellik, 6 sınıf</dd></dl></div></li>
+    <li class="step"><span class="no">02</span><div class="body"><h3>Veriyi tanıma</h3><p>Ortalama, medyan, mod gibi tanımlayıcı istatistikleri, sınıf dağılımını, eksik ve aykırı değerleri inceledik. Grafikler çizdik.</p><dl class="kv"><dt>Hoca istiyor</dt><dd>Veri tanıtımı ve tanımlayıcı istatistik</dd></dl></div></li>
+    <li class="step"><span class="no">03</span><div class="body"><h3>Sınıflandırma modelleri</h3><p>Random Forest, XGBoost, SVM ve MLP'yi eğittik. Ayarlarını (hiperparametre) otomatik aradık. Doğrulama verisinde en iyi olan XGBoost'u seçtik. SHAP ile modelin hangi özelliğe baktığını gösterdik.</p><dl class="kv"><dt>Sonuç</dt><dd>XGBoost: doğruluk 0.785, F1 0.783, ROC-AUC 0.961</dd></dl></div></li>
+    <li class="step"><span class="no">04</span><div class="body"><h3>Değişim ve iklim analizi</h3><p>Her 1 km'lik kareye 9 nokta koyduk ve bu noktaları 2014 ve 2024 için sınıflandırdık. Tüm ili sınıflandırmak Earth Engine kotasını aşıyordu. Sonra değişimi iklimle karşılaştırdık: 22 yıllık trendler (Mann-Kendall), hücre düzeyinde korelasyon (Spearman), kentsel ısı adası ve yüzey sıcaklığı regresyonu.</p><dl class="kv"><dt>Sonuç</dt><dd>Regresyon R² = 0.921, hata ≈ 2 °C</dd></dl></div></li>
+    <li class="step"><span class="no">05</span><div class="body"><h3>Yüzen atık tespiti (İDA kolu)</h3><p>Endonezya nehirlerinden alınmış açık bir fotoğraf veri setinde YOLOv8n modelini 50 tur eğittik. İki sınıf var: yüzen atık ve nehir bitkisi.</p><dl class="kv"><dt>Sonuç</dt><dd>mAP50 = 0.388, görüntü başına 5.4 ms</dd></dl></div></li>
+    <li class="step"><span class="no">06</span><div class="body"><h3>Bölgeler arası genelleme</h3><p>Her seferinde bir ili dışarıda bıraktık, modeli kalan 6 ilde eğittik ve dışarıdaki ilde test ettik (LOCO). Sonucu, aynı ilde eğitilmiş modelle karşılaştırdık.</p><dl class="kv"><dt>Sonuç</dt><dd>Başarı ortalama 0.11 düşüyor</dd></dl></div></li>
+    <li class="step"><span class="no">07</span><div class="body"><h3>Literatür</h3><p>56 aday çalışma bulduk, hepsinin DOI'sini doğruladık. Okunacak 25 çalışma seçildi.</p><dl class="kv"><dt>Durum</dt><dd>Makaleler henüz okunmadı (en büyük açık iş)</dd></dl></div></li>
+    <li class="step"><span class="no">08</span><div class="body"><h3>Rapor ve sunum hazırlığı</h3><p>Rapor iskeleti, 20 slaytlık sunum planı, 27 olası jüri sorusu ve teslim kontrol listesi hazır. Metinleri biz yazacağız.</p></div></li>
+  </ol>
+</section>
+
+<section id="sonuclar">
+  <p class="eyebrow">Ana sonuçlar</p>
+  <h2>Akılda tutulacak 4 sayı</h2>
+  <div class="stats">
+    <div class="stat"><span class="v">0.783</span><span class="l">XGBoost macro-F1 (test). 6 arazi sınıfını tanıma başarısı.</span></div>
+    <div class="stat"><span class="v">0.921</span><span class="l">Yüzey sıcaklığı regresyonu R². Değişkenliğin %92'si açıklanıyor.</span></div>
+    <div class="stat"><span class="v">−0.11</span><span class="l">Model başka ile taşınınca F1'deki ortalama düşüş.</span></div>
+    <div class="stat"><span class="v">0.388</span><span class="l">Yüzen atık tespitinde mAP50 (açık veri seti).</span></div>
+  </div>
+
+  <div class="chart" role="img" aria-label="7 il için aynı şehir ve başka şehir macro-F1 karşılaştırması">
+    <h3>Model başka ile taşınınca ne oluyor? (macro-F1, XGBoost)</h3>
+    <div class="legend"><span><i style="background:var(--bar-a)"></i>Aynı ilde eğitilmiş</span><span><i style="background:var(--bar-b)"></i>Bu il hiç görülmeden (LOCO)</span><span>Sağdaki sayı: düşüş</span></div>
+    <div id="bars" style="display:grid;gap:10px"></div>
+    <div class="axis"><span></span><span class="t"><span>0</span><span>0.25</span><span>0.50</span><span>0.75</span><span>1</span></span><span></span></div>
+    <p style="font-size:.9rem;color:var(--muted)">Kurak ve sıcak illerde (Konya, Şanlıurfa, Van) düşüş daha büyük. Yalnızca 7 il var, bu yüzden bunu kanıt değil, örüntü olarak anlatın.</p>
+  </div>
+
+  <div class="tablewrap"><table>
+    <thead><tr><th>Konu</th><th>Bulgu</th><th>Nasıl anlatılır</th></tr></thead>
+    <tbody>
+      <tr><td>En zor sınıf</td><td>Tarım (F1 ≈ 0.59)</td><td>Hasat edilmiş tarla, yaz görüntüsünde çayır veya çıplak toprak gibi görünüyor.</td></tr>
+      <tr><td>Modelin baktığı bantlar</td><td>SR_B7 ve MNDWI</td><td>Kısa dalga kızılötesi ve su indeksi sınıfları en iyi ayırıyor.</td></tr>
+      <tr><td>Sıcaklığı belirleyen</td><td>NDVI 4.8 °C, rakım 2.3 °C</td><td>Yeşil alan ve yükseklik sıcaklığı düşürüyor. Arazi sınıfının etkisi NDVI'nin içinde.</td></tr>
+      <tr><td>Artvin</td><td>Orman +5.6 puan, su +%79</td><td>Su artışı Yusufeli barajıyla tutarlı. Orman artışının bir kısmı model hatası olabilir.</td></tr>
+      <tr><td>Korelasyonlar</td><td>Çoğu |ρ| &lt; 0.2, p &lt; 0.001</td><td>"Anlamlı ama zayıf". Hücre sayısı çok büyük olduğu için küçük ilişkiler de anlamlı çıkıyor.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="gorseller">
+  <p class="eyebrow">Sunumda ne gösterelim</p>
+  <h2>Hazır grafikler</h2>
+  <p>Hepsi Drive'da <code>yapay-zeka-proje/results/figures/</code> klasöründe. Slayt numaraları sunum iskeletinden.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Dosya</th><th>Ne gösteriyor</th><th>Slayt</th></tr></thead>
+    <tbody>
+      <tr><td><code>sinif_dagilimi.png</code></td><td>Her ilde her sınıftan kaç nokta var</td><td class="num">7</td></tr>
+      <tr><td><code>kutu_grafikleri_indeksler.png</code></td><td>NDVI, NDBI, MNDWI değerlerinin sınıflara göre dağılımı</td><td class="num">8</td></tr>
+      <tr><td><code>model_karsilastirma.png</code></td><td>4 modelin metrikleri yan yana</td><td class="num">11</td></tr>
+      <tr><td><code>karisiklik_matrisi_XGBoost.png</code></td><td>Model hangi sınıfı hangisiyle karıştırıyor</td><td class="num">12</td></tr>
+      <tr><td><code>roc_tumu.png</code>, <code>shap_XGBoost.png</code></td><td>ROC eğrileri; modelin en çok kullandığı özellikler</td><td class="num">12</td></tr>
+      <tr><td><code>degisim_haritalari.png</code></td><td>7 il: 2014, 2024 ve değişim haritası</td><td class="num">13</td></tr>
+      <tr><td><code>sinif_degisim_pp.png</code></td><td>Hangi ilde hangi sınıf kaç puan değişti</td><td class="num">13</td></tr>
+      <tr><td><code>iklim_serileri.png</code></td><td>2003–2024 sıcaklık, nem, yağış serileri</td><td class="num">14</td></tr>
+      <tr><td><code>spearman_isi_haritasi.png</code></td><td>Değişim ile sıcaklık/nem arasındaki korelasyonlar</td><td class="num">14</td></tr>
+      <tr><td><code>kentsel_isi_adasi.png</code></td><td>İstanbul ve İzmir ısı adası</td><td class="num">15</td></tr>
+      <tr><td><code>lst_regresyon_shap.png</code></td><td>Sıcaklık tahmini: gerçek ve tahmin, etkili değişkenler</td><td class="num">16</td></tr>
+      <tr><td><code>genelleme_isi_haritasi.png</code></td><td>İl × metrik, aynı il ve başka il</td><td class="num">17</td></tr>
+      <tr><td><code>ida_ornek_tespitler.png</code></td><td>Doğru, kaçırılan ve yanlış atık tespitleri</td><td class="num">17</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="nerede">
+  <p class="eyebrow">Nerede ne var</p>
+  <h2>Dosyalar</h2>
+  <div class="three">
+    <div class="box"><h3>GitHub (kod ve notlar)</h3><p class="mono">selinzeykaya/yapay-zeka-proje</p><ul class="clean">
+      <li><code>notebooks/</code> 00–06 notebook'ları</li>
+      <li><code>report/rapor_iskeleti.md</code> rapor planı</li>
+      <li><code>report/sinirliliklar_notlari.md</code> tüm sayılar ve sınırlılıklar</li>
+      <li><code>presentation/sunum_iskeleti.md</code> 20 slayt planı</li>
+      <li><code>presentation/olasi_sorular.md</code> 27 jüri sorusu</li>
+      <li><code>literature/</code> 56 kaynak, okuma tablosu</li>
+      <li><code>report/teslim_kontrol_listesi.md</code></li>
+    </ul></div>
+    <div class="box"><h3>Google Drive (sonuçlar)</h3><p class="mono">Drive'ım/yapay-zeka-proje/</p><ul class="clean">
+      <li><code>results/tables/</code> tüm sonuç tabloları (CSV)</li>
+      <li><code>results/figures/</code> grafikler</li>
+      <li><code>results/figures/lc_maps/</code> il il haritalar</li>
+      <li><code>results/models/</code> eğitilmiş modeller</li>
+      <li><code>data/</code> ham ve işlenmiş veri</li>
+    </ul></div>
+    <div class="box"><h3>Notebook'ları çalıştırmayın</h3><p>Sonuçların hepsi hazır. Notebook çalıştırmak ortak Earth Engine kotasını harcar ve Drive'daki dosyaların üzerine yazabilir. Bakmak için GitHub ve Drive yeterli.</p></div>
+  </div>
+</section>
+
+<section id="sozluk">
+  <p class="eyebrow">Sözlük</p>
+  <h2>Sunumda geçecek terimler</h2>
+  <div class="gloss">
+    <div><b>Landsat</b><span>NASA/USGS uydusu. 30 m çözünürlükte, yaklaşık 16 günde bir aynı yeri çeker.</span></div>
+    <div><b>Google Earth Engine (GEE)</b><span>Uydu verisini bulutta işleyen Google platformu. Aylık kotası var.</span></div>
+    <div><b>NDVI</b><span>Bitki örtüsü indeksi. Yüksekse yeşil, sağlıklı bitki var.</span></div>
+    <div><b>NDBI / MNDWI / NDMI</b><span>Yapılaşma, su ve nem indeksleri. Bantların oranından hesaplanır.</span></div>
+    <div><b>LST</b><span>Yüzey sıcaklığı. Toprağın veya çatının sıcaklığı, hava sıcaklığı değil.</span></div>
+    <div><b>Kentsel ısı adası (UHI)</b><span>Şehrin çevresindeki kırsala göre ne kadar daha sıcak olduğu.</span></div>
+    <div><b>Accuracy / Precision / Recall</b><span>Toplam doğruluk; "dedi"lerinin ne kadarı doğru; gerçekte olanların ne kadarını buldu.</span></div>
+    <div><b>F1 (macro)</b><span>Precision ve Recall'un dengesi. Her sınıfa eşit ağırlık verir.</span></div>
+    <div><b>ROC-AUC</b><span>Modelin sınıfları ne kadar iyi ayırdığı. 1 mükemmel, 0.5 rastgele.</span></div>
+    <div><b>Hiperparametre</b><span>Modelin eğitimden önce seçilen ayarları, örneğin ağaç sayısı veya derinliği.</span></div>
+    <div><b>SHAP</b><span>Her özelliğin tahmine ne kadar ve hangi yönde katkı yaptığını gösterir.</span></div>
+    <div><b>Spearman ρ</b><span>İki değişkenin birlikte artıp azalma eğilimi. −1 ile +1 arası.</span></div>
+    <div><b>Mann-Kendall</b><span>Bir zaman serisinde artış veya azalış trendi var mı, test eder.</span></div>
+    <div><b>Mekânsal blok CV</b><span>Haritayı 10 km'lik bloklara bölüp test etmek. Komşu hücreler birbirine "kopya vermesin" diye.</span></div>
+    <div><b>LOCO</b><span>Leave-One-City-Out. Bir ili dışarıda bırak, kalanlarla eğit, dışarıdakinde test et.</span></div>
+    <div><b>YOLOv8n / mAP50</b><span>Hızlı nesne tespit modeli. mAP50: kutuların %50'den fazla örtüştüğü tespitlerin ortalama başarısı.</span></div>
+  </div>
+</section>
+
+<section id="dikkat">
+  <p class="eyebrow">Sunumda dikkat</p>
+  <h2>Yanlış söylememiz gereken 4 şey</h2>
+  <ul class="clean">
+    <li><b>"Neden oldu" demeyin, "ilişkili" deyin.</b> Korelasyon neden-sonuç göstermez.</li>
+    <li><b>Atık verisi Türkiye verisi değil.</b> Endonezya nehirlerinden alınmış açık bir veri seti. Kendi İDA görüntümüz yok.</li>
+    <li><b>2014 ve 2024 haritalarının doğruluğunu ölçemedik.</b> Elimizde yalnızca 2021 etiketi var.</li>
+    <li><b>Değişim haritası resimleri görsel amaçlı.</b> Sayıların hepsi noktalardan hesaplandı.</li>
+  </ul>
+</section>
+
+<section id="kalan">
+  <p class="eyebrow">Teslime kadar</p>
+  <h2>Kalan işler</h2>
+  <p>Teslim adresi: <span class="mono">yapayzekaproje80@gmail.com</span> (rapor, kaynak kod, sunum). Tarih henüz belli değil.</p>
+  <ul class="clean todo">
+    <li class="done">Bütün analizler (00–06)</li>
+    <li class="done">Rapor ve sunum iskeleti, olası sorular</li>
+    <li>25 makaleyi okuyup literatür tablosunu doldurmak (paylaşılabilir: kişi başına birkaç makale)</li>
+    <li>Rapor bölümlerini kendi cümlelerimizle yazmak</li>
+    <li>Slaytları hazırlamak ve grafikleri yerleştirmek</li>
+    <li>Olası soruları herkesin çalışması, prova</li>
+    <li>Kaynak kodu zip'lemek ve e-postayı göndermek</li>
+  </ul>
+</section>
+
+<footer>Sayılar projenin Colab çıktılarından alındı. Ayrıntı ve kaynak dosyalar: <code>report/sinirliliklar_notlari.md</code>.</footer>
+</div>
+
+<script>
+(function(){
+  var d=[["İstanbul",.812,.729],["İzmir",.809,.716],["Artvin",.728,.668],["Samsun",.742,.671],["Konya",.794,.607],["Van",.770,.645],["Şanlıurfa",.773,.626]];
+  var host=document.getElementById("bars");
+  d.forEach(function(r){
+    var row=document.createElement("div");row.className="row";
+    row.innerHTML='<span class="city">'+r[0]+'</span><div class="bars"><div class="bar a" style="width:'+(r[1]*100)+'%" title="Aynı il: '+r[1].toFixed(3)+'"></div><div class="bar b" style="width:'+(r[2]*100)+'%" title="Başka il: '+r[2].toFixed(3)+'"></div></div><span class="d">−'+(r[1]-r[2]).toFixed(3).replace(/^0/,"0")+'</span>';
+    host.appendChild(row);
+  });
+})();
+</script>
