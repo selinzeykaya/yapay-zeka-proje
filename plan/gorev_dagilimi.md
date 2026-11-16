@@ -3,6 +3,20 @@
 > Ekip: 3 kişi (**A**, **B**, **C**). Her şey Google Colab + Google Earth Engine (GEE) üzerinde, bulutta çalışır. Kimsenin kendi bilgisayarında GPU olması gerekmez.
 > Repo dalı: herkes kendi dalında çalışır (`ad/konu`), bitince `main`'e Pull Request açılır.
 
+## Repoda zaten yapılmış olanlar (tekrar yapılmayacak)
+
+Bu plan yalnızca **eksikleri** listeler. Aşağıdakiler Selin tarafından tamamlandı, sonuçları Drive'da:
+
+| Yapılmış | Notebook |
+|---|---|
+| GEE kurulumu, 7 il sınırı, veri erişim testi | 00 |
+| Landsat 8/9 yaz kompozitleri (2014, 2021, 2024), bulut maskesi, 6 indeks; 13.251 etiketli nokta (WorldCover 2021); 1 km grid; 2003–2024 iklim serileri (MODIS LST, ERA5-Land, CHIRPS) | 01 |
+| Tanımlayıcı istatistik (ortalama/medyan/mod), grafikler, eksik/aykırı değer, ön işleme kararları | 02 |
+| RF, XGBoost, SVM, MLP; hiperparametre araması; Accuracy/Precision/Recall/F1/ROC-AUC/Kappa; karışıklık matrisi; SHAP | 03 |
+| 2014→2024 değişim + geçiş (değişim) matrisi; Mann-Kendall + Sen eğimi; Spearman; kentsel ısı adası; RF + doğrusal LST regresyonu (10 km mekânsal blok CV, R² 0.921); su alanı (MNDWI–JRC IoU) | 04 |
+| Leave-One-City-Out genelleme, sınıf bazında düşüş, neden göstergeleri | 06 |
+| 46 aday kaynak (DOI doğrulanmış), rapor ve sunum iskeleti, olası sorular, sınırlılık notları | literature/, report/, presentation/ |
+
 ## 0. Kararlar (sabit)
 
 | Konu | Karar |
@@ -59,7 +73,7 @@
 2. **03: mekânsal bölme.** Rastgele `train_test_split` yerine 10 km blok bazlı bölme (04'teki mantık). Sonuçlar yeniden hesaplanır, eski ve yeni değerler raporda yan yana verilir.
 3. **IoU** (sınıf bazında ve ortalama) 03 ve 06'ya eklenir.
 4. **XGBoost regresyonu** 04'teki LST regresyonuna eklenir (RF ve doğrusal regresyonun yanına).
-5. 06'daki "neden göstergeleri" Spearman'ı notebook'a taşınır (şu an elle hesaplanmış).
+5. 06'daki "neden göstergeleri" Spearman'ı notebook'ta hesaplanıp yalnızca ekrana yazdırılıyor → CSV'ye kaydedilsin, sınırlılık notundaki "elle hesaplandı" ifadesi düzeltilsin.
 6. **Ölçek analizi:** 1 km hücreler ERA5-Land hücrelerine (~9 km) toplanır, sınıf oranları ↔ ERA5 toprak nemi/hava sıcaklığı ilişkisi hesaplanır.
 7. Kuraklık göstergesi: CHIRPS'ten **SPI-3/SPI-12**; DEM'den **eğim**.
 8. Hafta 3: **Streamlit paneli** (il seç → harita, değişim, iklim serisi, metrikler). Bulutta Streamlit Community Cloud'da yayınlanır.
