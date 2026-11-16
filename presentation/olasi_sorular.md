@@ -71,17 +71,10 @@
     - Yağış ile düşüş ρ ≈ −0.96 ama yalnızca 7 il → örüntü, kanıt değil
     - Olası: fenoloji farkı, tuzlu/sığ göller (Konya su F1 0.89 → 0.39), parlak toprak
 
-## İDA (yüzen atık)
-21. **Bu Türkiye verisi mi?**
-    - **Hayır.** Endonezya (Banjarmasin) nehir görüntüleri, açık veri (L47); kendi İDA görüntümüz yok
-    - FloW-Img'e erişemedik (başvuru sitesi açılmadı)
-22. **mAP50 0.388 düşük değil mi?**
-    - Bulanık su, küçük nesneler, atık–bitki karışması; en küçük model (YOLOv8n); n_test = 158
-    - Literatür değerleri farklı veri setlerinde → doğrudan karşılaştırılamaz
-23. **İstanbul/İzmir kıyılarına uygulanabilir mi?**
-    - Bilinmiyor: nehir ≠ deniz (dalga, yansıma, köpük) → gelecek çalışma: yerel görüntü toplayıp test etmek
-24. **5.39 ms/görüntü ne anlama geliyor?**
-    - GPU'da (Colab T4) gerçek zamanlıya yakın; İDA üzerinde gömülü donanımda daha yavaş olur
+## Kapsam
+21. **İlk konuda İDA vardı, neden çıkardınız?**
+    - Deniz yüzeyinde atık tespiti, arazi örtüsü değişimi ile iklim göstergeleri arasındaki ilişkiyi test etmiyor
+    - İstanbul/İzmir kıyılarına ait İDA görüntüsü yok; başka ülkenin verisiyle Türkiye sonucu veremezdik
 
 ## Genel
 25. **Projenin en önemli bulgusu ne?** `[SEN YAZ]` — önerilen aday: genelleme sonucu (model kurak illere iyi taşınmıyor) veya NDVI'nın LST'deki baskın rolü

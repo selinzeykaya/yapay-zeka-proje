@@ -1,6 +1,6 @@
 # Rapor iskeleti
 
-> **Nasıl kullanılır:** Her bölümde *ne yazılacağı* madde olarak, *hangi sayı/tablo/şekil* kullanılacağı dosya adıyla, *hangi kaynağa* atıf yapılacağı ID ile (`literature/aday_calismalar.md`, L01–L56) verilmiştir. Paragrafları **kendi cümlelerinizle** yazın. `[SEN YAZ]` = sizin yorumunuz/cümleniz gereken yer.
+> **Nasıl kullanılır:** Her bölümde *ne yazılacağı* madde olarak, *hangi sayı/tablo/şekil* kullanılacağı dosya adıyla, *hangi kaynağa* atıf yapılacağı ID ile (`literature/aday_calismalar.md`, L01–L46) verilmiştir. Paragrafları **kendi cümlelerinizle** yazın. `[SEN YAZ]` = sizin yorumunuz/cümleniz gereken yer.
 >
 > Tablolar: `Drive'ım/yapay-zeka-proje/results/tables/` · Şekiller: `.../results/figures/` · Sınırlılıklar ham listesi: `report/sinirliliklar_notlari.md`
 >
@@ -14,7 +14,7 @@
 > | 20–30 akademik çalışma, yöntem + bulgu özeti | 2. Literatür Taraması (tablo) |
 > | Veri kaynağı, özellikler, örnek sayısı, sınıf dağılımı, ortalama/medyan/mod | 3.3 + 4.1 |
 > | Algoritmalar ve tercih nedenleri | 3.4 |
-> | Hiperparametreler ve yapılan değişiklikler | 3.8 |
+> | Hiperparametreler ve yapılan değişiklikler | 3.7 |
 > | Accuracy, Precision, Recall, F1, ROC-AUC tablo + grafik | 4.2 |
 > | Literatürle karşılaştırma | 5 (Tartışma) + `literatur_karsilastirma.csv` |
 > | Güçlü yönler ve sınırlılıklar | 6.2, 6.3 |
@@ -23,19 +23,18 @@
 ---
 
 ## Kapak / Başlık
-- Başlık: *Türkiye'de Coğrafi Değişimlerin İklimsel Etkilerinin Uydu ve İDA Görüntüleriyle Yapay Zekâ Destekli Analizi*
+- Başlık: *Türkiye'de Coğrafi Değişimlerin İklimsel Etkilerinin Uydu Görüntüleriyle Yapay Zekâ Destekli Analizi*
 - Ders, öğrenciler, tarih
 
 ## Özet (Abstract) (≈200–250 kelime) — `[SEN YAZ]`, en son yazın
 Sırayla değinilecek noktalar:
 - Problem: arazi örtüsü değişimi ↔ yüzey sıcaklığı/nem; 7 il, 2014 → 2024
 - Veri: Landsat 8/9, ESA WorldCover 2021 etiketi, MODIS, ERA5-Land, CHIRPS; GEE
-- Yöntem: 4 sınıflandırıcı (RF, XGBoost, SVM, MLP) → en iyi XGBoost; değişim + Spearman + Mann-Kendall + LST regresyonu (SHAP); LOCO genelleme; YOLOv8n (açık veri)
+- Yöntem: 4 sınıflandırıcı (RF, XGBoost, SVM, MLP) → en iyi XGBoost; değişim + Spearman + Mann-Kendall + LST regresyonu (SHAP); LOCO genelleme
 - Ana sayılar (en fazla 4–5 tane):
   - XGBoost test macro-F1 **0.783**, Kappa **0.742**
   - LST regresyonu R² **0.921**, RMSE **2.04 °C** (10 km mekânsal blok CV); en etkili: NDVI
   - Başka ile genellemede ortalama macro-F1 düşüşü **≈ 0.11** (en çok Konya −0.19)
-  - YOLOv8n mAP50 **0.388** (Endonezya nehir veri seti — Türkiye verisi değil)
 - Bir cümle sınırlılık: ilişki, neden-sonuç değil
 
 ## 1. Giriş (Introduction)
@@ -43,7 +42,6 @@ Sırayla değinilecek noktalar:
 - Arazi örtüsü değişimi (kentleşme, orman/tarım değişimi, su alanları) yerel iklimi etkiler → L26, L27, L29
 - Türkiye'de farklı iklim bölgeleri → tek bir model her yerde çalışır mı? (AS5)
 - Uydu + makine öğrenmesi ile ölçeklenebilir izleme → L09, L02
-- Su yüzeyinde atık izleme (İDA) → L48, L54
 
 ### 1.2 Amaç ve alt sorular
 Tablo olarak verin:
@@ -55,20 +53,18 @@ Tablo olarak verin:
 | AS3 | Su/sulak alan değişimi ile sıcaklık ve nem | Konya, Van, Samsun | 04 |
 | AS4 | Tarım değişimi ile toprak nemi ve LST | Konya, Şanlıurfa | 04 |
 | AS5 | Bir ilde eğitilen model başka ilde ne kadar başarılı? | 7 il | 06 |
-| AS6 | Su yüzeyinde yüzen atık tespiti (YOLOv8n) | Açık veri seti (Endonezya) | 05 |
 
-- AS6 notu: Türkiye verisi **değil**; İstanbul/İzmir kıyıları yalnızca *gelecekteki uygulama alanı*.
+- Kapsam notu: İDA / yüzen atık tespiti çalışmanın dışında (ana araştırma sorusunu test etmiyor; Türkiye kıyı görüntüsü yok). Raporda bir cümleyle belirtin.
 
 ### 1.3 Raporun düzeni — tek cümle `[SEN YAZ]`
 
 ## 2. Literatür Taraması (Literature Review)
 - **Hoca 20–30 çalışmanın incelenmesini, yöntem ve bulgularının özetlenmesini istiyor.** Şu an `literatur_matrisi.csv`'de hiçbir çalışma "okundu" değil → **en büyük açık iş bu**.
-- Önerilen 25 çalışma (veri/yazılım ve özgün algoritma makaleleri hariç; onlar yalnızca yöntem bölümünde atıf alır):
+- Önerilen 21 çalışma (veri/yazılım ve özgün algoritma makaleleri hariç; onlar yalnızca yöntem bölümünde atıf alır):
   - Sınıflandırma / LULC (5): L01, L02, L04, L32, L41
   - LST – arazi örtüsü / kentsel ısı adası (11): L26, L27, L28, L29, L30, L34, L35, L37, L39, L40, L38
   - İllere özel (2): L43 (Artvin/Yusufeli), L44 (Şanlıurfa)
   - Mekânsal doğrulama / genelleme (3): L21, L22, L46
-  - Yüzen atık tespiti (4): L48, L50, L51, L54
 - Rapordaki tablo (her çalışma 1 satır): Yazar (yıl) · Bölge · Veri/sensör · Yöntem · Metrik ve değer · Ana bulgu · Bizimle ilişkisi → `literatur_matrisi.csv` sütunlarından
 - Tablonun altında 2–3 paragraf karşılaştırma `[SEN YAZ]`: hangi yöntemler yaygın, hangi değerler raporlanmış, bizim çalışma nerede duruyor
 - Karşılaştırma tablosu: `literature/literatur_karsilastirma.csv` (bizim değerler dolu, literatür değerleri `[MAKALEDEN DOLDUR]`)
@@ -77,7 +73,6 @@ Tablo olarak verin:
   - 2.2 Arazi örtüsü – LST ilişkisi ve kentsel ısı adası → L26–L29; Türkiye: L30, L31, L34–L40
   - 2.3 İllere özel çalışmalar → Artvin/Yusufeli L43; Şanlıurfa L44; Konya L40; Samsun L41; Van `[DOĞRULANMADI]`
   - 2.4 Mekânsal doğrulama ve genelleme → L21, L22, L23, L45, L46
-  - 2.5 Yüzen atık tespiti → L48, L50, L51, L53, L54
 - Bu çalışmanın farkı (madde): 7 il aynı yöntemle · iki yıl karşılaştırma + 22 yıllık iklim serisi · mekânsal blok CV · LOCO genelleme testi · SHAP — `[SEN YAZ]`
 - **Eksik:** 1. öncelikli makalelerin bulguları `literatur_matrisi.csv`'ye yazılmalı (sizden bekleniyor)
 
@@ -87,7 +82,7 @@ Tablo olarak verin:
 - Neden bu iller: alt soru tablosuna bağla
 
 ### 3.2 Veri setleri
-- Tablo: README "Veri kaynakları ve lisanslar" tablosu (kısaltılmış) → L10–L16, L47
+- Tablo: README "Veri kaynakları ve lisanslar" tablosu (kısaltılmış) → L10–L16
 - Yaz kompoziti Haziran–Ağustos; 2014 yalnızca Landsat 8, 2024 Landsat 8+9 (sınırlılık)
 - Etiket: ESA WorldCover 2021 (L12) → 6 sınıf: Orman, Tarım, Yapılaşma, Çayır/Çalı, Çıplak, Su/Sulak
 
@@ -118,20 +113,14 @@ Tablo olarak verin:
 - Leave-One-City-Out: 6 ilde eğit, 7.'de test; aynı-şehir sonuçlarıyla aynı test noktalarında karşılaştırma → L22, L23
 - Neden göstergeleri: spektral kayma, sınıf dağılımı farkı, iklim ortalamaları
 
-### 3.7 Yüzen atık tespiti (05, AS6)
-- Veri: Radam ve ark. (L47), 1 577 görüntü, 2 sınıf (floating_waste, river_vegetation), Endonezya nehirleri, CC BY 4.0
-- Model: YOLOv8n (L49), transfer öğrenme; metrikler P, R, F1, mAP50, mAP50-95 (L56)
-- FloW-Img kullanılamadı (erişim) → yalnızca "farklı veri setinde raporlanan değerler" (L48)
-- Hiperparametreler: YOLOv8n, görüntü boyutu ve epoch sayısı `config.py` (YOLO_*) değerlerinden; önceden eğitilmiş COCO ağırlıkları
-
-### 3.8 Hiperparametreler ve yapılan değişiklikler
+### 3.7 Hiperparametreler ve yapılan değişiklikler
 - Tablo 1 — arama uzayı ve seçilen değerler: `hiperparametre_arama.csv` (model × parametre × aralık × seçilen); arama ayarları `config.py`
 - Tablo 2 — süreç içinde yapılan değişiklikler (neden + etkisi), maddeler:
   - Kapsam daraltma: 2019 çıkarıldı, il başına 2 000 nokta, n_iter=10, 3-katlı CV (süre)
   - NDMI modelden çıkarıldı (Landsat'ta NDMI = −NDBI, aynı bilgi)
   - SAVI, BSI 1 km grid'den çıkarıldı (GEE bellek sınırı)
   - Değişim analizi tam haritadan 9 nokta/hücre örneklemesine geçti (GEE zaman aşımı/bellek)
-  - FloW-Img yerine yalnızca Mendeley verisi (erişim)
+  - İDA / yüzen atık modülü kapsamdan çıkarıldı (ana soruyu test etmiyor, Türkiye verisi yok)
   - LST regresyonunda mekânsal blok tanımı düzeltildi (ilk sürüm il bazlı CV yapıyordu; R² −0.26 → 0.921)
   - Kaynak: `on_isleme_kararlari.csv`, `model_gerekceleri.csv`, `report/sinirliliklar_notlari.md`
 
@@ -200,11 +189,6 @@ Tablo önerisi (rapor için kısaltılmış):
 - Gözlemler: ortalama düşüş ≈ 0.11; en çok Konya (−0.187), Şanlıurfa (−0.147), Van (−0.125); en az Artvin (−0.059); en zor sınıf Tarım; Konya Su/Sulak 0.89 → 0.39
 - `genelleme_neden_gostergeleri.csv`: düşüş yağışla ρ ≈ −0.96 (n = 7, elle hesap — raporda belirtin)
 
-### 4.8 Yüzen atık tespiti (05)
-- Tablo `ida_metrikleri.csv`: TÜMÜ P 0.500, R 0.388, F1 0.437, mAP50 0.388, mAP50-95 0.121; floating_waste mAP50 0.414, river_vegetation 0.362; n_test = 158; 5.39 ms/görüntü
-- Şekiller: `ida_eda.png`, `ida_egitim_egrileri.png`, `ida_ornek_tespitler.png`, PR eğrisi
-- Literatür değerleri yalnızca "farklı veri setinde" (`ida_literatur_karsilastirma.csv`)
-
 ## 5. Tartışma (Discussion) — `[SEN YAZ]` (her madde için 2–4 cümle, literatürle)
 - **Hoca: sonuçlar literatürle karşılaştırılmalı** → her maddede en az bir çalışmanın değeriyle yan yana koyun (`literatur_karsilastirma.csv`); veri/bölge/sınıf farkını mutlaka belirtin
 - Sınıflandırma başarısı literatürle nasıl? → L04, L32, L41 (değerler `literatur_karsilastirma.csv`)
@@ -214,12 +198,11 @@ Tablo önerisi (rapor için kısaltılmış):
 - İstanbul–İzmir UHI farkı neden bu kadar büyük? (tanım, kırsal referans, deniz etkisi) → L28, L29, L30, L36
 - Korelasyonların zayıf olması: 9 noktalı hücre gürültüsü, iki tek yaz kompoziti, otokorelasyon
 - Genelleme: kurak illerde daha büyük düşüş; mekânsal doğrulama literatürüyle uyum → L22, L23, L46
-- İDA: mAP50 0.388 düşük/orta; küçük nesne, bulanık su, 2 sınıf karışması → L50, L51, L53
 
 ## 6. Sonuç (Conclusion)
 > Hocanın yapısında sınırlılıklar ve gelecek çalışmalar Sonuç bölümünün içinde.
 
-### 6.1 Genel değerlendirme — `[SEN YAZ]` (her alt soruya bir cümlelik cevap: AS1 … AS6)
+### 6.1 Genel değerlendirme — `[SEN YAZ]` (her alt soruya bir cümlelik cevap: AS1 … AS5)
 
 ### 6.2 Güçlü yönler (madde → cümleye çevirin)
 - 7 il aynı yöntem ve aynı veriyle; 4 model karşılaştırması
@@ -236,19 +219,17 @@ Tablo önerisi (rapor için kısaltılmış):
   4. Tek yaz kompoziti; 2014 L8, 2024 L8+9
   5. Su/Sulak sınıfı iki farklı yüzeyi birleştiriyor
   6. LOCO'da küçük test kümeleri (±0.05)
-  7. İDA verisi Türkiye verisi değil; FloW erişilemedi
-  8. Kapsam daraltma: 2 yıl, 2 000 nokta/il, n_iter=10, yalnızca YOLOv8n
+  7. Kapsam daraltma: 2 yıl, 2 000 nokta/il, n_iter=10
 
 ### 6.4 Gelecek çalışmalar (madde)
 - Çok mevsimli kompozit / Sentinel-1 ile sulak alan
 - 2019 ara yılı ve yıllık zaman serisi
 - Bağımsız referans verisiyle 2014/2024 doğruluk değerlendirmesi (L19)
 - Kurak iller için bölgesel model veya alan uyarlaması (L46)
-- Türkiye kıyılarında İDA görüntüsü toplama ve modeli yeniden değerlendirme
 
 ## Kaynakça (References)
 - `literature/aday_calismalar.md` tablolarından; yalnızca metinde atıf yaptıklarınız
-- Veri setleri ve yazılım (GEE, scikit-learn, XGBoost, Ultralytics, SHAP) künyeleri aynı dosyanın sonunda
+- Veri setleri ve yazılım (GEE, scikit-learn, XGBoost, SHAP) künyeleri aynı dosyanın sonunda
 - `[DOĞRULANMADI]` olanları kullanmayın
 
 ## Ekler (isteğe bağlı)

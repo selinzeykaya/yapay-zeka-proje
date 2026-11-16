@@ -100,7 +100,7 @@ html{scroll-behavior:smooth}
 <header class="hero">
   <p class="eyebrow">Yapay Zekâ dersi · ekip içi rehber · 16 Kasım 2026</p>
   <h1>Türkiye'de coğrafi değişimlerin iklimsel etkileri</h1>
-  <p class="lede">7 ilde uydu görüntülerinden arazi örtüsünü yapay zekâyla sınıflandırdık. 2014 ile 2024 arasında neyin değiştiğini ölçtük. Bu değişimin yüzey sıcaklığı ve nemle ilişkisine baktık. Ayrıca açık bir veri setinde su yüzeyindeki atıkları tespit eden bir model eğittik.</p>
+  <p class="lede">7 ilde uydu görüntülerinden arazi örtüsünü yapay zekâyla sınıflandırdık. 2014 ile 2024 arasında neyin değiştiğini ölçtük. Bu değişimin yüzey sıcaklığı ve nemle ilişkisine baktık.</p>
   <div class="strip" aria-label="Projedeki 6 arazi sınıfının harita renkleri">
     <span style="background:var(--c-orman)"></span><span style="background:var(--c-tarim)"></span><span style="background:var(--c-yapi)"></span><span style="background:var(--c-cayir)"></span><span style="background:var(--c-ciplak)"></span><span style="background:var(--c-su)"></span>
   </div>
@@ -119,7 +119,7 @@ html{scroll-behavior:smooth}
 
 <section id="sorular">
   <p class="eyebrow">Araştırma soruları</p>
-  <h2>6 alt soru ve kısa cevapları</h2>
+  <h2>5 alt soru ve kısa cevapları</h2>
   <p>Her alt soru, o konuyu en iyi gösteren illerle çalışıldı. "AS" alt soru demek.</p>
   <div class="tablewrap"><table>
     <thead><tr><th>Kod</th><th>Soru</th><th>İller</th><th>Kısa cevap</th></tr></thead>
@@ -129,7 +129,6 @@ html{scroll-behavior:smooth}
       <tr><td><span class="tag">AS3</span></td><td>Su alanı değişimi sıcaklık ve nemle ilişkili mi?</td><td>Konya, Van, Samsun</td><td>Su alanı Van'da +%12, Samsun'da +%9, Konya'da −%1.4. Sıcaklıkla ilişki çok zayıf.</td></tr>
       <tr><td><span class="tag">AS4</span></td><td>Tarım değişimi nem ve sıcaklıkla ilişkili mi?</td><td>Konya, Şanlıurfa</td><td>Şanlıurfa'da tarım +4.1 puan ve yaz yüzey sıcaklığı 10 yılda 1.44 °C düşmüş. Sulamayla tutarlı, ama bu bir ilişki.</td></tr>
       <tr><td><span class="tag">AS5</span></td><td>Model hiç görmediği bir ilde de çalışır mı?</td><td>7 il</td><td>Kısmen. Başarı ortalama 0.11 düşüyor. En çok düşen iller kurak olanlar: Konya, Şanlıurfa, Van.</td></tr>
-      <tr><td><span class="tag">AS6</span></td><td>Su yüzeyinde yüzen atık tespit edilebilir mi?</td><td>Açık veri (Endonezya)</td><td>YOLOv8n ile mAP50 = 0.388. <b>Türkiye verisi değil.</b></td></tr>
     </tbody>
   </table></div>
 </section>
@@ -144,7 +143,6 @@ html{scroll-behavior:smooth}
     <li class="step"><span class="no">02</span><div class="body"><h3>Veriyi tanıma</h3><p>Ortalama, medyan, mod gibi tanımlayıcı istatistikleri, sınıf dağılımını, eksik ve aykırı değerleri inceledik. Grafikler çizdik.</p><dl class="kv"><dt>Hoca istiyor</dt><dd>Veri tanıtımı ve tanımlayıcı istatistik</dd></dl></div></li>
     <li class="step"><span class="no">03</span><div class="body"><h3>Sınıflandırma modelleri</h3><p>Random Forest, XGBoost, SVM ve MLP'yi eğittik. Ayarlarını (hiperparametre) otomatik aradık. Doğrulama verisinde en iyi olan XGBoost'u seçtik. SHAP ile modelin hangi özelliğe baktığını gösterdik.</p><dl class="kv"><dt>Sonuç</dt><dd>XGBoost: doğruluk 0.785, F1 0.783, ROC-AUC 0.961</dd></dl></div></li>
     <li class="step"><span class="no">04</span><div class="body"><h3>Değişim ve iklim analizi</h3><p>Her 1 km'lik kareye 9 nokta koyduk ve bu noktaları 2014 ve 2024 için sınıflandırdık. Tüm ili sınıflandırmak Earth Engine kotasını aşıyordu. Sonra değişimi iklimle karşılaştırdık: 22 yıllık trendler (Mann-Kendall), hücre düzeyinde korelasyon (Spearman), kentsel ısı adası ve yüzey sıcaklığı regresyonu.</p><dl class="kv"><dt>Sonuç</dt><dd>Regresyon R² = 0.921, hata ≈ 2 °C</dd></dl></div></li>
-    <li class="step"><span class="no">05</span><div class="body"><h3>Yüzen atık tespiti (İDA kolu)</h3><p>Endonezya nehirlerinden alınmış açık bir fotoğraf veri setinde YOLOv8n modelini 50 tur eğittik. İki sınıf var: yüzen atık ve nehir bitkisi.</p><dl class="kv"><dt>Sonuç</dt><dd>mAP50 = 0.388, görüntü başına 5.4 ms</dd></dl></div></li>
     <li class="step"><span class="no">06</span><div class="body"><h3>Bölgeler arası genelleme</h3><p>Her seferinde bir ili dışarıda bıraktık, modeli kalan 6 ilde eğittik ve dışarıdaki ilde test ettik (LOCO). Sonucu, aynı ilde eğitilmiş modelle karşılaştırdık.</p><dl class="kv"><dt>Sonuç</dt><dd>Başarı ortalama 0.11 düşüyor</dd></dl></div></li>
     <li class="step"><span class="no">07</span><div class="body"><h3>Literatür</h3><p>56 aday çalışma bulduk, hepsinin DOI'sini doğruladık. Okunacak 25 çalışma seçildi.</p><dl class="kv"><dt>Durum</dt><dd>Makaleler henüz okunmadı (en büyük açık iş)</dd></dl></div></li>
     <li class="step"><span class="no">08</span><div class="body"><h3>Rapor ve sunum hazırlığı</h3><p>Rapor iskeleti, 20 slaytlık sunum planı, 27 olası jüri sorusu ve teslim kontrol listesi hazır. Metinleri biz yazacağız.</p></div></li>
@@ -153,12 +151,11 @@ html{scroll-behavior:smooth}
 
 <section id="sonuclar">
   <p class="eyebrow">Ana sonuçlar</p>
-  <h2>Akılda tutulacak 4 sayı</h2>
+  <h2>Akılda tutulacak 3 sayı</h2>
   <div class="stats">
     <div class="stat"><span class="v">0.783</span><span class="l">XGBoost macro-F1 (test). 6 arazi sınıfını tanıma başarısı.</span></div>
     <div class="stat"><span class="v">0.921</span><span class="l">Yüzey sıcaklığı regresyonu R². Değişkenliğin %92'si açıklanıyor.</span></div>
     <div class="stat"><span class="v">−0.11</span><span class="l">Model başka ile taşınınca F1'deki ortalama düşüş.</span></div>
-    <div class="stat"><span class="v">0.388</span><span class="l">Yüzen atık tespitinde mAP50 (açık veri seti).</span></div>
   </div>
 
   <div class="chart" role="img" aria-label="7 il için aynı şehir ve başka şehir macro-F1 karşılaştırması">
@@ -200,7 +197,7 @@ html{scroll-behavior:smooth}
       <tr><td><code>kentsel_isi_adasi.png</code></td><td>İstanbul ve İzmir ısı adası</td><td class="num">15</td></tr>
       <tr><td><code>lst_regresyon_shap.png</code></td><td>Sıcaklık tahmini: gerçek ve tahmin, etkili değişkenler</td><td class="num">16</td></tr>
       <tr><td><code>genelleme_isi_haritasi.png</code></td><td>İl × metrik, aynı il ve başka il</td><td class="num">17</td></tr>
-      <tr><td><code>ida_ornek_tespitler.png</code></td><td>Doğru, kaçırılan ve yanlış atık tespitleri</td><td class="num">17</td></tr>
+      <tr><td><code>genelleme_sinif_bazinda.png</code></td><td>Başka ile taşınınca hangi sınıf ne kadar düştü</td><td class="num">17</td></tr>
     </tbody>
   </table></div>
 </section>
@@ -248,7 +245,6 @@ html{scroll-behavior:smooth}
     <div><b>Mann-Kendall</b><span>Bir zaman serisinde artış veya azalış trendi var mı, test eder.</span></div>
     <div><b>Mekânsal blok CV</b><span>Haritayı 10 km'lik bloklara bölüp test etmek. Komşu hücreler birbirine "kopya vermesin" diye.</span></div>
     <div><b>LOCO</b><span>Leave-One-City-Out. Bir ili dışarıda bırak, kalanlarla eğit, dışarıdakinde test et.</span></div>
-    <div><b>YOLOv8n / mAP50</b><span>Hızlı nesne tespit modeli. mAP50: kutuların %50'den fazla örtüştüğü tespitlerin ortalama başarısı.</span></div>
   </div>
 </section>
 
@@ -257,7 +253,7 @@ html{scroll-behavior:smooth}
   <h2>Yanlış söylememiz gereken 4 şey</h2>
   <ul class="clean">
     <li><b>"Neden oldu" demeyin, "ilişkili" deyin.</b> Korelasyon neden-sonuç göstermez.</li>
-    <li><b>Atık verisi Türkiye verisi değil.</b> Endonezya nehirlerinden alınmış açık bir veri seti. Kendi İDA görüntümüz yok.</li>
+    <li><b>İDA'yı neden çıkardığımızı bilin.</b> Deniz yüzeyinde atık tespiti ana sorumuzu (arazi değişimi ↔ iklim göstergeleri) test etmiyor ve Türkiye kıyısına ait İDA görüntüsü yok.</li>
     <li><b>2014 ve 2024 haritalarının doğruluğunu ölçemedik.</b> Elimizde yalnızca 2021 etiketi var.</li>
     <li><b>Değişim haritası resimleri görsel amaçlı.</b> Sayıların hepsi noktalardan hesaplandı.</li>
   </ul>

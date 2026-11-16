@@ -8,7 +8,8 @@
 ## Kapsam kararları
 - Değişim analizi yalnızca 2014 ve 2024 yıllarını kapsıyor (2019 hız için çıkarıldı).
 - Şehir başına 2.000 örnek nokta; hiperparametre araması n_iter=10, 3-katlı CV ile sınırlı.
-- CNN modeli kapsam dışı; İDA modülünde yalnızca YOLOv8n eğitildi.
+- CNN modeli kapsam dışı.
+- İDA (insansız deniz aracı) modülü kapsamdan çıkarıldı. Deniz yüzeyinde atık tespiti, arazi örtüsü değişimi ile iklimsel göstergeler arasındaki ilişkiyi doğrudan test etmiyor; ayrıca İstanbul/İzmir kıyılarına ait İDA görüntüsü yok (önceki deneme Endonezya nehir veri setiyleydi). Eski 05 notebook'u ve sonuçları git geçmişinde duruyor.
 
 ## Veri kısıtları
 - ESA WorldCover v200 yalnızca 2021 → model 2021 etiketiyle eğitilip 2014/2024'e uygulanıyor; diğer yıllardaki doğruluk ölçülemiyor.
@@ -72,12 +73,3 @@
   - Spektral kayma ρ ≈ +0.36 (Konya en yüksek: 1.05, en büyük düşüş); sınıf dağılımı farkı açıklamıyor (Artvin en farklı dağılım 0.197 ama en küçük düşüş).
   - n = 7 il ve göstergeler birbiriyle ilişkili (hepsi kuraklığı ölçüyor) → bu bir **örüntü**, kanıt değil; tek bir neden ayrıştırılamaz.
 
-## İDA
-- Kendi İDA görüntümüz yok. Model açık veri setiyle eğitilip değerlendirildi; Türkiye kıyı verisi DEĞİLDİR.
-- Kullanılan veri seti: *Floating Waste and Aquatic Vegetation Image Dataset from Turbid Rivers* (Radam ve ark., Mendeley Data, DOI 10.17632/j26w4m645z.2, CC BY 4.0): Banjarmasin (Endonezya) bulanık nehirleri; çekim platformu (İDA / drone / el kamerası) veri sayfasında belirtilmemiş → "İDA görüntüsü" diye nitelendirilmemeli, "su yüzeyi görüntüleri" denmeli.
-- Nehir ortamı ≠ deniz kıyısı (dalga, yansıma, tuzlu su köpüğü farklı) → İstanbul/İzmir kıyılarına aktarılabilirlik belirsiz.
-- FloW-Img (gerçek İDA görüntüleri, Cheng ve ark., ICCV 2021) KULLANILMADI: indirme başvuru gerektiriyor ve başvuru sitesi (orca-tech.cn) Türkiye'den açılmadı → Faz 5 yalnızca Mendeley verisiyle yapıldı.
-- Sonuç: Modelimiz gerçek bir İDA kamerasından çekilmiş görüntülerle eğitilmedi/test edilmedi.
-- Literatürdeki FloW sonuçları (mAP vb.) yalnızca "farklı veri setinde raporlanan değerler" olarak verilir; veri, sınıflar, görüntü koşulları ve değerlendirme protokolü farklı olduğu için bizim sonuçlarımızla DOĞRUDAN KARŞILAŞTIRMA YAPILMAZ.
-- MMOS (95.5 GB, drone) boyut ve platform nedeniyle kullanılmadı.
-- Gelecek çalışma: İstanbul/İzmir kıyılarından İDA görüntüsü toplanıp modelin bu verilerle doğrulanması.
