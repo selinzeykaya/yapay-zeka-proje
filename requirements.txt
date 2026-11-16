@@ -10,4 +10,3 @@ pymannkendall
 matplotlib
 seaborn
 geopandas
-ultralytics

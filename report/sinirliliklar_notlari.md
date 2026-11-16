@@ -8,7 +8,8 @@
 ## Kapsam kararları
 - Değişim analizi yalnızca 2014 ve 2024 yıllarını kapsıyor (2019 hız için çıkarıldı).
 - Şehir başına 2.000 örnek nokta; hiperparametre araması n_iter=10, 3-katlı CV ile sınırlı.
-- CNN modeli kapsam dışı; İDA modülünde yalnızca YOLOv8n eğitildi.
+- CNN modeli kapsam dışı.
+- İDA (insansız deniz aracı) modülü kapsamdan çıkarıldı. Deniz yüzeyinde atık tespiti, arazi örtüsü değişimi ile iklimsel göstergeler arasındaki ilişkiyi doğrudan test etmiyor; ayrıca İstanbul/İzmir kıyılarına ait İDA görüntüsü yok (önceki deneme Endonezya nehir veri setiyleydi). Eski 05 notebook'u ve sonuçları git geçmişinde duruyor.
 
 ## Veri kısıtları
 - ESA WorldCover v200 yalnızca 2021 → model 2021 etiketiyle eğitilip 2014/2024'e uygulanıyor; diğer yıllardaki doğruluk ölçülemiyor.
@@ -55,6 +56,13 @@
   - Model 2024 yazının tek bir kompozitini açıklıyor; başka yıllara/illere genellenebilirliği test edilmedi.
   - Not: İlk çalıştırmada blok tanımı hatalıydı (x, y hücre biriminde; 7 blok = il bazlı CV, R² = −0.26). Düzeltildi (commit d91c1de); raporda yalnızca düzeltilmiş değerler kullanılmalı.
 
+## Eklenen analizler (16.11.2026, `amine/geoclimate-uyum` dalı, yerel çalıştırma)
+- **Mekânsal blok doğrulama (03 bölüm 10b):** rastgele ile 10 km blok 5 katlı CV arasındaki macro-F1 farkı en fazla 0.013 (RF, XGBoost) → 300 m mesafe filtresi sızıntıyı büyük ölçüde önlemiş. Blok doğrulamada katmanlar arası std daha büyük (±0.012–0.022): bölgeden bölgeye başarı değişiyor.
+- **IoU:** macro IoU 0.63–0.66; en zayıf sınıf Tarım (0.38–0.43). IoU = F1/(2−F1) olduğundan F1'den düşük olması beklenir.
+- **Sürüm farkı:** Yerel çalıştırmada (scikit-learn 1.9.1, xgboost 3.4.1) RF, SVM, MLP Faz 3 ile birebir aynı; XGBoost macro-F1 0.776 (Faz 3: 0.783). Fark xgboost sürümünden. Raporda Faz 3 (Colab) değerleri kullanılmalı; XGBoost IoU'su Colab'da kesinleşir. LST regresyonunda RF R² 0.9203 (Faz 3: 0.9209).
+- **XGBoost regresyonu** RF ile aynı başarıda (R² 0.921) → regresyon sonucu modele özgü değil.
+- **Hipotez tablosundaki 0.1 eşiği** yaygın bir kuraldır, istatistiksel test değildir. Hücreler bağımsız olmadığından p-değerleri yorumlanmadı.
+
 ## Faz 6 (bölgeler arası genelleme, AS5)
 - XGBoost macro-F1, aynı şehir → başka şehir (LOCO, aynı test noktaları): İstanbul 0.812 → 0.729 (−0.083), İzmir 0.809 → 0.716 (−0.094), Artvin 0.728 → 0.668 (−0.059), Samsun 0.742 → 0.671 (−0.071), Konya 0.794 → 0.607 (**−0.187**), Van 0.770 → 0.645 (−0.125), Şanlıurfa 0.773 → 0.626 (−0.147). Ortalama düşüş ≈ −0.11.
   - En büyük düşüş iç/kurak illerde (Konya, Şanlıurfa, Van); kıyı ve nemli illerde (Artvin, Samsun, İstanbul, İzmir) daha az. Olası neden: fenoloji/iklim farkı (aşağıda neden göstergeleri).
@@ -67,17 +75,8 @@
   - En büyük tekil düşüşler: Konya Su/Sulak 0.89 → 0.39 (−0.50), İstanbul Tarım −0.31, Şanlıurfa Yapılaşma 0.69 → 0.39 (−0.30), Konya Çıplak −0.25, Van Çayır/Çalı −0.22, İzmir Çayır/Çalı −0.21.
   - Konya'daki su düşüşü için olası açıklama: tuzlu/sığ göl yüzeyleri (ör. Tuz Gölü) başka illerdeki sudan spektral olarak farklı → `[DOĞRULANMADI]`, haritayla kontrol edilmeli.
   - Sınıf başına test noktası il başına ~50 → tek sınıf F1 değerleri çok oynak; tekil değerler değil genel örüntü yorumlanmalı.
-- Düşüşün olası nedenleri (`genelleme_neden_gostergeleri.csv`): 7 il üzerinde F1 düşüşü ile göstergeler arasında Spearman sıra korelasyonu (tablodan elle hesaplandı, notebook'ta yok):
+- Düşüşün olası nedenleri (`genelleme_neden_gostergeleri.csv`): 7 il üzerinde F1 düşüşü ile göstergeler arasında Spearman sıra korelasyonu (06 notebook'unda hesaplanıyor; `genelleme_neden_spearman.csv`):
   - Yıllık yağış ρ ≈ −0.96, yaz toprak nemi ρ ≈ −0.86, MODIS yaz LST ρ ≈ +0.93 → **kurak ve sıcak illerde düşüş daha büyük**.
   - Spektral kayma ρ ≈ +0.36 (Konya en yüksek: 1.05, en büyük düşüş); sınıf dağılımı farkı açıklamıyor (Artvin en farklı dağılım 0.197 ama en küçük düşüş).
   - n = 7 il ve göstergeler birbiriyle ilişkili (hepsi kuraklığı ölçüyor) → bu bir **örüntü**, kanıt değil; tek bir neden ayrıştırılamaz.
 
-## İDA
-- Kendi İDA görüntümüz yok. Model açık veri setiyle eğitilip değerlendirildi; Türkiye kıyı verisi DEĞİLDİR.
-- Kullanılan veri seti: *Floating Waste and Aquatic Vegetation Image Dataset from Turbid Rivers* (Radam ve ark., Mendeley Data, DOI 10.17632/j26w4m645z.2, CC BY 4.0): Banjarmasin (Endonezya) bulanık nehirleri; çekim platformu (İDA / drone / el kamerası) veri sayfasında belirtilmemiş → "İDA görüntüsü" diye nitelendirilmemeli, "su yüzeyi görüntüleri" denmeli.
-- Nehir ortamı ≠ deniz kıyısı (dalga, yansıma, tuzlu su köpüğü farklı) → İstanbul/İzmir kıyılarına aktarılabilirlik belirsiz.
-- FloW-Img (gerçek İDA görüntüleri, Cheng ve ark., ICCV 2021) KULLANILMADI: indirme başvuru gerektiriyor ve başvuru sitesi (orca-tech.cn) Türkiye'den açılmadı → Faz 5 yalnızca Mendeley verisiyle yapıldı.
-- Sonuç: Modelimiz gerçek bir İDA kamerasından çekilmiş görüntülerle eğitilmedi/test edilmedi.
-- Literatürdeki FloW sonuçları (mAP vb.) yalnızca "farklı veri setinde raporlanan değerler" olarak verilir; veri, sınıflar, görüntü koşulları ve değerlendirme protokolü farklı olduğu için bizim sonuçlarımızla DOĞRUDAN KARŞILAŞTIRMA YAPILMAZ.
-- MMOS (95.5 GB, drone) boyut ve platform nedeniyle kullanılmadı.
-- Gelecek çalışma: İstanbul/İzmir kıyılarından İDA görüntüsü toplanıp modelin bu verilerle doğrulanması.

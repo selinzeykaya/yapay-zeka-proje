@@ -1,9 +1,8 @@
 # Aday çalışmalar (Faz 7)
 
-- Toplam 56 aday. Hepsinin DOI'si doi.org üzerinden doğrulandı (2026-11-04). Yazar, başlık ve dergi bilgileri DOI kaydından otomatik alındı.
+- Toplam 46 aday (İDA / yüzen atık grubu L47–L56 kapsam dışı kaldığı için çıkarıldı). Hepsinin DOI'si doi.org üzerinden doğrulandı (2026-11-04). Yazar, başlık ve dergi bilgileri DOI kaydından otomatik alındı.
 - "Konu" sütunu yalnızca başlıktan/künyeden çıkarılmış etikettir, **makalenin bulgusu değildir**. Bulgular makale okunduktan sonra `literatur_matrisi.csv` dosyasına yazılır.
 - Öncelik: 1 = mutlaka okunmalı/atıf yapılmalı, 2 = yararlı, 3 = yedek.
-- FloW (Cheng ve ark., 2021): veri seti kullanılamadı. Sonuçları yalnızca **farklı veri setinde raporlanan değerler** olarak verilir, doğrudan karşılaştırma yapılmaz.
 - Boşluklar: Van ve Şanlıurfa için DOI'li LST çalışması bulunamadı. Artvin için Landsat tabanlı çalışma bulunamadı (Yusufeli çalışması Sentinel-2 kullanıyor).
 - Doğrulanamayan kaynaklar en altta **[DOĞRULANMADI]** başlığı altında. Künye ve DOI kontrol edilmeden kullanılmamalı.
 
@@ -93,21 +92,6 @@
 | L45 | Tong ve ark. (2020) | Land-cover classification with high-resolution remote sensing images using transferable deep models | Remote Sensing of Environment | [10.1016/j.rse.2019.111322](https://doi.org/10.1016/j.rse.2019.111322) | Çin | Aktarılabilir derin modelle arazi örtüsü sınıflandırma | Literatür / 06 | 2 |
 | L46 | Siddamsetty ve ark. (2023) | INTER-REGION TRANSFER LEARNING FOR LAND USE LAND COVER CLASSIFICATION | ISPRS Annals of the Photogrammetry, Remote Sensing and Spatial Information Sciences | [10.5194/isprs-annals-X-1-W1-2023-881-2023](https://doi.org/10.5194/isprs-annals-X-1-W1-2023-881-2023) | Avrupa (BigEarthNet) | Bölgeler arası transfer öğrenme (LULC) | Literatür / 06 | 2 |
 
-## I. İDA / yüzen atık tespiti (10)
-
-| ID | Kaynak | Başlık | Dergi / yayın | DOI | Bölge | Konu | Kullanılacağı yer | Öncelik |
-|---|---|---|---|---|---|---|---|---|
-| L47 | Radam ve ark. (2026) | Floating Waste and Aquatic Vegetation Image Dataset from Turbid Rivers | Mendeley Data | [10.17632/j26w4m645z.2](https://doi.org/10.17632/j26w4m645z.2) | Endonezya (Banjarmasin) | Faz 5'te KULLANILAN veri seti | Veri / 05 | 1 |
-| L48 | Cheng ve ark. (2021) | FloW: A Dataset and Benchmark for Floating Waste Detection in Inland Waters | 2021 IEEE/CVF International Conference on Computer Vision (ICCV) | [10.1109/ICCV48922.2021.01077](https://doi.org/10.1109/ICCV48922.2021.01077) | Çin (iç sular) | FloW veri seti — KULLANILAMADI; yalnızca farklı veri setinde raporlanan değer | Literatür / 05 (dolaylı) | 1 |
-| L49 | Redmon ve ark. (2016) | You Only Look Once: Unified, Real-Time Object Detection | 2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR) | [10.1109/CVPR.2016.91](https://doi.org/10.1109/CVPR.2016.91) | — | YOLO özgün kaynağı | Yöntem / 05 | 1 |
-| L50 | Li ve ark. (2023) | A Floating-Waste-Detection Method for Unmanned Surface Vehicle Based on Feature Fusion and Enhancement | Journal of Marine Science and Engineering | [10.3390/jmse11122234](https://doi.org/10.3390/jmse11122234) | — | İDA (USV) için yüzen atık tespiti | Literatür / 05 | 1 |
-| L51 | Dong ve ark. (2025) | Optimized YOLOv8 for Lightweight Floating Object Detection on Unmanned Surface Vehicles | Information Technology and Control | [10.5755/j01.itc.54.3.38966](https://doi.org/10.5755/j01.itc.54.3.38966) | — | İDA (USV) üzerinde hafif YOLOv8 ile yüzen nesne tespiti | Literatür / 05 | 1 |
-| L52 | Chen ve ark. (2025) | A Novel Method for Water Surface Debris Detection Based on YOLOV8 with Polarization Interference Suppression | Photonics | [10.3390/photonics12060620](https://doi.org/10.3390/photonics12060620) | — | YOLOv8 + polarizasyon; su yansıması sorunu | Literatür / 05 (sınırlılık) | 2 |
-| L53 | Kataoka ve ark. (2024) | Instance segmentation models for detecting floating macroplastic debris from river surface images | Frontiers in Earth Science | [10.3389/feart.2024.1427132](https://doi.org/10.3389/feart.2024.1427132) | Japonya (nehirler) | YOLOv8 örnek bölütleme ile nehir makroplastiği | Literatür / 05 | 1 |
-| L54 | van Lieshout ve ark. (2020) | Automated River Plastic Monitoring Using Deep Learning and Cameras | Earth and Space Science | [10.1029/2019EA000960](https://doi.org/10.1029/2019EA000960) | Endonezya (Jakarta) | Kamera + derin öğrenmeyle nehir plastiği izleme | Literatür / 05 | 1 |
-| L55 | Devi ve ark. (2024) | Yolo-based Deep Learning Techniques for Identifying Floating Bottles in Inland Water: A Comprehensive Analysis | 2024 15th International Conference on Computing Communication and Networking Technologies (ICCCNT) | [10.1109/icccnt61001.2024.10724494](https://doi.org/10.1109/icccnt61001.2024.10724494) | — | İç sularda şişe tespiti için YOLO sürümleri | Literatür / 05 | 3 |
-| L56 | Padilla ve ark. (2021) | A Comparative Analysis of Object Detection Metrics with a Companion Open-Source Toolkit | Electronics | [10.3390/electronics10030279](https://doi.org/10.3390/electronics10030279) | — | Nesne tespiti metrikleri (mAP) | Yöntem / 05 | 1 |
-
 ## [DOĞRULANMADI]
 
 | Bölge | Konu (arama sonucundan) | Bağlantı | Kullanılacağı yer | Durum |
@@ -118,5 +102,4 @@
 
 | Yazılım | Kullanıldığı yer | Not |
 |---|---|---|
-| Ultralytics YOLOv8 (Jocher ve ark., 2023) | 05 | Künye: github.com/ultralytics/ultralytics; sürüm numarası requirements.txt ile aynı yazılmalı |
 | scikit-learn (Pedregosa ve ark., 2011, JMLR 12) | 03, 06 | JMLR makalesinin DOI'si yok; dergi künyesiyle verilir |

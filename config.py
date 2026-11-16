@@ -46,7 +46,17 @@ SUB_QUESTIONS = {
     "AS3": ["Konya", "Van", "Samsun"],           # su/sulak alan - sıcaklık, nem
     "AS4": ["Konya", "Sanliurfa"],               # tarım - toprak nemi, LST
     "AS5": list(CITIES.keys()),                  # bölgeler arası genelleme
-    "AS6": ["Istanbul", "Izmir"],                # İDA (açık veri seti; Türkiye verisi DEĞİL)
+}
+
+# GeoClimate AI hipotezleri. Kanıt tabloları: 04 (H1–H5, hipotez_ozet_H1_H5.csv) ve
+# 06 (H6 + hepsi, hipotez_ozet.csv). 'Desteklendi / kısmen / desteklenmedi' kararını ekip yazar.
+HYPOTHESES = {
+    "H1": ("Yapılaşmış alan artışı ile LST arasında pozitif ilişki", "AS2"),
+    "H2": ("Orman/bitki örtüsü azalması LST artışıyla ilişkili", "AS1"),
+    "H3": ("Tarım değişimi ile bitki örtüsü yoğunluğu ve nem arasında ilişki", "AS4"),
+    "H4": ("Su/sulak alan değişimi ile sıcaklık ve nem arasında ilişki", "AS3"),
+    "H5": ("İlişkiler coğrafi bölgeye göre farklılaşır", "AS1–AS4"),
+    "H6": ("Model başarısı bölgeye göre değişir, genellenebilirlik etkilenir", "AS5"),
 }
 
 # ---------------------------------------------------------------------------
@@ -183,27 +193,6 @@ GEE_VS_COLAB_WARN = 0.02           # macro-F1 farkı bundan büyükse uyarı
 # ERA5-Land toprak nemi yalnızca şehir ölçeğindeki zaman serisinde kullanılır.
 GRID_MOISTURE_PROXY = "NDMI"
 ERA5_BANDS = ["volumetric_soil_water_layer_1", "temperature_2m"]
-
-# ---------------------------------------------------------------------------
-# İDA nesne tespiti (Faz 5)
-# ---------------------------------------------------------------------------
-# "mendeley": Floating Waste and Aquatic Vegetation (Radam ve ark., Mendeley Data, DOI 10.17632/j26w4m645z.2,
-#             CC BY 4.0) — hemen indirilebilir, şu anki ana veri
-# "flow":     FloW-Img (Cheng ve ark., ICCV 2021) — KULLANILMADI: başvuru sitesi (orca-tech.cn)
-#             Türkiye'den açılmadı. Kod yolu yalnızca ileride erişim olursa diye duruyor
-IDA_DATASET = "mendeley"
-MENDELEY_URL = ("https://data.mendeley.com/public-files/datasets/j26w4m645z/files/"
-                "fe81eec3-65c8-48c3-809b-9a9a3a359c82/file_downloaded")
-MENDELEY_SHA256 = "e43166dde54f82fa9dc00adc5f3943ea7a9083f4beda1490a774fcea6dc7d8b3"
-FLOW_ZIP = "data/raw/FloW-Img.zip"   # Drive'daki proje klasörüne göre
-# Mendeley doğrudan indirmeyi (Colab'dan) 403 ile reddediyor → tarayıcıdan indirilip Drive'a konur
-MENDELEY_ZIP = "data/raw/Floating Waste and River Vegetation Dataset.zip"
-IDA_VAL_FRACTION = 0.15            # FloW'da eğitim kümesinden ayrılan doğrulama payı
-IDA_CONF = 0.25                    # örnek görsellerde tahmin eşiği
-IDA_IOU_MATCH = 0.5                # TP/FP/FN eşleştirme eşiği
-YOLO_MODEL = "yolov8n.pt"          # yalnızca YOLOv8n (v8s karşılaştırması kapsam dışı)
-YOLO_EPOCHS = 50
-YOLO_IMG_SIZE = 640
 
 # ---------------------------------------------------------------------------
 # Klasörler (proje köküne göre)

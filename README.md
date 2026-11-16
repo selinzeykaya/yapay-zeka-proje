@@ -1,8 +1,8 @@
-# Türkiye'de Coğrafi Değişimlerin İklimsel Etkilerinin Uydu ve İDA Görüntüleriyle Yapay Zekâ Destekli Analizi
+# Türkiye'de Coğrafi Değişimlerin İklimsel Etkilerinin Uydu Görüntüleriyle Yapay Zekâ Destekli Analizi
 
-Yapay Zekâ dersi projesi. Türkiye'deki 7 ilde (İstanbul, İzmir, Artvin, Samsun, Konya, Van, Şanlıurfa) arazi örtüsü değişimini makine öğrenmesiyle sınıflandırıyoruz. Bu değişimin yüzey sıcaklığı (LST) ve nem göstergeleriyle ilişkisini inceliyoruz. Ayrıca açık bir İDA veri setiyle yüzen atık tespiti yapıyoruz.
+Yapay Zekâ dersi projesi. Türkiye'deki 7 ilde (İstanbul, İzmir, Artvin, Samsun, Konya, Van, Şanlıurfa) arazi örtüsü değişimini makine öğrenmesiyle sınıflandırıyoruz. Bu değişimin yüzey sıcaklığı (LST) ve nem göstergeleriyle ilişkisini inceliyoruz.
 
-> **İDA notu:** Kendi çektiğimiz İDA görüntüsü yoktur. İDA modülü açık veri setleriyle geliştirilmiş ve değerlendirilmiştir: *Floating Waste and Aquatic Vegetation* (Mendeley Data, Endonezya nehirleri). FloW-Img başvuru sitesi (orca-tech.cn) Türkiye'den açılmadığı için başvuru yapılamadı; FloW-Img kullanılmadı. Bu veriler **Türkiye kıyı verisi değildir**. Türkiye kıyılarında (ör. İstanbul, İzmir) doğrulama gelecek çalışmadır.
+> **Kapsam notu:** İDA (insansız deniz aracı) modülü kapsamdan çıkarıldı. Deniz yüzeyinde atık tespiti, arazi örtüsü değişimi ile iklimsel göstergeler arasındaki ilişkiyi doğrudan test etmiyor; ayrıca İstanbul/İzmir kıyılarına ait İDA görüntüsü yok (önceki deneme Endonezya nehir veri setiyleydi). Eski 05 notebook'u ve sonuçları git geçmişinde duruyor. Notebook numaralarında 05 bu yüzden boştur.
 
 ## Klasör yapısı
 ```
@@ -25,7 +25,6 @@ presentation/        Sunum iskeleti ve olası sorular
 | 02 | `02_eda_tanimlayici_istatistik` | Veri tanıtımı, tanımlayıcı istatistik, grafikler |
 | 03 | `03_siniflandirma_modelleri` | RF, XGBoost, SVM, MLP; Accuracy/Precision/Recall/F1/ROC-AUC |
 | 04 | `04_degisim_ve_iklim_analizi` | 2014→2024 değişim, LST/nem ilişkisi, kentsel ısı adası |
-| 05 | `05_ida_nesne_tespiti` | Mendeley veri setinde YOLOv8n |
 | 06 | `06_bolgeler_arasi_genelleme` | Leave-One-City-Out |
 
 ## Nasıl çalıştırılır (Google Colab)
@@ -48,12 +47,7 @@ presentation/        Sunum iskeleti ve olası sorular
 2. Colab'da sol menüdeki **anahtar simgesi (Secrets)** → **Yeni gizli anahtar ekle**. Ad: `GITHUB_TOKEN`, değer: token. **Not defteri erişimi** anahtarını açın.
 
 ### 4. Çalıştırma
-Colab → **Dosya → Not defteri aç → GitHub** sekmesi → "Özel depoları dahil et" kutusunu işaretleyin → `selinzeykaya/yapay-zeka-proje` → notebook'u seçin. Sonra **Çalışma zamanı → Tümünü çalıştır** deyin. Sırayla 00, 01, 02... çalıştırın. Faz 5 (YOLO) için önce **Çalışma zamanı → Çalışma zamanı türünü değiştir → T4 GPU** seçin.
-
-### Faz 5 verisi (Mendeley)
-Mendeley zip'ini tarayıcıdan indirip Drive'da `Drive'ım/yapay-zeka-proje/data/raw/` altına koyun (dosya adı `config.MENDELEY_ZIP` ile aynı olmalı). Colab'dan doğrudan indirme 403 hatası veriyor.
-
-> FloW-Img kullanılmadı: başvuru sitesi Türkiye'den açılmadı. 05 notebook'undaki `"flow"` seçeneği yalnızca ileride erişim olursa diye kodda duruyor.
+Colab → **Dosya → Not defteri aç → GitHub** sekmesi → "Özel depoları dahil et" kutusunu işaretleyin → `selinzeykaya/yapay-zeka-proje` → notebook'u seçin. Sonra **Çalışma zamanı → Tümünü çalıştır** deyin. Sırayla 00, 01, 02... çalıştırın.
 
 GitHub'dan açılan notebook'taki değişiklikler (çıktılar dahil) otomatik kaydedilmez. Sonuçlar zaten Drive'a yazıldığı için bu sorun değil.
 
@@ -68,8 +62,6 @@ GitHub'dan açılan notebook'taki değişiklikler (çıktılar dahil) otomatik k
 | Su yüzeyi | `JRC/GSW1_4/YearlyHistory` | 1984–2021; 2024 için Landsat MNDWI |
 | Yağış | `UCSB-CHG/CHIRPS/PENTAD` | Kamu malı |
 | Rakım | `USGS/SRTMGL1_003` | NASA/USGS, kamu malı |
-| İDA atık tespiti | Floating Waste and Aquatic Vegetation Image Dataset from Turbid Rivers — Radam ve ark., Mendeley Data v2, DOI 10.17632/j26w4m645z.2 | CC BY 4.0; 1.577 görüntü, 2 sınıf, YOLO formatı; çekim platformu belirtilmemiş |
-| İDA atık tespiti (KULLANILMADI) | FloW-Img — Cheng ve ark., ICCV 2021 (github.com/ORCA-Uboat/FloW-Dataset) | Başvuru sitesi (orca-tech.cn) Türkiye'den açılmadı → erişilemedi. Literatürde yalnızca "farklı veri setinde raporlanan değerler" olarak anılır |
 
 ## Tekrarlanabilirlik
 Her yerde `RANDOM_STATE = 42` kullanılır. Bütün parametreler `config.py` dosyasındadır.

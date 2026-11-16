@@ -1,7 +1,7 @@
 """Sınıflandırma modelleri ve metrikler (Faz 3 ve Faz 6 ortak kullanır)."""
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import (accuracy_score, cohen_kappa_score, f1_score,
+from sklearn.metrics import (accuracy_score, cohen_kappa_score, f1_score, jaccard_score,
                              precision_score, recall_score, roc_auc_score)
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
@@ -52,7 +52,11 @@ def strip_prefix(params):
 
 
 def compute_metrics(y_true, y_pred, proba=None, labels=None):
-    """Hocanın istediği 5 metrik (+ weighted sürümler ve Kappa)."""
+    """Hocanın istediği 5 metrik (+ weighted sürümler, Kappa ve IoU).
+
+    IoU (Jaccard) = TP / (TP + FP + FN). GeoClimate dokümanında istenen metrik; U-Net gibi
+    segmentasyon modelleriyle aynı ölçüyle karşılaştırma sağlar.
+    """
     labels = labels if labels is not None else sorted(config.CLASSES)
     m = {
         "accuracy": accuracy_score(y_true, y_pred),
@@ -63,6 +67,8 @@ def compute_metrics(y_true, y_pred, proba=None, labels=None):
         "recall_weighted": recall_score(y_true, y_pred, average="weighted", labels=labels, zero_division=0),
         "f1_weighted": f1_score(y_true, y_pred, average="weighted", labels=labels, zero_division=0),
         "kappa": cohen_kappa_score(y_true, y_pred),
+        "iou_macro": jaccard_score(y_true, y_pred, average="macro", labels=labels, zero_division=0),
+        "iou_weighted": jaccard_score(y_true, y_pred, average="weighted", labels=labels, zero_division=0),
         "roc_auc_ovr_macro": np.nan,
     }
     if proba is not None:
