@@ -1,5 +1,7 @@
 # Türkiye'de Coğrafi Değişimlerin İklimsel Etkilerinin Uydu Görüntüleriyle Yapay Zekâ Destekli Analizi
 
+[![CI](https://github.com/selinzeykaya/yapay-zeka-proje/actions/workflows/ci.yml/badge.svg)](https://github.com/selinzeykaya/yapay-zeka-proje/actions/workflows/ci.yml)
+
 Yapay Zekâ dersi projesi. Türkiye'deki 7 ilde (İstanbul, İzmir, Artvin, Samsun, Konya, Van, Şanlıurfa) arazi örtüsü değişimini makine öğrenmesiyle sınıflandırıyoruz. Bu değişimin yüzey sıcaklığı (LST) ve nem göstergeleriyle ilişkisini inceliyoruz.
 
 > **Kapsam notu:** İDA (insansız deniz aracı) modülü kapsamdan çıkarıldı. Deniz yüzeyinde atık tespiti, arazi örtüsü değişimi ile iklimsel göstergeler arasındaki ilişkiyi doğrudan test etmiyor; ayrıca İstanbul/İzmir kıyılarına ait İDA görüntüsü yok (önceki deneme Endonezya nehir veri setiyleydi). Eski 05 notebook'u ve sonuçları git geçmişinde duruyor. Notebook numaralarında 05 bu yüzden boştur.
@@ -50,6 +52,14 @@ presentation/        Sunum iskeleti ve olası sorular
 Colab → **Dosya → Not defteri aç → GitHub** sekmesi → "Özel depoları dahil et" kutusunu işaretleyin → `selinzeykaya/yapay-zeka-proje` → notebook'u seçin. Sonra **Çalışma zamanı → Tümünü çalıştır** deyin. Sırayla 00, 01, 02... çalıştırın.
 
 GitHub'dan açılan notebook'taki değişiklikler (çıktılar dahil) otomatik kaydedilmez. Sonuçlar zaten Drive'a yazıldığı için bu sorun değil.
+
+## Otomatik kontrol (GitHub Actions)
+Her push'ta ve `main`'e açılan her Pull Request'te `.github/workflows/ci.yml` çalışır (≈1–2 dk):
+1. `tools/notebook_kontrol.py`: notebook'lar geçerli mi, kod hücrelerinde yazım hatası var mı, **çıktı kaydedilmiş mi** (repo çıktısız notebook tutar).
+2. `pytest` (`tests/`): `config.py` tutarlılığı, `src/ml_utils.py` metrikleri (IoU = F1/(2−F1) dahil) ve 4 modelin kurulup eğitilebilmesi.
+
+Earth Engine ve Drive verisi gerektiren analizler CI'da çalışmaz. Yerelde aynı kontrol: `pip install -r requirements-ci.txt` → `python tools/notebook_kontrol.py` → `pytest`.
+Kırmızı (❌) olursa: Actions sekmesinde hangi adımın düştüğüne bakın; en sık neden Colab'dan **çıktılı** notebook commit'lemek (Colab → Düzenle → Tüm çıktıları temizle).
 
 ## Veri kaynakları ve lisanslar
 | Veri | Kaynak (GEE kimliği) | Not |

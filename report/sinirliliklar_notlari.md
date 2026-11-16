@@ -61,6 +61,7 @@
 - **IoU:** macro IoU 0.63–0.66; en zayıf sınıf Tarım (0.38–0.43). IoU = F1/(2−F1) olduğundan F1'den düşük olması beklenir.
 - **Sürüm farkı:** Yerel çalıştırmada (scikit-learn 1.9.1, xgboost 3.4.1) RF, SVM, MLP Faz 3 ile birebir aynı; XGBoost macro-F1 0.776 (Faz 3: 0.783). Fark xgboost sürümünden. Raporda Faz 3 (Colab) değerleri kullanılmalı; XGBoost IoU'su Colab'da kesinleşir. LST regresyonunda RF R² 0.9203 (Faz 3: 0.9209).
 - **XGBoost regresyonu** RF ile aynı başarıda (R² 0.921) → regresyon sonucu modele özgü değil.
+- **scikit-learn uyarısı:** 1.9 sürümünde `SVC(probability=True)` kullanımdan kaldırılacak olarak işaretlendi (1.11'de kalkıyor). Colab scikit-learn'ü güncellediğinde 03/06'daki SVM olasılık hesabı bozulabilir; CI en yeni sürümü kurduğu için bunu ilk o gösterir. Çözüm: `CalibratedClassifierCV(SVC(), ensemble=False)`.
 - **Hipotez tablosundaki 0.1 eşiği** yaygın bir kuraldır, istatistiksel test değildir. Hücreler bağımsız olmadığından p-değerleri yorumlanmadı.
 
 ## Faz 6 (bölgeler arası genelleme, AS5)
