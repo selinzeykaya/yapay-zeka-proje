@@ -5,6 +5,7 @@
 #   2) config.py kendi içinde tutarlı mı
 #   3) src/ml_utils.py'deki modeller ve metrikler doğru çalışıyor mu
 #   4) src/gee_utils.py ve ml_utils.py içe aktarılabiliyor mu, notebook'ların çağırdığı her fonksiyon tanımlı mı
+#   5) panel/app.py her il, gösterge ve model seçiminde hatasız açılıyor mu (Streamlit AppTest)
 name: CI
 
 on:
@@ -42,5 +43,5 @@ jobs:
       - name: Notebook kontrolü (JSON, sözdizimi, çıktı yok)
         run: python tools/notebook_kontrol.py
 
-      - name: Testler (config, metrikler, modeller, modül/fonksiyon kontrolü)
+      - name: Testler (config, metrikler, modeller, modüller, panel)
         run: pytest -v

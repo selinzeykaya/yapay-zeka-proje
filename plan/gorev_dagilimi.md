@@ -77,7 +77,7 @@ Bu plan yalnızca **eksikleri** listeler. Aşağıdakiler Selin tarafından tama
    - ✅ 1–5 gerçek veriyle yerelde çalıştırıldı (16.11.2026); sonuçlar rapor iskeletinde (4.2, 4.6, 4.9). Yeni CSV/PNG'ler `D:\geoclimate-calisma\yeni_sonuclar` → Drive `results/` altına yüklenmeli. XGBoost IoU'su için Colab'da 03 bir kez çalıştırılmalı.
 6. **Ölçek analizi:** 1 km hücreler ERA5-Land hücrelerine (~9 km) toplanır, sınıf oranları ↔ ERA5 toprak nemi/hava sıcaklığı ilişkisi hesaplanır.
 7. Kuraklık göstergesi: CHIRPS'ten **SPI-3/SPI-12**; DEM'den **eğim**.
-8. Hafta 3: **Streamlit paneli** (il seç → harita, değişim, iklim serisi, metrikler). Bulutta Streamlit Community Cloud'da yayınlanır.
+8. ✅ **Streamlit paneli** (`panel/app.py`, 5 sekme; il seç → harita, değişim, iklim serisi, hipotezler, metrikler). Yerelde çalışıyor ve CI'da test ediliyor; istenirse Streamlit Community Cloud'da yayınlanabilir.
 9. Literatür: L01–L22 arasından 7 çalışma.
 10. Rapor bölümleri: 3.4–3.7 (yöntem), 4.2–4.6 (bulgular).
 

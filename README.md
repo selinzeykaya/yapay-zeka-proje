@@ -53,10 +53,22 @@ Colab → **Dosya → Not defteri aç → GitHub** sekmesi → "Özel depoları 
 
 GitHub'dan açılan notebook'taki değişiklikler (çıktılar dahil) otomatik kaydedilmez. Sonuçlar zaten Drive'a yazıldığı için bu sorun değil.
 
+## Sonuç paneli (Streamlit)
+Notebook'ların ürettiği sonuçları tek ekranda gösteren etkileşimli panel: `panel/app.py`. Hiçbir şey hesaplamaz, Earth Engine'e bağlanmaz.
+
+```bash
+pip install -r panel/requirements.txt
+streamlit run panel/app.py        # tarayıcıda http://localhost:8501
+```
+
+Sekmeler: **Genel bakış** (ana sayılar) · **Arazi değişimi** (il il 2014/2024 haritaları, sınıf payları, geçiş matrisi) · **İklim** (2003–2024 serileri, Mann-Kendall trendleri) · **İlişkiler ve hipotezler** (H1–H6, ısı adası, su alanı) · **Model başarısı** (4 model, IoU, mekânsal blok, LOCO, LST regresyonu ve SHAP).
+
+Veri `panel/veri/` altındadır (≈5 MB, yalnızca özet tablolar ve küçültülmüş görseller). Notebook'lar yeniden çalıştırılıp sonuçlar değişirse: `python panel/veri_hazirla.py "<Drive'daki yapay-zeka-proje klasörü>"`.
+
 ## Otomatik kontrol (GitHub Actions)
 Her push'ta ve `main`'e açılan her Pull Request'te `.github/workflows/ci.yml` çalışır (≈1–2 dk):
 1. `tools/notebook_kontrol.py`: notebook'lar geçerli mi, kod hücrelerinde yazım hatası var mı, **çıktı kaydedilmiş mi** (repo çıktısız notebook tutar).
-2. `pytest` (`tests/`): `config.py` tutarlılığı, `src/ml_utils.py` metrikleri (IoU = F1/(2−F1) dahil), 4 modelin kurulup eğitilebilmesi, `src/gee_utils.py`'nin içe aktarılabilmesi ve notebook'larda çağrılan her `gu.*` / `mu.*` fonksiyonunun tanımlı olması.
+2. `pytest` (`tests/`): `config.py` tutarlılığı, `src/ml_utils.py` metrikleri (IoU = F1/(2−F1) dahil), 4 modelin kurulup eğitilebilmesi, `src/gee_utils.py`'nin içe aktarılabilmesi ve notebook'larda çağrılan her `gu.*` / `mu.*` fonksiyonunun tanımlı olması; panelin her il, gösterge ve model seçiminde hatasız açılması.
 
 Earth Engine ve Drive verisi gerektiren analizler CI'da çalışmaz. Yerelde aynı kontrol: `pip install -r requirements-ci.txt` → `python tools/notebook_kontrol.py` → `pytest`.
 Kırmızı (❌) olursa: Actions sekmesinde hangi adımın düştüğüne bakın; en sık neden Colab'dan **çıktılı** notebook commit'lemek (Colab → Düzenle → Tüm çıktıları temizle).

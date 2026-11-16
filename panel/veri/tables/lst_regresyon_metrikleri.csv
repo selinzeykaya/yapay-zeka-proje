@@ -1,0 +1,3 @@
+﻿model,R2_ort,R2_std,RMSE_ort_C,MAE_ort_C,n_hucre,n_blok
+RandomForestRegressor,0.9209,0.0059,2.0414,1.5151,111950,1435
+LinearRegression,0.8242,0.0166,3.0405,2.3805,111950,1435

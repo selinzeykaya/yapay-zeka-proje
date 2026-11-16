@@ -1,0 +1,5 @@
+﻿model,accuracy,precision_macro,recall_macro,f1_macro,precision_weighted,recall_weighted,f1_weighted,kappa,roc_auc_ovr_macro
+RandomForest,0.7676,0.7662,0.7651,0.7641,0.7675,0.7676,0.7661,0.7209,0.957
+XGBoost,0.7852,0.7842,0.7834,0.7833,0.7853,0.7852,0.7848,0.7421,0.9613
+SVM,0.7777,0.7768,0.7745,0.7721,0.7775,0.7777,0.7741,0.7329,0.959
+MLP,0.7912,0.7912,0.7902,0.7893,0.7922,0.7912,0.7904,0.7494,0.9642
