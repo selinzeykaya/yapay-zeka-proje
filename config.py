@@ -48,6 +48,17 @@ SUB_QUESTIONS = {
     "AS5": list(CITIES.keys()),                  # bölgeler arası genelleme
 }
 
+# GeoClimate AI hipotezleri. Kanıt tabloları: 04 (H1–H5, hipotez_ozet_H1_H5.csv) ve
+# 06 (H6 + hepsi, hipotez_ozet.csv). 'Desteklendi / kısmen / desteklenmedi' kararını ekip yazar.
+HYPOTHESES = {
+    "H1": ("Yapılaşmış alan artışı ile LST arasında pozitif ilişki", "AS2"),
+    "H2": ("Orman/bitki örtüsü azalması LST artışıyla ilişkili", "AS1"),
+    "H3": ("Tarım değişimi ile bitki örtüsü yoğunluğu ve nem arasında ilişki", "AS4"),
+    "H4": ("Su/sulak alan değişimi ile sıcaklık ve nem arasında ilişki", "AS3"),
+    "H5": ("İlişkiler coğrafi bölgeye göre farklılaşır", "AS1–AS4"),
+    "H6": ("Model başarısı bölgeye göre değişir, genellenebilirlik etkilenir", "AS5"),
+}
+
 # ---------------------------------------------------------------------------
 # Zaman
 # ---------------------------------------------------------------------------

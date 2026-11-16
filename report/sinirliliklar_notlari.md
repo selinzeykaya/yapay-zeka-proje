@@ -68,7 +68,7 @@
   - En büyük tekil düşüşler: Konya Su/Sulak 0.89 → 0.39 (−0.50), İstanbul Tarım −0.31, Şanlıurfa Yapılaşma 0.69 → 0.39 (−0.30), Konya Çıplak −0.25, Van Çayır/Çalı −0.22, İzmir Çayır/Çalı −0.21.
   - Konya'daki su düşüşü için olası açıklama: tuzlu/sığ göl yüzeyleri (ör. Tuz Gölü) başka illerdeki sudan spektral olarak farklı → `[DOĞRULANMADI]`, haritayla kontrol edilmeli.
   - Sınıf başına test noktası il başına ~50 → tek sınıf F1 değerleri çok oynak; tekil değerler değil genel örüntü yorumlanmalı.
-- Düşüşün olası nedenleri (`genelleme_neden_gostergeleri.csv`): 7 il üzerinde F1 düşüşü ile göstergeler arasında Spearman sıra korelasyonu (tablodan elle hesaplandı, notebook'ta yok):
+- Düşüşün olası nedenleri (`genelleme_neden_gostergeleri.csv`): 7 il üzerinde F1 düşüşü ile göstergeler arasında Spearman sıra korelasyonu (06 notebook'unda hesaplanıyor; `genelleme_neden_spearman.csv`):
   - Yıllık yağış ρ ≈ −0.96, yaz toprak nemi ρ ≈ −0.86, MODIS yaz LST ρ ≈ +0.93 → **kurak ve sıcak illerde düşüş daha büyük**.
   - Spektral kayma ρ ≈ +0.36 (Konya en yüksek: 1.05, en büyük düşüş); sınıf dağılımı farkı açıklamıyor (Artvin en farklı dağılım 0.197 ama en küçük düşüş).
   - n = 7 il ve göstergeler birbiriyle ilişkili (hepsi kuraklığı ölçüyor) → bu bir **örüntü**, kanıt değil; tek bir neden ayrıştırılamaz.

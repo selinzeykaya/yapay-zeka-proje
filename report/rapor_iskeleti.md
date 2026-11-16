@@ -56,6 +56,19 @@ Tablo olarak verin:
 
 - Kapsam notu: İDA / yüzen atık tespiti çalışmanın dışında (ana araştırma sorusunu test etmiyor; Türkiye kıyı görüntüsü yok). Raporda bir cümleyle belirtin.
 
+### 1.2b Hipotezler (GeoClimate AI) — kanıt: `hipotez_ozet.csv` (04 B9 + 06 bölüm 6)
+
+| Hipotez | İfade | Test eden analiz |
+|---|---|---|
+| H1 | Yapılaşmış alan artışı ↔ LST artışı (pozitif) | Δyapılaşma–ΔLST, kentsel ısı adası (AS2) |
+| H2 | Orman/bitki örtüsü azalması ↔ LST artışı | Δorman–ΔLST, ΔNDVI–ΔLST (AS1) |
+| H3 | Tarım değişimi ↔ bitki örtüsü yoğunluğu ve nem | Δtarım–ΔNDMI, Δtarım–ΔLST (AS4) |
+| H4 | Su/sulak alan değişimi ↔ sıcaklık ve nem | Δsu–ΔLST, Δsu–ΔNDMI (AS3) |
+| H5 | İlişkiler bölgeye göre farklılaşır | Aynı ilişkinin 7 ildeki ρ aralığı ve işareti |
+| H6 | Model başarısı bölgeye göre değişir | LOCO F1 düşüşü (AS5) |
+
+- Her hipotez için Sonuç bölümünde "desteklendi / kısmen / desteklenmedi" yazın (`karar_[EKİP_YAZACAK]` sütunu). İlişki ≠ neden-sonuç.
+
 ### 1.3 Raporun düzeni — tek cümle `[SEN YAZ]`
 
 ## 2. Literatür Taraması (Literature Review)
@@ -96,7 +109,8 @@ Tablo olarak verin:
 - 4 model: RF (L06), XGBoost (L08), SVM (L07), MLP; gerekçe tablosu `model_gerekceleri.csv`
 - Hiperparametre: rastgele arama n_iter=10, 3-katlı CV (`hiperparametre_arama.csv`); seçim doğrulama macro-F1 ile
 - Veri bölme: `veri_bolme.csv`
-- Metrikler: Accuracy, Precision, Recall, F1 (macro), ROC-AUC, Kappa (Kappa eleştirisi L20)
+- Metrikler: Accuracy, Precision, Recall, F1 (macro), ROC-AUC, Kappa (Kappa eleştirisi L20), IoU (`sinif_bazinda_iou.csv`)
+- Mekânsal blok doğrulama (03 bölüm 10b): rastgele bölme ile 10 km blok GroupKFold karşılaştırması → L21, L23; `mekansal_blok_ozet.csv`, `mekansal_blok_dogrulama.png`
 - Açıklanabilirlik: SHAP (L24)
 
 ### 3.5 Değişim analizi (04, AS1–AS4)
@@ -107,7 +121,7 @@ Tablo olarak verin:
 - Hücre düzeyi ilişki: Spearman (Δ değişkenler)
 - Kentsel ısı adası: kentsel (>%50 yapı) − kırsal (<%5 yapı, ±200 m rakım)
 - Su: MNDWI > 0; JRC (L16) ile 2021 karşılaştırması
-- LST regresyonu: RF Regressor + doğrusal regresyon, 10 km mekânsal blok GroupKFold (5 katman) → L21, L22; SHAP
+- LST regresyonu: RF Regressor + XGBoost Regressor + doğrusal regresyon, 10 km mekânsal blok GroupKFold (5 katman) → L21, L22; SHAP
 
 ### 3.6 Bölgeler arası genelleme (06, AS5)
 - Leave-One-City-Out: 6 ilde eğit, 7.'de test; aynı-şehir sonuçlarıyla aynı test noktalarında karşılaştırma → L22, L23
@@ -187,7 +201,7 @@ Tablo önerisi (rapor için kısaltılmış):
 - Tablo: `genelleme_dusus.csv` (7 il × aynı/başka şehir macro-F1)
 - Şekiller: `genelleme_isi_haritasi.png`, `genelleme_dusus.png`, `genelleme_sinif_bazinda.png`
 - Gözlemler: ortalama düşüş ≈ 0.11; en çok Konya (−0.187), Şanlıurfa (−0.147), Van (−0.125); en az Artvin (−0.059); en zor sınıf Tarım; Konya Su/Sulak 0.89 → 0.39
-- `genelleme_neden_gostergeleri.csv`: düşüş yağışla ρ ≈ −0.96 (n = 7, elle hesap — raporda belirtin)
+- `genelleme_neden_gostergeleri.csv`: düşüş yağışla ρ ≈ −0.96 (n = 7, `genelleme_neden_spearman.csv` — raporda n'yi belirtin)
 
 ## 5. Tartışma (Discussion) — `[SEN YAZ]` (her madde için 2–4 cümle, literatürle)
 - **Hoca: sonuçlar literatürle karşılaştırılmalı** → her maddede en az bir çalışmanın değeriyle yan yana koyun (`literatur_karsilastirma.csv`); veri/bölge/sınıf farkını mutlaka belirtin
