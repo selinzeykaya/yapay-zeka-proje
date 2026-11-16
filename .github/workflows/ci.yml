@@ -1,0 +1,45 @@
+# Her push ve main'e açılan her Pull Request'te çalışan otomatik kontrol (CI).
+# Earth Engine ve Drive verisi gerektiren analizler burada ÇALIŞMAZ (giriş bilgisi ve büyük veri ister);
+# bu iş akışı yalnızca kodun bozulmadığını denetler:
+#   1) notebook'lar geçerli mi, kod hücrelerinde yazım hatası var mı, çıktılı notebook commit'lenmiş mi
+#   2) config.py kendi içinde tutarlı mı
+#   3) src/ml_utils.py'deki modeller ve metrikler doğru çalışıyor mu
+name: CI
+
+on:
+  push:                      # her dalda her push
+  pull_request:
+    branches: [main]         # main'e açılan PR'lar
+  workflow_dispatch:         # Actions sekmesinden elle "Run workflow"
+
+permissions:
+  contents: read             # yalnızca okuma; iş akışı repoya yazamaz
+
+concurrency:                 # aynı dala art arda push edilirse eski çalıştırma iptal edilir
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  kontrol:
+    name: Kod ve notebook kontrolü
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Repoyu indir
+        uses: actions/checkout@v4
+
+      - name: Python 3.12 kur (Colab ile aynı ana sürüm)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+
+      - name: Paketleri kur
+        run: pip install -r requirements-ci.txt
+
+      - name: Notebook kontrolü (JSON, sözdizimi, çıktı yok)
+        run: python tools/notebook_kontrol.py
+
+      - name: Testler (config tutarlılığı, metrikler, modeller)
+        run: pytest -v

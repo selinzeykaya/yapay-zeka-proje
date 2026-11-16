@@ -257,6 +257,12 @@ Eskiden yalnızca ekrana yazdırılıyordu. Şimdi `genelleme_neden_spearman.csv
 - İkinci takılma: C diski doluydu (4,85 GB boş) ve pip'in indirme bağlantısı takılıyordu. Çözüm: her şey D'ye taşındı (`D:\geoclimate-calisma`), paket listesi pip ile çıkarıldı, dosyalar `curl` ile indirildi, pip internete çıkmadan bu dosyalardan kurdu. Docker Desktop'ın 12 GB'lık diski de D'ye taşındı; C'de boş alan 17 GB oldu.
 - Fan neden çalıştı? LST regresyonu 112 bin hücrede 300 ağaçlı modeli 5 kez eğitiyor ve hızlı olsun diye bütün işlemci çekirdeklerini kullanıyor (`n_jobs=-1`). Normal ve zararsız.
 
+### 5.12 GitHub Actions (otomatik kontrol)
+- **Ne:** `.github/workflows/ci.yml`. GitHub, her push'ta kendi sunucusunda (ubuntu-latest, Python 3.12) repoyu indirip kontroller yapar; sonuç yeşil ✅ ya da kırmızı ❌.
+- **Neden analizleri değil de kontrolleri çalıştırıyor?** Analizler Earth Engine girişi ve Drive'daki büyük veriyi ister; bunlar GitHub'ın sunucusunda yok. CI'nın işi "bu değişiklik kodu bozdu mu?" sorusunu her seferinde otomatik sormak.
+- **Kontroller:** (1) `tools/notebook_kontrol.py`: notebook JSON'u, kod hücrelerinin sözdizimi, çıktı kaydedilmemiş olması, `GITHUB_BRANCH` ayarı. (2) `tests/test_config.py`: alt sorulardaki iller tanımlı mı, hipotezler doğru alt sorulara bağlı mı, NDMI modelde yok mu, bölme oranları toplamı 1 mi. (3) `tests/test_ml_utils.py`: kusursuz tahminde metrikler 1 mi, IoU = F1/(2−F1) tutuyor mu, 4 model eğitilebiliyor mu, arama aralıkları modele uyuyor mu.
+- **Ayrıntılar:** `permissions: contents: read` (iş akışı repoya yazamaz), `concurrency` (art arda push'ta eskisi iptal), `cache: pip` (paketler önbellekten, daha hızlı), `workflow_dispatch` (Actions sekmesinden elle çalıştırma).
+
 ### 5.11 Sonuçlar (gerçek veriyle, 16.11.2026)
 
 **Önce kontrol:** Modeller Faz 3'teki ayarlarla yeniden eğitildi. RF, SVM, MLP Drive'daki sonuçlarla **birebir** aynı çıktı → veri ve bölme doğru kuruldu. XGBoost 0.776 (Drive: 0.783) → xgboost sürüm farkı; raporda Drive değeri kullanılır.

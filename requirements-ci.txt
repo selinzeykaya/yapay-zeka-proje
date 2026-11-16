@@ -1,0 +1,7 @@
+# GitHub Actions (CI) için gereken paketler. Earth Engine, geemap ve SHAP burada gerekmez:
+# CI yalnızca config.py, src/ml_utils.py ve notebook'ların sözdizimini kontrol eder.
+numpy
+pandas
+scikit-learn
+xgboost
+pytest
