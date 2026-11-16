@@ -65,6 +65,20 @@ Sekmeler: **Genel bakış** (ana sayılar) · **Arazi değişimi** (il il 2014/2
 
 Veri `panel/veri/` altındadır (≈5 MB, yalnızca özet tablolar ve küçültülmüş görseller). Notebook'lar yeniden çalıştırılıp sonuçlar değişirse: `python panel/veri_hazirla.py "<Drive'daki yapay-zeka-proje klasörü>"`.
 
+## QGIS haritaları (rapor ve sunum için)
+`qgis/haritalar.py`, 1 km hücre sonuçlarından **lejantlı, ölçekli, kuzey oklu** A4 haritalar üretir (PyQGIS, QGIS 3.44 ile denendi). 29 harita:
+çalışma alanları + her il için 4 harita (2024 baskın arazi örtüsü · 2014→2024 değişim · göreli ΔLST · ΔNDVI). Ayrıca düzenlenebilir bir QGIS projesi (`geoclimate.qgz`, 29 baskı düzeni) ve GeoPackage (`geoclimate.gpkg`) oluşturur.
+
+```powershell
+$q = "<QGIS klasörü>in\python-qgis-ltr.bat"
+& $q qgis/haritalar.py <grid_1km_lc_iklim.csv> <tur_adm1.geojson> <çıktı klasörü> gpkg     # 1) GeoPackage
+& $q qgis/haritalar.py <grid_1km_lc_iklim.csv> <tur_adm1.geojson> <çıktı klasörü> harita   # 2) haritalar + proje
+```
+- `grid_1km_lc_iklim.csv`: Drive `data/processed/` (04 notebook'u üretir). `tur_adm1.geojson`: [geoBoundaries TUR ADM1](https://github.com/wmgeolab/geoBoundaries/raw/main/releaseData/gbOpen/TUR/ADM1/geoBoundaries-TUR-ADM1_simplified.geojson) (CC BY 4.0).
+- Harita projeksiyonu Türkiye merkezli Lambert konik konform; analiz ızgarası EPSG:3035'te kalır (EPSG:3035 Avrupa merkezli olduğu için Türkiye'yi döndürür).
+- Göreli ΔLST = hücrenin ΔLST'si − ilin medyan ΔLST'si (iki yazın genel hava farkını giderir).
+- İki ayrı adım ve GeoPackage'ın salt okunur (`IMMUTABLE`) açılması bilinçli: aksi halde ilk harita boş çıkıyor. `QT_QPA_PLATFORM=offscreen` kullanmayın, yazılar kara kutu çıkar.
+
 ## Otomatik kontrol (GitHub Actions)
 Her push'ta ve `main`'e açılan her Pull Request'te `.github/workflows/ci.yml` çalışır (≈1–2 dk):
 1. `tools/notebook_kontrol.py`: notebook'lar geçerli mi, kod hücrelerinde yazım hatası var mı, **çıktı kaydedilmiş mi** (repo çıktısız notebook tutar).
