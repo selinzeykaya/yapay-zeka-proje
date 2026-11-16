@@ -326,16 +326,21 @@ with sekmeler[4]:
             width="stretch")
         st.caption("Kırmızı: model o ili hiç görmeden eğitildi. Düşüş kurak ve sıcak illerde (Konya, Şanlıurfa, Van) daha büyük.")
 
-    lm = tablo("lst_regresyon_metrikleri_xgboost_eklendi")
-    if lm is None:
-        lm = tablo("lst_regresyon_metrikleri")
+    # Resmi Colab değerleri esas; yerel tablodan yalnızca resmi tabloda olmayan model (XGBoost) eklenir
+    lm = tablo("lst_regresyon_metrikleri")
+    yerel = tablo("lst_regresyon_metrikleri_xgboost_eklendi")
+    if lm is not None:
+        lm = lm.assign(kaynak="Colab (resmi)")
+        if yerel is not None:
+            lm = pd.concat([lm, yerel[~yerel["model"].isin(lm["model"])].assign(kaynak="yerel çalıştırma")])
     shap = tablo("lst_regresyon_shap", 0)
     if lm is not None:
         st.subheader("Yüzey sıcaklığını (LST) tahmin etme")
         c = st.columns(len(lm))
         for col, (_, row) in zip(c, lm.iterrows()):
             col.metric(row["model"].replace("Regressor", "").replace("LinearRegression", "Doğrusal"),
-                       f"R² {row['R2_ort']:.3f}", f"RMSE {row['RMSE_ort_C']:.2f} °C", delta_color="off")
+                       f"R² {row['R2_ort']:.3f}", f"RMSE {row['RMSE_ort_C']:.2f} °C", delta_color="off",
+                       help=f"Kaynak: {row['kaynak']}")
     if shap is not None:
         s = shap.reset_index(names="Değişken")
         s["Yön"] = s["yon_korelasyonu"].map(lambda v: "arttıkça LST artıyor" if v > 0 else "arttıkça LST azalıyor")

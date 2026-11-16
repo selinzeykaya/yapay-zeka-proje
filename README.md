@@ -53,6 +53,20 @@ Colab → **Dosya → Not defteri aç → GitHub** sekmesi → "Özel depoları 
 
 GitHub'dan açılan notebook'taki değişiklikler (çıktılar dahil) otomatik kaydedilmez. Sonuçlar zaten Drive'a yazıldığı için bu sorun değil.
 
+## Etkileşimli web sitesi (`web/`)
+Sonuçları görsel olarak anlatan tek sayfalık site: Türkiye haritasından il seçilir, her ilin **kendi araştırma sorusu**
+(İstanbul: kentleşme ve ısı adası · Konya: tarım ve nem · Van: göl ve su yüzeyi …) 1 km hücre haritası, sayı kartları,
+kısa yorum ve grafiklerle gösterilir. Hipotezler (H1–H6), model başarısı ve yöntem bölümleri de vardır.
+
+```bash
+python web/veri_hazirla.py <grid_1km_lc_iklim.csv> <tur_adm1.geojson> panel/veri/tables   # web/data/ (~7 MB)
+python -m http.server 8600 -d web                                                     # http://127.0.0.1:8600
+```
+- **Model uyumu:** haritalardaki arazi sınıfları Faz 3'te Colab'da eğitilen XGBoost modelinin 2014/2024 sınıflandırmasıdır
+  (Drive `grid_1km_lc_iklim.csv`); bütün sayılar resmi Colab tablolarından gelir. `tests/test_model_uyumu.py` bunu CI'da denetler.
+- Teknoloji: düz HTML + MapLibre GL (harita) + proj4js (EPSG:3035 hücre köşeleri) + Chart.js. Sunucu gerektirmez; GitHub Pages'te yayınlanabilir.
+- Altlık: Esri (açık gri, koyu gri, uydu; anahtarsız). Hücre verisi sütunlu ve kompakt: köşeler tarayıcıda hesaplanır.
+
 ## Sonuç paneli (Streamlit)
 Notebook'ların ürettiği sonuçları tek ekranda gösteren etkileşimli panel: `panel/app.py`. Hiçbir şey hesaplamaz, Earth Engine'e bağlanmaz.
 
