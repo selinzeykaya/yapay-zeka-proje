@@ -25,6 +25,7 @@ from qgis.core import (
     QgsLayoutSize, QgsPalLayerSettings, QgsPrintLayout, QgsProject, QgsRendererCategory, QgsRendererRange,
     QgsSingleSymbolRenderer, QgsTextFormat, QgsUnitTypes, QgsVectorLayer, QgsVectorLayerSimpleLabeling,
     QgsLegendStyle, QgsRectangle, QgsLayoutMeasurement, QgsCoordinateTransform, QgsFeatureRequest,
+    QgsReferencedRectangle,
 )
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QColor, QFont
@@ -226,7 +227,8 @@ def duzen(ad, baslik, alt_baslik, katmanlar, lejant_katmanlari, kapsam, not_metn
     lg = QgsLayoutItemLegend(lay); lg.setLinkedMap(m); lg.setAutoUpdateModel(False)
     kok = lg.model().rootGroup(); kok.removeAllChildren()
     for L, ad_ in lejant_katmanlari:
-        node = kok.addLayer(L); node.setName(ad_)
+        node = kok.addLayer(L)
+        node.setCustomProperty("legend/title-label", ad_)   # setName katmanın kendi adını da değiştirir
     lg.setTitle("Lejant")
     for stil, boyut, kalin in [(QgsLegendStyle.Title, 12, True), (QgsLegendStyle.Group, 10, True),
                                (QgsLegendStyle.Subgroup, 9, True), (QgsLegendStyle.SymbolLabel, 8, False)]:
@@ -310,6 +312,32 @@ for i, (kod, (ad, _)) in enumerate(ILLER.items(), start=1):
           f"Landsat yaz NDVI farkı {Y0}→{Y1}", [sinir, n], [(n, "ΔNDVI")], kapsam,
           "ΔNDVI ile ΔLST 7 ilin hepsinde negatif ilişkili (Spearman ρ −0,41 … −0,65): bitki azalan yerler görece ısınıyor (H2).")
     print("bitti:", ad, flush=True)
+
+# ------------------------------------------------------------------ 4) QGIS'te açılınca düzenli görünsün
+# Katmanlar il il gruplanır; açılışta yalnızca İstanbul'un 2024 arazi örtüsü ve sınırı görünür.
+kok = prj.layerTreeRoot()
+for kod, (ad, _) in ILLER.items():
+    grup = kok.insertGroup(len(kok.children()), ad + (" ★" if kod in ANA_ODAK else ""))
+    # sıra: sınır en üstte (en son çizilir, hücrelerin üstünde görünür), sonra 4 harita katmanı
+    sira = ["sınırı", "baskın", "değişim", "göreli ΔLST", "ΔNDVI"]
+    grup_katmanlari = [L for L in prj.mapLayers().values() if L.name().startswith(ad + " ")]
+    grup_katmanlari.sort(key=lambda L: next(i for i, s in enumerate(sira) if s in L.name()))
+    for L in grup_katmanlari:
+        node = kok.findLayer(L.id())
+        grup.addChildNode(node.clone())
+        node.parent().removeChildNode(node)
+    acik = kod == "Istanbul"
+    grup.setItemVisibilityChecked(acik)
+    grup.setExpanded(acik)
+    for node in grup.findLayers():
+        node.setItemVisibilityChecked(node.name().endswith("sınırı") or "baskın" in node.name())
+for L in (iller, tur):                       # genel katmanlar en altta; çalışma illeri kapalı başlar
+    node = kok.findLayer(L.id())
+    kopya = node.clone(); kok.addChildNode(kopya); node.parent().removeChildNode(node)
+kok.findLayer(iller.id()).setItemVisibilityChecked(False)
+ist = katman("_kapsam", "iller", "\"il\" = 'Istanbul'", ekle=False).extent()
+prj.viewSettings().setDefaultViewExtent(
+    QgsReferencedRectangle(QgsCoordinateTransform(LAEA, TR, prj).transformBoundingBox(ist), TR))
 
 prj.write(os.path.join(OUT, "geoclimate.qgz"))
 print("proje:", os.path.join(OUT, "geoclimate.qgz"), "| düzen sayısı:", len(prj.layoutManager().layouts()))
