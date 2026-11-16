@@ -254,7 +254,28 @@ Eskiden yalnızca ekrana yazdırılıyordu. Şimdi `genelleme_neden_spearman.csv
 - Paylaştığın Drive klasörü bağlantıya sahip herkese açık. 67 tablo ve gereken veri dosyaları geçici bir çalışma klasörüne indirildi. **Drive'daki hiçbir dosya değiştirilmedi.**
 - Yeni analizler GPU istemediği için senin bilgisayarında gerçek veriyle çalıştırılabiliyor. Bunun için geçici bir **sanal ortam (venv)** kuruldu: sistem Python'una dokunmadan gerekli paketleri (pandas, scikit-learn, xgboost...) içine kurduğumuz ayrı bir kutu.
 - İlk kurulum takıldı: bilgisayardaki Python 3.14 için pip paketleri kaynaktan derlemeye çalışıyordu. `--only-binary` seçeneğiyle hazır paket kullanmaya zorladım.
-- Sonuçlar gelince rapor iskeletine ve sınırlılık notlarına işlenecek.
+- İkinci takılma: C diski doluydu (4,85 GB boş) ve pip'in indirme bağlantısı takılıyordu. Çözüm: her şey D'ye taşındı (`D:\geoclimate-calisma`), paket listesi pip ile çıkarıldı, dosyalar `curl` ile indirildi, pip internete çıkmadan bu dosyalardan kurdu. Docker Desktop'ın 12 GB'lık diski de D'ye taşındı; C'de boş alan 17 GB oldu.
+- Fan neden çalıştı? LST regresyonu 112 bin hücrede 300 ağaçlı modeli 5 kez eğitiyor ve hızlı olsun diye bütün işlemci çekirdeklerini kullanıyor (`n_jobs=-1`). Normal ve zararsız.
+
+### 5.11 Sonuçlar (gerçek veriyle, 16.11.2026)
+
+**Önce kontrol:** Modeller Faz 3'teki ayarlarla yeniden eğitildi. RF, SVM, MLP Drive'daki sonuçlarla **birebir** aynı çıktı → veri ve bölme doğru kuruldu. XGBoost 0.776 (Drive: 0.783) → xgboost sürüm farkı; raporda Drive değeri kullanılır.
+
+**IoU (macro):** RF 0.633 · XGBoost ≈0.648 · SVM 0.644 · MLP 0.664. En zayıf Tarım (≈0.41), en güçlü Su (≈0.91).
+
+**Mekânsal blok doğrulama (macro-F1, rastgele → 10 km blok):** RF 0.773 → 0.761 · XGBoost 0.786 → 0.773 · SVM 0.775 → 0.768 · MLP 0.787 → 0.780. Fark en fazla 0.013 → sızıntı küçük, 03'ün sonuçları güvenilir.
+
+**LST regresyonu (R² / RMSE):** RF 0.921 / 2.04 °C · XGBoost 0.921 / 2.04 °C · doğrusal 0.824 / 3.04 °C → sonuç modele özgü değil; ilişki doğrusal değil.
+
+**Hipotezler (karar ekibin; öneriler):**
+- H1 (yapılaşma ↔ LST): kısmen. Isı adası belirgin (İstanbul +8 °C) ama hücre düzeyinde Δyapı–ΔLST çok zayıf (ρ ≤ 0.15).
+- H2 (bitki ↓ ↔ LST ↑): **desteklendi, en güçlü bulgu.** ΔNDVI–ΔLST 7 ilin hepsinde negatif, ρ −0.41…−0.65.
+- H3 (tarım ↔ nem): kısmen. Δtarım–ΔNDMI Konya'da +0.39, Van'da +0.28; diğerlerinde zayıf.
+- H4 (su ↔ sıcaklık/nem): büyük ölçüde desteklenmedi. Yalnızca Artvin (−0.19) ve İstanbul (−0.13) zayıf ilişki.
+- H5 (bölgeye göre farklı): kısmen. İlişkinin gücü ilden ile değişiyor (aralık 0.07–0.33) ama yönü hiçbir ilişkide değişmiyor.
+- H6 (genelleme): desteklendi. Başka ilde ortalama 0.11 macro-F1 kaybı; kurak illerde daha büyük (yağışla ρ = −0.96, n = 7).
+
+Yeni dosyalar: `D:\geoclimate-calisma\yeni_sonuclar\` (tables + figures) → Drive `results/` altına yüklenmeli.
 
 ---
 

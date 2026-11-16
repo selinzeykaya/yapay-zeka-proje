@@ -56,6 +56,13 @@
   - Model 2024 yazının tek bir kompozitini açıklıyor; başka yıllara/illere genellenebilirliği test edilmedi.
   - Not: İlk çalıştırmada blok tanımı hatalıydı (x, y hücre biriminde; 7 blok = il bazlı CV, R² = −0.26). Düzeltildi (commit d91c1de); raporda yalnızca düzeltilmiş değerler kullanılmalı.
 
+## Eklenen analizler (16.11.2026, `amine/geoclimate-uyum` dalı, yerel çalıştırma)
+- **Mekânsal blok doğrulama (03 bölüm 10b):** rastgele ile 10 km blok 5 katlı CV arasındaki macro-F1 farkı en fazla 0.013 (RF, XGBoost) → 300 m mesafe filtresi sızıntıyı büyük ölçüde önlemiş. Blok doğrulamada katmanlar arası std daha büyük (±0.012–0.022): bölgeden bölgeye başarı değişiyor.
+- **IoU:** macro IoU 0.63–0.66; en zayıf sınıf Tarım (0.38–0.43). IoU = F1/(2−F1) olduğundan F1'den düşük olması beklenir.
+- **Sürüm farkı:** Yerel çalıştırmada (scikit-learn 1.9.1, xgboost 3.4.1) RF, SVM, MLP Faz 3 ile birebir aynı; XGBoost macro-F1 0.776 (Faz 3: 0.783). Fark xgboost sürümünden. Raporda Faz 3 (Colab) değerleri kullanılmalı; XGBoost IoU'su Colab'da kesinleşir. LST regresyonunda RF R² 0.9203 (Faz 3: 0.9209).
+- **XGBoost regresyonu** RF ile aynı başarıda (R² 0.921) → regresyon sonucu modele özgü değil.
+- **Hipotez tablosundaki 0.1 eşiği** yaygın bir kuraldır, istatistiksel test değildir. Hücreler bağımsız olmadığından p-değerleri yorumlanmadı.
+
 ## Faz 6 (bölgeler arası genelleme, AS5)
 - XGBoost macro-F1, aynı şehir → başka şehir (LOCO, aynı test noktaları): İstanbul 0.812 → 0.729 (−0.083), İzmir 0.809 → 0.716 (−0.094), Artvin 0.728 → 0.668 (−0.059), Samsun 0.742 → 0.671 (−0.071), Konya 0.794 → 0.607 (**−0.187**), Van 0.770 → 0.645 (−0.125), Şanlıurfa 0.773 → 0.626 (−0.147). Ortalama düşüş ≈ −0.11.
   - En büyük düşüş iç/kurak illerde (Konya, Şanlıurfa, Van); kıyı ve nemli illerde (Artvin, Samsun, İstanbul, İzmir) daha az. Olası neden: fenoloji/iklim farkı (aşağıda neden göstergeleri).

@@ -74,7 +74,7 @@ Bu plan yalnızca **eksikleri** listeler. Aşağıdakiler Selin tarafından tama
 3. ✅ kod hazır — **IoU** (`ml_utils.compute_metrics`, 03 bölüm 7a, 06).
 4. ✅ kod hazır — **XGBoost regresyonu** 04 B5'te.
 5. ✅ kod hazır — 06 neden göstergeleri Spearman'ı `genelleme_neden_spearman.csv`'ye kaydediliyor.
-   - ⏳ 1–5'in sonuçları için Colab'da sırayla **03 → 04 (yalnızca B5 ve B9) → 06** çalıştırılmalı (CPU yeter).
+   - ✅ 1–5 gerçek veriyle yerelde çalıştırıldı (16.11.2026); sonuçlar rapor iskeletinde (4.2, 4.6, 4.9). Yeni CSV/PNG'ler `D:\geoclimate-calisma\yeni_sonuclar` → Drive `results/` altına yüklenmeli. XGBoost IoU'su için Colab'da 03 bir kez çalıştırılmalı.
 6. **Ölçek analizi:** 1 km hücreler ERA5-Land hücrelerine (~9 km) toplanır, sınıf oranları ↔ ERA5 toprak nemi/hava sıcaklığı ilişkisi hesaplanır.
 7. Kuraklık göstergesi: CHIRPS'ten **SPI-3/SPI-12**; DEM'den **eğim**.
 8. Hafta 3: **Streamlit paneli** (il seç → harita, değişim, iklim serisi, metrikler). Bulutta Streamlit Community Cloud'da yayınlanır.

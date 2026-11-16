@@ -151,12 +151,16 @@ Tablo olarak verin:
 ### 4.2 Sınıflandırma sonuçları (03)
 - **Hoca bu 5 metriği açıkça istiyor:** Accuracy, Precision, Recall, F1-Score, ROC-AUC. Tablo `model_karsilastirma.csv` (test kümesi) — eksik hücreleri CSV'den doldurun:
 
-| Model | Accuracy | Precision (macro) | Recall (macro) | F1 (macro) | ROC-AUC (macro, OvR) | Kappa |
-|---|---|---|---|---|---|---|
-| XGBoost (doğrulamada en iyi) | 0.785 | [CSV] | [CSV] | 0.783 | 0.961 | 0.742 |
-| MLP | [CSV] | [CSV] | [CSV] | 0.789 | [CSV] | [CSV] |
-| SVM | [CSV] | [CSV] | [CSV] | 0.772 | [CSV] | [CSV] |
-| RF | [CSV] | [CSV] | [CSV] | 0.764 | [CSV] | [CSV] |
+| Model | Accuracy | Precision (macro) | Recall (macro) | F1 (macro) | ROC-AUC (macro, OvR) | Kappa | IoU (macro) |
+|---|---|---|---|---|---|---|---|
+| XGBoost (doğrulamada en iyi) | 0.785 | 0.784 | 0.783 | 0.783 | 0.961 | 0.742 | 0.648* |
+| MLP | 0.791 | 0.791 | 0.790 | 0.789 | 0.964 | 0.749 | 0.664 |
+| SVM | 0.778 | 0.777 | 0.775 | 0.772 | 0.959 | 0.733 | 0.644 |
+| RF | 0.768 | 0.766 | 0.765 | 0.764 | 0.957 | 0.721 | 0.633 |
+
+- Kaynak: Drive `model_karsilastirma.csv` (Faz 3). IoU: `sinif_bazinda_iou.csv` (yerel çalıştırma, 16.11.2026). RF, SVM ve MLP yerelde Faz 3 ile birebir aynı çıktı. *XGBoost yerelde xgboost 3.4.1 ile F1 0.776 verdi (Faz 3: 0.783, Colab'daki sürüm farkı); IoU'su Colab'da 03 yeniden çalıştırılınca kesinleşir.
+- Sınıf bazında IoU (XGBoost): Orman 0.70, **Tarım 0.41** (en zayıf), Yapılaşma 0.66, Çayır/Çalı 0.56, Çıplak 0.65, Su/Sulak 0.91
+- **Mekânsal blok doğrulama** (`mekansal_blok_ozet.csv`, 5 katlı CV, 1 327 blok): macro-F1 rastgele → 10 km blok: RF 0.773 → 0.761, XGBoost 0.786 → 0.773, SVM 0.775 → 0.768, MLP 0.787 → 0.780. **Fark en fazla 0.013** → 300 m mesafe filtresi mekânsal sızıntıyı büyük ölçüde önlemiş; blok doğrulamada katmanlar arası std 2–4 kat büyük (±0.012–0.022).
 
 - Sınıf bazında Precision/Recall/F1: `sinif_raporu_XGBoost.csv`, `sinif_bazinda_f1.csv`; sınıf bazında ROC-AUC: `roc_auc_sinif_bazinda.csv`
 
@@ -193,7 +197,15 @@ Tablo önerisi (rapor için kısaltılmış):
 - Tüm p < 0.001 (Şanlıurfa Δtarım–ΔLST hariç, p = 0.093) ama çoğu |ρ| < 0.2 → "anlamlı ama zayıf"
 
 ### 4.6 LST regresyonu (04 B5)
-- Tablo: `lst_regresyon_metrikleri.csv` — RF R² 0.921, RMSE 2.04 °C, MAE 1.52 °C (111 950 hücre, 1 435 blok); doğrusal regresyon satırını da CSV'den ekleyin
+- Tablo: `lst_regresyon_metrikleri.csv` (111 950 hücre, 1 435 blok, 10 km blok CV):
+
+| Model | R² | RMSE (°C) | MAE (°C) |
+|---|---|---|---|
+| Random Forest | 0.921 | 2.04 | 1.52 |
+| XGBoost | 0.921 | 2.04 | 1.54 |
+| Doğrusal (çoklu) regresyon | 0.824 | 3.04 | 2.38 |
+
+- RF ve XGBoost neredeyse aynı → R² 0.92 tek bir modele özgü değil; doğrusal modelden belirgin iyi → ilişkiler doğrusal değil
 - Şekil: `lst_regresyon_shap.png`
 - SHAP sırası: NDVI 4.81 °C (−), rakım 2.28 °C (−), MNDWI 0.61, Su/Sulak oranı 0.52, Tarım oranı 0.30 (+) …
 
@@ -202,6 +214,18 @@ Tablo önerisi (rapor için kısaltılmış):
 - Şekiller: `genelleme_isi_haritasi.png`, `genelleme_dusus.png`, `genelleme_sinif_bazinda.png`
 - Gözlemler: ortalama düşüş ≈ 0.11; en çok Konya (−0.187), Şanlıurfa (−0.147), Van (−0.125); en az Artvin (−0.059); en zor sınıf Tarım; Konya Su/Sulak 0.89 → 0.39
 - `genelleme_neden_gostergeleri.csv`: düşüş yağışla ρ ≈ −0.96 (n = 7, `genelleme_neden_spearman.csv` — raporda n'yi belirtin)
+
+### 4.9 Hipotezler (H1–H6) — `hipotez_ozet.csv`, `hipotez_kanit_H1_H5.png`
+Sayılar otomatik; **karar sütununu siz yazın** (öneri parantez içinde, tartışarak kesinleştirin):
+
+| Hipotez | Kanıt (7 il) | Öneri |
+|---|---|---|
+| H1 Yapılaşma ↑ ↔ LST ↑ | Δyapı–ΔLST ρ −0.04…+0.15, yalnızca İstanbul ≥ 0.1; UHI İstanbul +8.1/+8.0 °C, İzmir +1.2/+1.5 °C | (kısmen: ısı adası belirgin, hücre düzeyinde değişim ilişkisi çok zayıf) |
+| H2 Orman/bitki ↓ ↔ LST ↑ | ΔNDVI–ΔLST **7/7 ilde negatif, ρ −0.41…−0.65** (orta–güçlü); Δorman–ΔLST 6/7 ilde ≤ −0.1 | (desteklendi; en güçlü bulgu) |
+| H3 Tarım ↔ bitki/nem | Δtarım–ΔNDMI 4 ilde ≥ 0.1, en güçlü Konya +0.39; Δtarım–ΔLST zayıf | (kısmen; kurak iç illerde belirgin) |
+| H4 Su ↔ sıcaklık/nem | Δsu–ΔLST yalnızca Artvin −0.19, İstanbul −0.13; Δsu–ΔNDMI hiçbir ilde ≥ 0.1 | (büyük ölçüde desteklenmedi; 1 km'de su değişimi küçük) |
+| H5 Bölgeye göre farklılaşır | Aynı ilişkinin iller arası ρ aralığı 0.07–0.33 (en geniş Δtarım–ΔNDMI); işaret değişen ilişki yok | (kısmen: güç değişiyor, yön değişmiyor) |
+| H6 Genelleme bölgeye göre değişir | LOCO macro-F1 düşüşü XGBoost ort. 0.109 (Artvin 0.059 … Konya 0.187); düşüş–yağış ρ = −0.96 (n = 7) | (desteklendi; kurak illerde daha büyük düşüş) |
 
 ## 5. Tartışma (Discussion) — `[SEN YAZ]` (her madde için 2–4 cümle, literatürle)
 - **Hoca: sonuçlar literatürle karşılaştırılmalı** → her maddede en az bir çalışmanın değeriyle yan yana koyun (`literatur_karsilastirma.csv`); veri/bölge/sınıf farkını mutlaka belirtin
