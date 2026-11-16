@@ -6,6 +6,18 @@ Yapay Zekâ dersi projesi. Türkiye'deki 7 ilde (İstanbul, İzmir, Artvin, Sams
 
 > **Kapsam notu:** İDA (insansız deniz aracı) modülü kapsamdan çıkarıldı. Deniz yüzeyinde atık tespiti, arazi örtüsü değişimi ile iklimsel göstergeler arasındaki ilişkiyi doğrudan test etmiyor; ayrıca İstanbul/İzmir kıyılarına ait İDA görüntüsü yok (önceki deneme Endonezya nehir veri setiyleydi). Eski 05 notebook'u ve sonuçları git geçmişinde duruyor. Notebook numaralarında 05 bu yüzden boştur.
 
+> 📖 **Projenin baştan sona anlatımı** (ne, nasıl, neden; kim ne yaptı; sonuçlar; her parçanın nasıl çalıştırılacağı):
+> **[PROJE_ANLATIMI.md](PROJE_ANLATIMI.md)** · Kavramlar sözlüğü: [plan/yapilanlar_ve_kavramlar.md](plan/yapilanlar_ve_kavramlar.md)
+
+## Hızlı başlangıç
+| Ne yapmak istiyorum? | Nasıl? |
+|---|---|
+| Analizleri çalıştırmak | Colab'da notebook'ları sırayla aç: 00 → 01 → 02 → 03 → 04 → 06 (aşağıdaki "Nasıl çalıştırılır") |
+| Sonuçları etkileşimli görmek | `python -m http.server 8600 -d web` → http://127.0.0.1:8600 |
+| Sonuç panelini açmak | `pip install -r panel/requirements.txt` → `streamlit run panel/app.py` |
+| Rapor haritalarını üretmek | QGIS 3.44 ile `qgis/haritalar.py` (aşağıda "QGIS haritaları") |
+| Kodun bozulmadığını denetlemek | `pip install -r requirements-ci.txt` → `python tools/notebook_kontrol.py` → `pytest` |
+
 ## Klasör yapısı
 ```
 config.py            Tüm parametreler (şehirler, yıllar, sınıflar, model ayarları)
@@ -17,6 +29,13 @@ results/             tables/ (CSV), figures/ (PNG/HTML), models/
 literature/          Literatür matrisi ve aday çalışmalar
 report/              Rapor iskeleti ve sınırlılık notları
 presentation/        Sunum iskeleti ve olası sorular
+plan/                Görev dağılımı, kavramlar ve yapılanlar rehberi
+panel/               Streamlit sonuç paneli (app.py) ve özet verisi
+web/                 Etkileşimli web sitesi (index.html, app.js, data/)
+qgis/                QGIS harita üretimi (haritalar.py)
+tests/, tools/       Otomatik kontroller (pytest, notebook kontrolü)
+.github/workflows/   GitHub Actions (ci.yml, kontrol.yml)
+PROJE_ANLATIMI.md    Projenin baştan sona anlatımı
 ```
 
 ## Notebook'lar
