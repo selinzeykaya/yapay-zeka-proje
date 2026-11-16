@@ -4,6 +4,7 @@
 #   1) notebook'lar geçerli mi, kod hücrelerinde yazım hatası var mı, çıktılı notebook commit'lenmiş mi
 #   2) config.py kendi içinde tutarlı mı
 #   3) src/ml_utils.py'deki modeller ve metrikler doğru çalışıyor mu
+#   4) src/gee_utils.py ve ml_utils.py içe aktarılabiliyor mu, notebook'ların çağırdığı her fonksiyon tanımlı mı
 name: CI
 
 on:
@@ -41,5 +42,5 @@ jobs:
       - name: Notebook kontrolü (JSON, sözdizimi, çıktı yok)
         run: python tools/notebook_kontrol.py
 
-      - name: Testler (config tutarlılığı, metrikler, modeller)
+      - name: Testler (config, metrikler, modeller, modül/fonksiyon kontrolü)
         run: pytest -v
