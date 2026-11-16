@@ -56,7 +56,7 @@ GitHub'dan açılan notebook'taki değişiklikler (çıktılar dahil) otomatik k
 ## Otomatik kontrol (GitHub Actions)
 Her push'ta ve `main`'e açılan her Pull Request'te `.github/workflows/ci.yml` çalışır (≈1–2 dk):
 1. `tools/notebook_kontrol.py`: notebook'lar geçerli mi, kod hücrelerinde yazım hatası var mı, **çıktı kaydedilmiş mi** (repo çıktısız notebook tutar).
-2. `pytest` (`tests/`): `config.py` tutarlılığı, `src/ml_utils.py` metrikleri (IoU = F1/(2−F1) dahil) ve 4 modelin kurulup eğitilebilmesi.
+2. `pytest` (`tests/`): `config.py` tutarlılığı, `src/ml_utils.py` metrikleri (IoU = F1/(2−F1) dahil), 4 modelin kurulup eğitilebilmesi, `src/gee_utils.py`'nin içe aktarılabilmesi ve notebook'larda çağrılan her `gu.*` / `mu.*` fonksiyonunun tanımlı olması.
 
 Earth Engine ve Drive verisi gerektiren analizler CI'da çalışmaz. Yerelde aynı kontrol: `pip install -r requirements-ci.txt` → `python tools/notebook_kontrol.py` → `pytest`.
 Kırmızı (❌) olursa: Actions sekmesinde hangi adımın düştüğüne bakın; en sık neden Colab'dan **çıktılı** notebook commit'lemek (Colab → Düzenle → Tüm çıktıları temizle).
