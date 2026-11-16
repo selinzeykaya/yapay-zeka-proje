@@ -1,11 +1,11 @@
 ﻿gorev,calisma,doi,bolge,veri_seti,sensor_platform,sinif_sayisi,model,metrik,deger,karsilastirma_turu,not
-Arazi örtüsü sınıflandırma,"Bu çalışma (XGBoost, en iyi model)",-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,[03 çıktısından],XGBoost,Accuracy,0.785,—,03 test kümesi
-Arazi örtüsü sınıflandırma,"Bu çalışma (XGBoost, en iyi model)",-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,[03 çıktısından],XGBoost,Macro-F1,0.783,—,03 test kümesi
-Arazi örtüsü sınıflandırma,"Bu çalışma (XGBoost, en iyi model)",-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,[03 çıktısından],XGBoost,Kappa,0.742,—,03 test kümesi
-Arazi örtüsü sınıflandırma,"Bu çalışma (XGBoost, en iyi model)",-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,[03 çıktısından],XGBoost,ROC-AUC (macro),0.961,—,03 test kümesi
-Arazi örtüsü sınıflandırma,Bu çalışma (RF),-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,[03 çıktısından],RF,Macro-F1,0.764,—,03 test kümesi
-Arazi örtüsü sınıflandırma,Bu çalışma (SVM),-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,[03 çıktısından],SVM,Macro-F1,0.772,—,03 test kümesi
-Arazi örtüsü sınıflandırma,Bu çalışma (MLP),-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,[03 çıktısından],MLP,Macro-F1,0.789,—,03 test kümesi
+Arazi örtüsü sınıflandırma,"Bu çalışma (XGBoost, en iyi model)",-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,6,XGBoost,Accuracy,0.785,—,03 test kümesi
+Arazi örtüsü sınıflandırma,"Bu çalışma (XGBoost, en iyi model)",-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,6,XGBoost,Macro-F1,0.783,—,03 test kümesi
+Arazi örtüsü sınıflandırma,"Bu çalışma (XGBoost, en iyi model)",-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,6,XGBoost,Kappa,0.742,—,03 test kümesi
+Arazi örtüsü sınıflandırma,"Bu çalışma (XGBoost, en iyi model)",-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,6,XGBoost,ROC-AUC (macro),0.961,—,03 test kümesi
+Arazi örtüsü sınıflandırma,Bu çalışma (RF),-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,6,RF,Macro-F1,0.764,—,03 test kümesi
+Arazi örtüsü sınıflandırma,Bu çalışma (SVM),-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,6,SVM,Macro-F1,0.772,—,03 test kümesi
+Arazi örtüsü sınıflandırma,Bu çalışma (MLP),-,Türkiye (7 il),Landsat 8/9 C2 L2 + ESA WorldCover 2021 etiketi,Landsat 8/9,6,MLP,Macro-F1,0.789,—,03 test kümesi
 Arazi örtüsü sınıflandırma,Talukdar ve ark. (2020),10.3390/rs12071135,Küresel (karşılaştırma),[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],farklı veri seti/bölge — doğrudan karşılaştırma değil,Değer makaleden okunmadan yazılmaz
 Arazi örtüsü sınıflandırma,Amini ve ark. (2022),10.3390/rs14112654,İran (Tahran),[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],farklı veri seti/bölge — doğrudan karşılaştırma değil,Değer makaleden okunmadan yazılmaz
 Arazi örtüsü sınıflandırma,Büyüksalih (2016),10.30897/ijegeo.304484,İstanbul,[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],[MAKALEDEN DOLDUR],farklı veri seti/bölge — doğrudan karşılaştırma değil,Değer makaleden okunmadan yazılmaz
