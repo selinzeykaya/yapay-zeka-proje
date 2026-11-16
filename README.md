@@ -70,7 +70,7 @@ Veri `panel/veri/` altındadır (≈5 MB, yalnızca özet tablolar ve küçült�
 çalışma alanları + her il için 4 harita (2024 baskın arazi örtüsü · 2014→2024 değişim · göreli ΔLST · ΔNDVI). Ayrıca düzenlenebilir bir QGIS projesi (`geoclimate.qgz`, 29 baskı düzeni) ve GeoPackage (`geoclimate.gpkg`) oluşturur.
 
 ```powershell
-$q = "<QGIS klasörü>in\python-qgis-ltr.bat"
+$q = "<QGIS klasörü>\bin\python-qgis-ltr.bat"
 & $q qgis/haritalar.py <grid_1km_lc_iklim.csv> <tur_adm1.geojson> <çıktı klasörü> gpkg     # 1) GeoPackage
 & $q qgis/haritalar.py <grid_1km_lc_iklim.csv> <tur_adm1.geojson> <çıktı klasörü> harita   # 2) haritalar + proje
 ```
