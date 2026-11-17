@@ -59,16 +59,15 @@ PROJE_ANLATIMI.md    Projenin baştan sona anlatımı
 6. Project ID'yi `config.py` içindeki `GEE_PROJECT` satırına yazın.
 
 ### 2. Kod nerede, sonuçlar nerede?
-- **Kod:** Özel GitHub reposu `selinzeykaya/yapay-zeka-proje`. Notebook'lar GitHub'dan açılır. İlk hücre repoyu Colab'ın geçici diskine (`/content/yapay-zeka-proje`) klonlar ya da günceller.
+- **Kod:** GitHub reposu `selinzeykaya/yapay-zeka-proje` (herkese açık). Notebook'lar GitHub'dan açılır. İlk hücre repoyu Colab'ın geçici diskine (`/content/yapay-zeka-proje`) klonlar ya da günceller.
 - **Veri ve sonuçlar:** Google Drive → `Drive'ım/yapay-zeka-proje/` (`data/`, `results/`). İlk çalıştırmada otomatik oluşturulur.
 - **GEE export'ları:** Drive → `Drive'ım/yapay-zeka-proje-gee/`. Ara dosyalardır, notebook bunları otomatik olarak `data/raw/gee/` altına kopyalar.
 
-### 3. Colab kurulumu (bir kez)
-1. GitHub'da okuma yetkili bir **fine-grained token** oluşturun: Settings → Developer settings → Fine-grained tokens. Yalnızca bu repo, Contents: Read-only.
-2. Colab'da sol menüdeki **anahtar simgesi (Secrets)** → **Yeni gizli anahtar ekle**. Ad: `GITHUB_TOKEN`, değer: token. **Not defteri erişimi** anahtarını açın.
+### 3. Colab kurulumu
+Repo herkese açık olduğu için **GitHub token gerekmez**; kurulum hücresi kodu doğrudan çeker. (Repo ileride gizli yapılırsa: GitHub'da *Contents: Read-only* izinli bir fine-grained token oluşturup Colab'ın 🔑 **Secrets** bölümüne `GITHUB_TOKEN` adıyla ekleyin ve *Not defteri erişimi*ni açın; notebook'lar onu otomatik kullanır. Token'ı asla kodun içine yazmayın.)
 
 ### 4. Çalıştırma
-Colab → **Dosya → Not defteri aç → GitHub** sekmesi → "Özel depoları dahil et" kutusunu işaretleyin → `selinzeykaya/yapay-zeka-proje` → notebook'u seçin. Sonra **Çalışma zamanı → Tümünü çalıştır** deyin. Sırayla 00, 01, 02... çalıştırın.
+Colab → **Dosya → Not defteri aç → GitHub** sekmesi → `selinzeykaya/yapay-zeka-proje` → notebook'u seçin. Sonra **Çalışma zamanı → Tümünü çalıştır** deyin. Sırayla 00, 01, 02... çalıştırın.
 
 GitHub'dan açılan notebook'taki değişiklikler (çıktılar dahil) otomatik kaydedilmez. Sonuçlar zaten Drive'a yazıldığı için bu sorun değil.
 

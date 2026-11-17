@@ -203,8 +203,8 @@ Analizler Google Colab'da sırayla çalışan notebook'lardır. Bütün ayarlar 
 ### 6.1 Analiz notebook'ları (Google Colab)
 1. **Earth Engine kaydı (bir kez):** https://code.earthengine.google.com/register → *Noncommercial* → *Academia & Research* → yeni Cloud projesi.
    Project ID'yi `config.py` → `GEE_PROJECT` satırına yazın.
-2. **GitHub token (bir kez):** GitHub → Settings → Developer settings → *Fine-grained tokens* → yalnızca bu repo, *Contents: Read-only*.
-   Colab'da sol menüdeki 🔑 **Secrets** → ad `GITHUB_TOKEN` → *Not defteri erişimi* açık.
+2. **GitHub token gerekmez:** repo herkese açık; kurulum hücresi kodu doğrudan çeker. (Repo gizli yapılırsa: *Contents: Read-only* izinli bir
+   fine-grained token oluşturup Colab'ın 🔑 **Secrets** bölümüne `GITHUB_TOKEN` adıyla ekleyin. Token'ı kodun içine yazmayın.)
 3. **Drive:** Proje klasörü `Drive'ım/yapay-zeka-proje/` olmalı (paylaşılan klasörse: sağ tık → *Kısayol ekle → Drive'ım*).
 4. **Açma:** Colab → *Dosya → Not defteri aç → GitHub* → `selinzeykaya/yapay-zeka-proje` → notebook'u seçin.
    Başka bir dalı denemek için kurulum hücresinde `GITHUB_BRANCH = "dal-adı"` yapın.
