@@ -195,6 +195,45 @@ GRID_MOISTURE_PROXY = "NDMI"
 ERA5_BANDS = ["volumetric_soil_water_layer_1", "temperature_2m"]
 
 # ---------------------------------------------------------------------------
+# Sentinel-2 + U-Net (notebook 07: veri, notebook 08: U-Net)
+# Tüm ili 10 m'de işlemek kotayı ve süreyi aşar → her ilde ilin temasını temsil eden 2 alt bölge (kare).
+# ---------------------------------------------------------------------------
+S2_COLLECTION = "COPERNICUS/S2_SR_HARMONIZED"          # Level-2A yüzey yansıması
+S2_CLOUD_PROB = "COPERNICUS/S2_CLOUD_PROBABILITY"      # s2cloudless bulut olasılığı
+S2_BANDS = ["B2", "B3", "B4", "B8", "B11", "B12"]       # mavi, yeşil, kırmızı, NIR, SWIR1, SWIR2 (Landsat ile aynı 6 bant)
+S2_SCALE_M = 10                                         # B11/B12 (20 m) 10 m'ye yeniden örneklenir
+S2_CRS = "EPSG:3035"                                    # analiz ızgarasıyla aynı (eşit alanlı)
+S2_MAX_SCENE_CLOUD = 60                                 # sahne bulutluluğu %60 üstü alınmaz
+S2_CLOUD_PROB_MAX = 40                                  # piksel bulut olasılığı > %40 maskelenir
+S2_SCL_MASK = [3, 8, 9, 10, 11]                         # SCL: gölge, bulut (orta/yüksek), ince bulut (cirrus), kar
+S2_ILK_YIL_ADAYLARI = [2017, 2018, 2019]                # ilk yıl: yedi ilin 14 alt bölgesinin hepsinde yaz verisi olan en erken yıl
+S2_ETIKET_YILI = 2021                                   # ESA WorldCover v200 (10 m) = eğitim etiketi
+S2_SON_YIL = 2025
+S2_KUTU_KM = 20                                         # alt bölge: 20 × 20 km = 2000 × 2000 piksel
+S2_NODATA = 0                                           # kompozitte verisi olmayan piksel (bütün bantlar 0)
+S2_ETIKET_YOK = 255                                     # eşlenmeyen / verisiz etiket (kayıpta yok sayılır)
+# (ad, merkez enlem, merkez boylam) — ilin araştırma konusunu temsil eden alanlar; ekip haritada kontrol etmeli.
+S2_ALT_BOLGELER = {
+    "Istanbul": [("kuzey_cevre", 41.13, 28.78), ("anadolu_yakasi", 41.02, 29.25)],   # yeni havalimanı çevresi; Sancaktepe
+    "Izmir": [("gediz_deltasi", 38.57, 26.88), ("bornova", 38.45, 27.22)],
+    "Artvin": [("yusufeli", 40.80, 41.55), ("borcka", 41.33, 41.72)],                 # baraj gölü; ormanlık havza
+    "Samsun": [("kizilirmak_deltasi", 41.62, 35.98), ("yesilirmak_deltasi", 41.28, 36.68)],
+    "Konya": [("cumra", 37.57, 32.78), ("karapinar", 37.73, 33.55)],                  # tarım ovası; kurak tarım
+    "Van": [("van_kent_kiyi", 38.50, 43.38), ("ercis_kiyi", 39.02, 43.35)],           # göl kıyısı
+    "Sanliurfa": [("harran", 36.86, 39.03), ("suruc", 36.97, 38.42)],                 # GAP sulu tarım ovaları
+}
+UNET_PATCH = 256                                        # eğitim parçası (piksel)
+UNET_BOLME = (0.70, 0.15, 0.15)                         # her kutu kuzeyden güneye şeritler: eğitim / doğrulama / test
+UNET_ENCODER = "resnet34"                               # ImageNet ön eğitimli kodlayıcı (6 kanala uyarlanır)
+UNET_EPOCHS = 40
+UNET_PATIENCE = 6                                       # doğrulama mIoU bu kadar epoch iyileşmezse dur
+UNET_BATCH = 16
+UNET_LR = 1e-3
+UNET_ORNEK_EPOCH = 1600                                 # her epoch'ta eğitim şeritlerinden rastgele parça sayısı
+UNET_LOCO_EPOCHS = 15                                   # il dışı (H6) testinde daha kısa eğitim
+UNET_RF_PIKSEL = 60000                                  # karşılaştırma için RF'nin eğitim piksel sayısı
+
+# ---------------------------------------------------------------------------
 # Klasörler (proje köküne göre)
 # ---------------------------------------------------------------------------
 DATA_RAW = "data/raw"

@@ -326,13 +326,13 @@ def _logged_completed(path=None):
     return set(k.loc[k["state"] == "COMPLETED", "task"])
 
 
-def _drive_export_path(name):
-    return os.path.join("/content/drive/MyDrive", config.GEE_EXPORT_FOLDER, f"{name}.csv")
+def _drive_export_path(name, ext="csv"):
+    return os.path.join("/content/drive/MyDrive", config.GEE_EXPORT_FOLDER, f"{name}.{ext}")
 
 
-def fetch_export(name, dest_dir, timeout_seconds=900):
-    """Drive'a düşen CSV'yi proje klasörüne kopyalar (Drive senkronu gecikebilir)."""
-    src = _drive_export_path(name)
+def fetch_export(name, dest_dir, timeout_seconds=900, ext="csv"):
+    """Drive'a düşen dosyayı (CSV ya da GeoTIFF) proje klasörüne kopyalar (Drive senkronu gecikebilir)."""
+    src = _drive_export_path(name, ext)
     waited = 0
     while not os.path.exists(src):
         if waited >= timeout_seconds:
@@ -340,6 +340,104 @@ def fetch_export(name, dest_dir, timeout_seconds=900):
                 f"{src} Drive'da görünmedi. Birkaç dakika bekleyip bu hücreyi tekrar çalıştırın.")
         time.sleep(15)
         waited += 15
-    dest = os.path.join(dest_dir, f"{name}.csv")
+    dest = os.path.join(dest_dir, f"{name}.{ext}")
     shutil.copy(src, dest)
     return dest
+
+
+# ---------------------------------------------------------------------------
+# Sentinel-2 (notebook 07): alt bölge kutuları, bulut maskeli yaz kompoziti, 10 m etiket, GeoTIFF export
+# ---------------------------------------------------------------------------
+def s2_kutu(lat, lon, km=None):
+    """Merkezi (lat, lon) olan, EPSG:3035 ızgarasına (10 m) oturmuş km × km kare.
+    Köşeler 10 m'ye yuvarlanır; böylece bütün yılların görüntüleri piksel piksel aynı ızgaradadır."""
+    from pyproj import Transformer
+    km = km or config.S2_KUTU_KM
+    x, y = Transformer.from_crs("EPSG:4326", config.S2_CRS, always_xy=True).transform(lon, lat)
+    s, h = config.S2_SCALE_M, km * 500
+    x0, y0 = round((x - h) / s) * s, round((y - h) / s) * s
+    return ee.Geometry.Rectangle([x0, y0, x0 + 2 * h, y0 + 2 * h], proj=config.S2_CRS, geodesic=False)
+
+
+def s2_koleksiyon(geom, year):
+    """Yaz (Haz–Ağu) Sentinel-2 L2A görüntüleri; s2cloudless olasılığı + SCL ile bulut/gölge/kar maskeli."""
+    s2 = (ee.ImageCollection(config.S2_COLLECTION).filterBounds(geom)
+          .filterDate(f"{year}-{config.SUMMER_START}", f"{year}-{config.SUMMER_END}")
+          .filter(ee.Filter.lt("CLOUDY_PIXEL_PERCENTAGE", config.S2_MAX_SCENE_CLOUD)))
+    olasilik = ee.ImageCollection(config.S2_CLOUD_PROB).filterBounds(geom).filterDate(
+        f"{year}-{config.SUMMER_START}", f"{year}-{config.SUMMER_END}")
+    birlesik = ee.Join.saveFirst("bulut").apply(
+        s2, olasilik, ee.Filter.equals(leftField="system:index", rightField="system:index"))
+
+    def maskele(img):
+        img = ee.Image(img)
+        bulut = ee.Image(img.get("bulut")).select("probability")
+        scl = img.select("SCL")
+        temiz = bulut.lt(config.S2_CLOUD_PROB_MAX)
+        for k in config.S2_SCL_MASK:
+            temiz = temiz.And(scl.neq(k))
+        return img.select(config.S2_BANDS).updateMask(temiz)
+
+    return ee.ImageCollection(birlesik).map(maskele)
+
+
+def s2_goruntu_sayisi(geom, year):
+    return ee.ImageCollection(config.S2_COLLECTION).filterBounds(geom).filterDate(
+        f"{year}-{config.SUMMER_START}", f"{year}-{config.SUMMER_END}").filter(
+        ee.Filter.lt("CLOUDY_PIXEL_PERCENTAGE", config.S2_MAX_SCENE_CLOUD)).size()
+
+
+def s2_kompozit(geom, year):
+    """Medyan yaz kompoziti, 6 bant, yansıma × 10000 (int16). Verisi olmayan piksel = S2_NODATA (0)."""
+    return s2_koleksiyon(geom, year).median().unmask(config.S2_NODATA).toInt16().clip(geom)
+
+
+def s2_etiket():
+    """ESA WorldCover 2021 (10 m) → projenin 6 sınıfı (0–5); eşlenmeyen sınıf = S2_ETIKET_YOK (255).
+    Segmentasyon için tam harita gerekir; 01'deki homojenlik filtresi burada uygulanmaz."""
+    wc = worldcover()
+    kodlar = list(config.WORLDCOVER_TO_CLASS)
+    degerler = [config.S2_ETIKET_YOK if v is None else v for v in config.WORLDCOVER_TO_CLASS.values()]
+    return wc.remap(kodlar, degerler).unmask(config.S2_ETIKET_YOK).toUint8().rename("etiket")
+
+
+def start_image_export(img, name, region):
+    """GeoTIFF'i Drive'a gönderir; EPSG:3035, 10 m, tek dosya (2000 × 2000 piksel bölünmez)."""
+    task = ee.batch.Export.image.toDrive(
+        image=img, description=name, folder=config.GEE_EXPORT_FOLDER, fileNamePrefix=name,
+        region=region, crs=config.S2_CRS, scale=config.S2_SCALE_M, fileFormat="GeoTIFF",
+        maxPixels=1e9, fileDimensions=4096,
+    )
+    task.start()
+    print(f"Export başladı: {name}")
+    return task
+
+
+def run_image_exports(exports, raw_dir, force=False):
+    """exports = {ad: (ee.Image, bölge)}. run_exports ile aynı güvenli devam mantığı, GeoTIFF için:
+    dosyası olanları atlar, hâlâ çalışanları bekler, önceki oturumda bitenleri yalnızca Drive'dan kopyalar."""
+    os.makedirs(raw_dir, exist_ok=True)
+    tasks = {}
+    active, done = ({}, {}) if force else _task_index(set(exports))
+    for name, (img, region) in exports.items():
+        if not force and os.path.exists(os.path.join(raw_dir, f"{name}.tif")):
+            print("zaten var, atlandı:", name)
+        elif not force and name in active:
+            print("zaten çalışıyor, bekleniyor:", name)
+            tasks[name] = active[name]
+        elif not force and (os.path.exists(_drive_export_path(name, "tif")) or name in done):
+            fetch_export(name, raw_dir, ext="tif")
+            print("önceki oturumda bitmiş, Drive'dan kopyalandı:", name)
+        else:
+            tasks[name] = start_image_export(img, name, region)
+    if not tasks:
+        return None
+    usage = wait_for_tasks(tasks)
+    for name in usage.loc[usage["state"] == "COMPLETED", "task"]:
+        fetch_export(name, raw_dir, ext="tif")
+    failed = usage[usage["state"] != "COMPLETED"]
+    if len(failed):
+        raise RuntimeError("Başarısız export'lar (başarılı olanlar kaydedildi; hücreyi tekrar "
+                           f"çalıştırınca yalnızca bunlar yeniden denenir):\n"
+                           f"{failed[['task', 'state', 'hata']].to_string()}")
+    return usage
