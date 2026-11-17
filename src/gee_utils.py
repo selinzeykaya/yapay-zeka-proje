@@ -49,15 +49,46 @@ def list_turkey_provinces():
     return sorted(_turkey_gaul().aggregate_array("ADM1_NAME").getInfo())
 
 
+ESRI_UYDU = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+
+
+def _folium_harita(center, zoom):
+    """geemap çalışmazsa yedek: düz folium haritası; addLayer, add_layer_control ve to_html destekler."""
+    import folium
+
+    class Harita(folium.Map):
+        def addLayer(self, obj, vis_params=None, name=None, shown=True):
+            img = obj if isinstance(obj, ee.Image) else ee.FeatureCollection(obj).style()
+            url = img.getMapId(vis_params or {})["tile_fetcher"].url_format
+            folium.TileLayer(tiles=url, attr="Google Earth Engine", name=name, overlay=True, show=shown).add_to(self)
+
+        def add_layer_control(self):
+            folium.LayerControl().add_to(self)
+
+        def to_html(self, filename=None, **_):
+            if filename:
+                self.save(filename)
+            return self.get_root().render()
+
+    m = Harita(location=list(center), zoom_start=zoom, tiles=None)
+    folium.TileLayer(tiles=ESRI_UYDU, attr="Esri, Maxar, Earthstar Geographics", name="Esri uydu").add_to(m)
+    return m
+
+
 def make_map(center=(39.0, 35.0), zoom=6):
     """Etkileşimli harita. OpenStreetMap karoları Colab'da 403 verdiği için
-    varsayılan arka plan Esri uydu görüntüsü, ek seçenek Google Hybrid."""
-    import geemap.foliumap as gf
+    varsayılan arka plan Esri uydu görüntüsü, ek seçenek Google Hybrid.
+    Bazı geemap sürümlerinde altlık eklemek hata veriyor ('xyz_to_folium'); o durumda düz folium haritası döner."""
     try:
-        m = gf.Map(center=list(center), zoom=zoom, basemap=config.BASEMAP)
-    except Exception:
-        m = gf.Map(center=list(center), zoom=zoom)
-        m.add_basemap(config.BASEMAP)
+        import geemap.foliumap as gf
+        try:
+            m = gf.Map(center=list(center), zoom=zoom, basemap=config.BASEMAP)
+        except Exception:
+            m = gf.Map(center=list(center), zoom=zoom)
+            m.add_basemap(config.BASEMAP)
+    except Exception as e:
+        print(f"geemap haritası açılamadı ({type(e).__name__}); folium haritası kullanılıyor.")
+        return _folium_harita(center, zoom)
     # OSM katmanı yine de eklendiyse kaldır (boş/403 karo göstermesin)
     for key, child in list(m._children.items()):
         if "openstreetmap" in str(getattr(child, "tiles", "")).lower():
