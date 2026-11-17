@@ -6,6 +6,18 @@ Yapay Zekâ dersi projesi. Türkiye'deki 7 ilde (İstanbul, İzmir, Artvin, Sams
 
 > **Kapsam notu:** İDA (insansız deniz aracı) modülü kapsamdan çıkarıldı. Deniz yüzeyinde atık tespiti, arazi örtüsü değişimi ile iklimsel göstergeler arasındaki ilişkiyi doğrudan test etmiyor; ayrıca İstanbul/İzmir kıyılarına ait İDA görüntüsü yok (önceki deneme Endonezya nehir veri setiyleydi). Eski 05 notebook'u ve sonuçları git geçmişinde duruyor. Notebook numaralarında 05 bu yüzden boştur.
 
+> 📖 **Projenin baştan sona anlatımı** (ne, nasıl, neden; kim ne yaptı; sonuçlar; her parçanın nasıl çalıştırılacağı):
+> **[PROJE_ANLATIMI.md](PROJE_ANLATIMI.md)** · Kavramlar sözlüğü: [plan/yapilanlar_ve_kavramlar.md](plan/yapilanlar_ve_kavramlar.md)
+
+## Hızlı başlangıç
+| Ne yapmak istiyorum? | Nasıl? |
+|---|---|
+| Analizleri çalıştırmak | Colab'da notebook'ları sırayla aç: 00 → 01 → 02 → 03 → 04 → 06 (aşağıdaki "Nasıl çalıştırılır") |
+| Sonuçları etkileşimli görmek | `python -m http.server 8600 -d web` → http://127.0.0.1:8600 |
+| Sonuç panelini açmak | `pip install -r panel/requirements.txt` → `streamlit run panel/app.py` |
+| Rapor haritalarını üretmek | QGIS 3.44 ile `qgis/haritalar.py` (aşağıda "QGIS haritaları") |
+| Kodun bozulmadığını denetlemek | `pip install -r requirements-ci.txt` → `python tools/notebook_kontrol.py` → `pytest` |
+
 ## Klasör yapısı
 ```
 config.py            Tüm parametreler (şehirler, yıllar, sınıflar, model ayarları)
@@ -17,6 +29,13 @@ results/             tables/ (CSV), figures/ (PNG/HTML), models/
 literature/          Literatür matrisi ve aday çalışmalar
 report/              Rapor iskeleti ve sınırlılık notları
 presentation/        Sunum iskeleti ve olası sorular
+plan/                Görev dağılımı, kavramlar ve yapılanlar rehberi
+panel/               Streamlit sonuç paneli (app.py) ve özet verisi
+web/                 Etkileşimli web sitesi (index.html, app.js, data/)
+qgis/                QGIS harita üretimi (haritalar.py)
+tests/, tools/       Otomatik kontroller (pytest, notebook kontrolü)
+.github/workflows/   GitHub Actions (ci.yml, kontrol.yml)
+PROJE_ANLATIMI.md    Projenin baştan sona anlatımı
 ```
 
 ## Notebook'lar
@@ -53,10 +72,50 @@ Colab → **Dosya → Not defteri aç → GitHub** sekmesi → "Özel depoları 
 
 GitHub'dan açılan notebook'taki değişiklikler (çıktılar dahil) otomatik kaydedilmez. Sonuçlar zaten Drive'a yazıldığı için bu sorun değil.
 
+## Etkileşimli web sitesi (`web/`)
+Sonuçları görsel olarak anlatan tek sayfalık site: Türkiye haritasından il seçilir, her ilin **kendi araştırma sorusu**
+(İstanbul: kentleşme ve ısı adası · Konya: tarım ve nem · Van: göl ve su yüzeyi …) 1 km hücre haritası, sayı kartları,
+kısa yorum ve grafiklerle gösterilir. Hipotezler (H1–H6), model başarısı ve yöntem bölümleri de vardır.
+
+```bash
+python web/veri_hazirla.py <grid_1km_lc_iklim.csv> <tur_adm1.geojson> panel/veri/tables   # web/data/ (~7 MB)
+python -m http.server 8600 -d web                                                     # http://127.0.0.1:8600
+```
+- **Model uyumu:** haritalardaki arazi sınıfları Faz 3'te Colab'da eğitilen XGBoost modelinin 2014/2024 sınıflandırmasıdır
+  (Drive `grid_1km_lc_iklim.csv`); bütün sayılar resmi Colab tablolarından gelir. `tests/test_model_uyumu.py` bunu CI'da denetler.
+- Teknoloji: düz HTML + MapLibre GL (harita) + proj4js (EPSG:3035 hücre köşeleri) + Chart.js. Sunucu gerektirmez; GitHub Pages'te yayınlanabilir.
+- Altlık: Esri (açık gri, koyu gri, uydu; anahtarsız). Hücre verisi sütunlu ve kompakt: köşeler tarayıcıda hesaplanır.
+
+## Sonuç paneli (Streamlit)
+Notebook'ların ürettiği sonuçları tek ekranda gösteren etkileşimli panel: `panel/app.py`. Hiçbir şey hesaplamaz, Earth Engine'e bağlanmaz.
+
+```bash
+pip install -r panel/requirements.txt
+streamlit run panel/app.py        # tarayıcıda http://localhost:8501
+```
+
+Sekmeler: **Genel bakış** (ana sayılar) · **Arazi değişimi** (il il 2014/2024 haritaları, sınıf payları, geçiş matrisi) · **İklim** (2003–2024 serileri, Mann-Kendall trendleri) · **İlişkiler ve hipotezler** (H1–H6, ısı adası, su alanı) · **Model başarısı** (4 model, IoU, mekânsal blok, LOCO, LST regresyonu ve SHAP).
+
+Veri `panel/veri/` altındadır (≈5 MB, yalnızca özet tablolar ve küçültülmüş görseller). Notebook'lar yeniden çalıştırılıp sonuçlar değişirse: `python panel/veri_hazirla.py "<Drive'daki yapay-zeka-proje klasörü>"`.
+
+## QGIS haritaları (rapor ve sunum için)
+`qgis/haritalar.py`, 1 km hücre sonuçlarından **lejantlı, ölçekli, kuzey oklu** A4 haritalar üretir (PyQGIS, QGIS 3.44 ile denendi). 29 harita:
+çalışma alanları + her il için 4 harita (2024 baskın arazi örtüsü · 2014→2024 değişim · göreli ΔLST · ΔNDVI). Ayrıca düzenlenebilir bir QGIS projesi (`geoclimate.qgz`, 29 baskı düzeni) ve GeoPackage (`geoclimate.gpkg`) oluşturur.
+
+```powershell
+$q = "<QGIS klasörü>\bin\python-qgis-ltr.bat"
+& $q qgis/haritalar.py <grid_1km_lc_iklim.csv> <tur_adm1.geojson> <çıktı klasörü> gpkg     # 1) GeoPackage
+& $q qgis/haritalar.py <grid_1km_lc_iklim.csv> <tur_adm1.geojson> <çıktı klasörü> harita   # 2) haritalar + proje
+```
+- `grid_1km_lc_iklim.csv`: Drive `data/processed/` (04 notebook'u üretir). `tur_adm1.geojson`: [geoBoundaries TUR ADM1](https://github.com/wmgeolab/geoBoundaries/raw/main/releaseData/gbOpen/TUR/ADM1/geoBoundaries-TUR-ADM1_simplified.geojson) (CC BY 4.0).
+- Harita projeksiyonu Türkiye merkezli Lambert konik konform; analiz ızgarası EPSG:3035'te kalır (EPSG:3035 Avrupa merkezli olduğu için Türkiye'yi döndürür).
+- Göreli ΔLST = hücrenin ΔLST'si − ilin medyan ΔLST'si (iki yazın genel hava farkını giderir).
+- İki ayrı adım ve GeoPackage'ın salt okunur (`IMMUTABLE`) açılması bilinçli: aksi halde ilk harita boş çıkıyor. `QT_QPA_PLATFORM=offscreen` kullanmayın, yazılar kara kutu çıkar.
+
 ## Otomatik kontrol (GitHub Actions)
 Her push'ta ve `main`'e açılan her Pull Request'te `.github/workflows/ci.yml` çalışır (≈1–2 dk):
 1. `tools/notebook_kontrol.py`: notebook'lar geçerli mi, kod hücrelerinde yazım hatası var mı, **çıktı kaydedilmiş mi** (repo çıktısız notebook tutar).
-2. `pytest` (`tests/`): `config.py` tutarlılığı, `src/ml_utils.py` metrikleri (IoU = F1/(2−F1) dahil), 4 modelin kurulup eğitilebilmesi, `src/gee_utils.py`'nin içe aktarılabilmesi ve notebook'larda çağrılan her `gu.*` / `mu.*` fonksiyonunun tanımlı olması.
+2. `pytest` (`tests/`): `config.py` tutarlılığı, `src/ml_utils.py` metrikleri (IoU = F1/(2−F1) dahil), 4 modelin kurulup eğitilebilmesi, `src/gee_utils.py`'nin içe aktarılabilmesi ve notebook'larda çağrılan her `gu.*` / `mu.*` fonksiyonunun tanımlı olması; panelin her il, gösterge ve model seçiminde hatasız açılması.
 
 Earth Engine ve Drive verisi gerektiren analizler CI'da çalışmaz. Yerelde aynı kontrol: `pip install -r requirements-ci.txt` → `python tools/notebook_kontrol.py` → `pytest`.
 Kırmızı (❌) olursa: Actions sekmesinde hangi adımın düştüğüne bakın; en sık neden Colab'dan **çıktılı** notebook commit'lemek (Colab → Düzenle → Tüm çıktıları temizle).

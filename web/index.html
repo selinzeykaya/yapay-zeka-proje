@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GeoClimate AI</title>
+<meta name="description" content="Türkiye'de arazi örtüsü değişimi ile yerel iklim göstergeleri arasındaki ilişkinin uydu verisi ve yapay zekâ ile 7 ilde incelenmesi.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<link href="style.css" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌍%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="hero">
+  <nav class="ust">
+    <span class="logo">🌍 GeoClimate AI</span>
+    <span class="baglantilar">
+      <a href="#iller">İller</a><a href="#hipotezler">Hipotezler</a><a href="#modeller">Modeller</a><a href="#yontem">Yöntem</a>
+    </span>
+  </nav>
+  <div class="hero-icerik">
+    <div class="hero-metin">
+      <p class="ust-etiket">Uydu verisi · Yapay zekâ · 7 il · 2014 → 2024</p>
+      <h1>Arazi değişince<br><span>yerel iklim</span> nasıl değişiyor?</h1>
+      <p class="giris">Türkiye'nin yedi farklı coğrafyasında arazi örtüsünü Landsat görüntülerinden yapay zekâyla sınıflandırdık,
+        on yıllık değişimi ölçtük ve yüzey sıcaklığı, nem ve yağış göstergeleriyle ilişkisini inceledik.</p>
+      <div class="istatistikler" id="istatistikler"></div>
+    </div>
+    <div class="hero-harita">
+      <div id="genel-harita"></div>
+      <p class="ipucu">Bir ile tıklayın</p>
+    </div>
+  </div>
+</header>
+
+<main>
+<section id="iller" class="bolum">
+  <div class="il-secici" id="il-secici" role="tablist" aria-label="İl seçimi"></div>
+
+  <div class="il-baslik">
+    <div>
+      <p class="ust-etiket" id="il-etiket"></p>
+      <h2 id="il-tema"></h2>
+      <p class="soru" id="il-soru"></p>
+    </div>
+  </div>
+
+  <div class="il-duzen">
+    <div class="harita-kutu">
+      <div id="harita"></div>
+      <div class="harita-arac">
+        <div class="katman-secici" id="katman-secici"></div>
+        <div class="altlik">
+          <button data-altlik="sade" class="secili">Sade</button><button data-altlik="uydu">Uydu</button>
+        </div>
+      </div>
+      <div class="lejant" id="lejant"></div>
+      <div class="saydamlik"><label>Saydamlık <input type="range" id="saydamlik" min="0.2" max="1" step="0.05" value="0.85"></label></div>
+      <div class="yukleniyor" id="yukleniyor">Hücreler yükleniyor…</div>
+    </div>
+
+    <aside class="yan">
+      <div class="kartlar" id="kartlar"></div>
+      <div class="hikaye" id="hikaye"></div>
+      <div class="grafik-kutu">
+        <div class="grafik-baslik">
+          <h3>İklim serisi 2003–2024</h3>
+          <select id="iklim-secim" aria-label="İklim göstergesi">
+            <option value="modis_lst_day">Yaz yüzey sıcaklığı (MODIS, °C)</option>
+            <option value="era5_sm_summer">Yaz toprak nemi (ERA5, m³/m³)</option>
+            <option value="chirps_precip_annual">Yıllık yağış (CHIRPS, mm)</option>
+          </select>
+        </div>
+        <canvas id="iklim-grafik" height="170"></canvas>
+        <p class="kucuk" id="trend-not"></p>
+      </div>
+      <div class="grafik-kutu">
+        <h3>Arazi örtüsü payları</h3>
+        <canvas id="sinif-grafik" height="190"></canvas>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section id="hipotezler" class="bolum koyu">
+  <h2>Hipotezler</h2>
+  <p class="bolum-giris">Her hipotez için 7 ildeki kanıt. Korelasyonlar 1 km hücrelerde Spearman ρ; |ρ| &lt; 0,1 ihmal edilebilir, 0,1–0,3 zayıf, 0,3–0,5 orta, ≥ 0,5 güçlü.
+    <strong>İlişki neden-sonuç değildir.</strong> Değerlendirme etiketleri öneridir; nihai karar rapordadır.</p>
+  <div class="hipotez-izgara" id="hipotezler-izgara"></div>
+</section>
+
+<section id="modeller" class="bolum">
+  <h2>Yapay zekâ modelleri ne kadar başarılı?</h2>
+  <div class="iki-sutun">
+    <div class="grafik-kutu">
+      <h3>Arazi örtüsü sınıflandırması (test kümesi, 1 988 nokta)</h3>
+      <canvas id="model-grafik" height="220"></canvas>
+      <p class="kucuk">Faz 3'te Colab'da eğitilen modeller; seçim doğrulama kümesine göre → XGBoost. IoU = F1 / (2 − F1) olduğundan F1'den düşüktür
+        (XGBoost IoU'su yaklaşık: kütüphane sürüm farkı).</p>
+    </div>
+    <div class="grafik-kutu">
+      <h3>Model hiç görmediği bir ile taşınınca (macro-F1)</h3>
+      <canvas id="loco-grafik" height="220"></canvas>
+      <p class="kucuk" id="loco-not"></p>
+    </div>
+    <div class="grafik-kutu">
+      <h3>Yüzey sıcaklığını tahmin etmek (10 km mekânsal blok doğrulama)</h3>
+      <div class="kartlar ince" id="regresyon-kartlar"></div>
+      <canvas id="shap-grafik" height="200"></canvas>
+      <p class="kucuk">SHAP: modelin tahminde en çok neye baktığı. Kırmızı: değer arttıkça sıcaklık artıyor; mavi: azalıyor.</p>
+    </div>
+    <div class="grafik-kutu">
+      <h3>Rastgele bölme mi, mekânsal blok mu?</h3>
+      <canvas id="blok-grafik" height="200"></canvas>
+      <p class="kucuk">Yakın noktalar birbirine benzer; rastgele bölme başarıyı şişirebilir. 10 km bloklarla fark en fazla ≈ 0,013 → sızıntı küçük.
+        Bu, test sonucunun yerine geçmeyen ayrı bir 5 katlı çapraz doğrulamadır (aynı hiperparametrelerle yeniden eğitildi).</p>
+    </div>
+  </div>
+</section>
+
+<section id="yontem" class="bolum acik">
+  <h2>Nasıl yaptık?</h2>
+  <ol class="akis">
+    <li><b>Uydu görüntüsü</b><span>Landsat 8/9 yaz kompozitleri (Haziran–Ağustos), bulut maskeli · Google Earth Engine</span></li>
+    <li><b>Etiket</b><span>ESA WorldCover 2021 → 6 sınıf · 13 251 nokta, 300 m arayla</span></li>
+    <li><b>Sınıflandırma</b><span>Random Forest, XGBoost, SVM, MLP · 11 özellik (6 bant + 5 indeks)</span></li>
+    <li><b>Değişim</b><span>Her 1 km hücrede 9 nokta, 2014 ve 2024 için sınıflandırıldı</span></li>
+    <li><b>İklim</b><span>Landsat LST, MODIS, ERA5-Land, CHIRPS · Mann-Kendall + Sen eğimi</span></li>
+    <li><b>İlişki</b><span>Spearman, LST regresyonu (RF, XGBoost) + SHAP, il dışı test (LOCO)</span></li>
+  </ol>
+  <div class="iki-sutun sinirlar">
+    <div>
+      <h3>Bilinmesi gerekenler</h3>
+      <ul>
+        <li>Etiket yalnızca 2021 için var; 2014 ve 2024 haritalarının doğruluğu ölçülemiyor.</li>
+        <li><b>Haritalardaki arazi sınıfları, eğittiğimiz XGBoost modelinin</b> (Faz 3, Colab) 2014 ve 2024 sınıflandırmasıdır.
+          Sitedeki bütün sayılar resmi Colab sonuçlarından gelir; site hiçbir şeyi yeniden hesaplamaz.</li>
+        <li>Bulgular ilişki düzeyinde; neden-sonuç iddiası yok.</li>
+        <li>Göreli ΔLST: iki yazın genel hava farkını gidermek için ilin medyan değişimi çıkarıldı.</li>
+        <li>Hücre sınıf payları 9 noktadan geldiği için tek hücre düzeyinde gürültülü.</li>
+        <li>Haritalardaki il sınırı geoBoundaries; analizde FAO GAUL kullanıldı (kenarlarda küçük farklar).</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Veri kaynakları</h3>
+      <ul>
+        <li>Landsat 8/9 Collection 2 (USGS) · ESA WorldCover 2021 (CC BY 4.0)</li>
+        <li>MODIS MOD11A2 (NASA) · ERA5-Land (Copernicus) · CHIRPS (UCSB)</li>
+        <li>İl sınırları: geoBoundaries (CC BY 4.0) · Altlık: © OpenStreetMap katkıcıları, © CARTO, Esri</li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>GeoClimate AI · Yapay Zekâ dersi projesi · Kod: <a href="https://github.com/selinzeykaya/yapay-zeka-proje">github.com/selinzeykaya/yapay-zeka-proje</a></footer>
+
+<div class="ipucu-kutu" id="ipucu-kutu" hidden></div>
+
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.12.1/proj4.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+﻿hipotez,iliski,city,rho,p,n_hucre,guc,beklenen_yon,yon_uyumlu,ana_odak_ili
+H1,Δyapılaşma – ΔLST (Landsat),Istanbul,0.1496,0.0,5166,zayıf,+,True,True
+H1,Δyapılaşma – ΔLST (Landsat),Izmir,0.0522,0.0,12188,ihmal edilebilir,+,True,True
+H1,Δyapılaşma – ΔLST (Landsat),Artvin,-0.0417,0.0005,6987,ihmal edilebilir,+,False,False
+H1,Δyapılaşma – ΔLST (Landsat),Samsun,0.0667,0.0,9826,ihmal edilebilir,+,True,False
+H1,Δyapılaşma – ΔLST (Landsat),Konya,0.0022,0.6637,38855,ihmal edilebilir,+,True,False
+H1,Δyapılaşma – ΔLST (Landsat),Van,0.0206,0.0042,19279,ihmal edilebilir,+,True,False
+H1,Δyapılaşma – ΔLST (Landsat),Sanliurfa,0.0598,0.0,18964,ihmal edilebilir,+,True,False
+H2,Δorman – ΔLST (Landsat),Istanbul,-0.1602,0.0,5166,zayıf,−,True,False
+H2,Δorman – ΔLST (Landsat),Izmir,-0.1942,0.0,12188,zayıf,−,True,False
+H2,Δorman – ΔLST (Landsat),Artvin,-0.0756,0.0,6987,ihmal edilebilir,−,True,True
+H2,Δorman – ΔLST (Landsat),Samsun,-0.1878,0.0,9826,zayıf,−,True,False
+H2,Δorman – ΔLST (Landsat),Konya,-0.1224,0.0,38855,zayıf,−,True,False
+H2,Δorman – ΔLST (Landsat),Van,-0.2423,0.0,19279,zayıf,−,True,False
+H2,Δorman – ΔLST (Landsat),Sanliurfa,-0.1935,0.0,18964,zayıf,−,True,True
+H2,ΔNDVI – ΔLST (Landsat),Istanbul,-0.5195,0.0,5166,güçlü,−,True,False
+H2,ΔNDVI – ΔLST (Landsat),Izmir,-0.5416,0.0,12188,güçlü,−,True,False
+H2,ΔNDVI – ΔLST (Landsat),Artvin,-0.4064,0.0,6987,orta,−,True,True
+H2,ΔNDVI – ΔLST (Landsat),Samsun,-0.4379,0.0,9826,orta,−,True,False
+H2,ΔNDVI – ΔLST (Landsat),Konya,-0.6026,0.0,38855,güçlü,−,True,False
+H2,ΔNDVI – ΔLST (Landsat),Van,-0.6092,0.0,19279,güçlü,−,True,False
+H2,ΔNDVI – ΔLST (Landsat),Sanliurfa,-0.6462,0.0,18964,güçlü,−,True,True
+H3,Δtarım – ΔNDMI (nem),Istanbul,0.0795,0.0,5166,ihmal edilebilir,belirtilmemiş,,False
+H3,Δtarım – ΔNDMI (nem),Izmir,0.1479,0.0,12188,zayıf,belirtilmemiş,,False
+H3,Δtarım – ΔNDMI (nem),Artvin,0.2195,0.0,6987,zayıf,belirtilmemiş,,False
+H3,Δtarım – ΔNDMI (nem),Samsun,0.0643,0.0,9826,ihmal edilebilir,belirtilmemiş,,False
+H3,Δtarım – ΔNDMI (nem),Konya,0.3937,0.0,38855,orta,belirtilmemiş,,True
+H3,Δtarım – ΔNDMI (nem),Van,0.283,0.0,19279,zayıf,belirtilmemiş,,False
+H3,Δtarım – ΔNDMI (nem),Sanliurfa,0.0955,0.0,18964,ihmal edilebilir,belirtilmemiş,,True
+H3,Δtarım – ΔLST (Landsat),Istanbul,-0.0373,0.0074,5166,ihmal edilebilir,belirtilmemiş,,False
+H3,Δtarım – ΔLST (Landsat),Izmir,0.0243,0.0073,12188,ihmal edilebilir,belirtilmemiş,,False
+H3,Δtarım – ΔLST (Landsat),Artvin,-0.174,0.0,6987,zayıf,belirtilmemiş,,False
+H3,Δtarım – ΔLST (Landsat),Samsun,0.0376,0.0002,9826,ihmal edilebilir,belirtilmemiş,,False
+H3,Δtarım – ΔLST (Landsat),Konya,-0.1961,0.0,38855,zayıf,belirtilmemiş,,True
+H3,Δtarım – ΔLST (Landsat),Van,-0.0862,0.0,19279,ihmal edilebilir,belirtilmemiş,,False
+H3,Δtarım – ΔLST (Landsat),Sanliurfa,-0.0122,0.0934,18964,ihmal edilebilir,belirtilmemiş,,True
+H4,Δsu – ΔLST (Landsat),Istanbul,-0.1284,0.0,5166,zayıf,belirtilmemiş,,False
+H4,Δsu – ΔLST (Landsat),Izmir,-0.0561,0.0,12188,ihmal edilebilir,belirtilmemiş,,False
+H4,Δsu – ΔLST (Landsat),Artvin,-0.1903,0.0,6987,zayıf,belirtilmemiş,,False
+H4,Δsu – ΔLST (Landsat),Samsun,-0.0433,0.0,9826,ihmal edilebilir,belirtilmemiş,,True
+H4,Δsu – ΔLST (Landsat),Konya,-0.0949,0.0,38855,ihmal edilebilir,belirtilmemiş,,True
+H4,Δsu – ΔLST (Landsat),Van,-0.0246,0.0006,19279,ihmal edilebilir,belirtilmemiş,,True
+H4,Δsu – ΔLST (Landsat),Sanliurfa,-0.027,0.0002,18964,ihmal edilebilir,belirtilmemiş,,False
+H4,Δsu – ΔNDMI (nem),Istanbul,0.0347,0.0126,5166,ihmal edilebilir,belirtilmemiş,,False
+H4,Δsu – ΔNDMI (nem),Izmir,0.0526,0.0,12188,ihmal edilebilir,belirtilmemiş,,False
+H4,Δsu – ΔNDMI (nem),Artvin,0.0099,0.4057,6987,ihmal edilebilir,belirtilmemiş,,False
+H4,Δsu – ΔNDMI (nem),Samsun,0.0742,0.0,9826,ihmal edilebilir,belirtilmemiş,,True
+H4,Δsu – ΔNDMI (nem),Konya,0.058,0.0,38855,ihmal edilebilir,belirtilmemiş,,True
+H4,Δsu – ΔNDMI (nem),Van,0.0253,0.0004,19279,ihmal edilebilir,belirtilmemiş,,True
+H4,Δsu – ΔNDMI (nem),Sanliurfa,0.0067,0.3526,18964,ihmal edilebilir,belirtilmemiş,,False

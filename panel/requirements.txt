@@ -1,0 +1,4 @@
+# GeoClimate AI paneli. Streamlit Community Cloud bu dosyayı kullanır (ana dosya: panel/app.py).
+streamlit>=1.40
+pandas
+altair>=5
