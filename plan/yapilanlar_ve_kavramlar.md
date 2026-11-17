@@ -265,9 +265,9 @@ Eskiden yalnızca ekrana yazdırılıyordu. Şimdi `genelleme_neden_spearman.csv
 
 ### 5.11 Sonuçlar (gerçek veriyle, 16.11.2026)
 
-**Önce kontrol:** Modeller Faz 3'teki ayarlarla yeniden eğitildi. RF, SVM, MLP Drive'daki sonuçlarla **birebir** aynı çıktı → veri ve bölme doğru kuruldu. XGBoost 0.776 (Drive: 0.783) → xgboost sürüm farkı; raporda Drive değeri kullanılır.
+**Önce kontrol:** Modeller Faz 3'teki ayarlarla yeniden eğitildi. RF, SVM, MLP Drive'daki sonuçlarla **birebir** aynı çıktı → veri ve bölme doğru kuruldu. XGBoost 0.776 (Drive: 0.783): sürüm aynı (3.4.1), yeniden eğitim başka bilgisayarda birebir aynı ağaçları üretmedi. Resmi model dosyası doğrudan değerlendirilince 0.783 birebir çıkıyor (`tools/resmi_model_iou.py`); raporda Drive değeri kullanılır.
 
-**IoU (macro):** RF 0.633 · XGBoost ≈0.648 · SVM 0.644 · MLP 0.664. En zayıf Tarım (≈0.41), en güçlü Su (≈0.91).
+**IoU (macro, resmi modellerden):** RF 0.633 · XGBoost 0.657 · SVM 0.644 · MLP 0.664. En zayıf Tarım (≈0.42), en güçlü Su (≈0.92).
 
 **Mekânsal blok doğrulama (macro-F1, rastgele → 10 km blok):** RF 0.773 → 0.761 · XGBoost 0.786 → 0.773 · SVM 0.775 → 0.768 · MLP 0.787 → 0.780. Fark en fazla 0.013 → sızıntı küçük, 03'ün sonuçları güvenilir.
 

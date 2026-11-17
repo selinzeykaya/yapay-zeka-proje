@@ -351,7 +351,7 @@ function modelGrafikleri() {
     datasets: [["Accuracy", "acc"], ["macro-F1", "f1"], ["Kappa", "kappa"], ["IoU", "iou"]].map(([l, k], i) =>
       ({ label: l, data: M.map(m => OZET.modeller[m][k]), backgroundColor: renk[i] })) },
     options: { scales: { y: { min: 0.5, max: 1 } }, plugins: { legend: { position: "bottom" },
-      tooltip: { callbacks: { label: c => `${c.dataset.label}: ${sayi(c.raw, 3)}${c.dataset.label === "IoU" && M[c.dataIndex] === "XGBoost" ? " (yaklaşık)" : ""}` } } } } });
+      tooltip: { callbacks: { label: c => `${c.dataset.label}: ${sayi(c.raw, 3)}` } } } } });
   const L = OZET.loco.XGBoost, I = Object.keys(TEMA);
   new Chart($("#loco-grafik"), { type: "bar", data: { labels: I.map(k => OZET.iller[k].ad), datasets: [
     { label: "Aynı il (eğitimde görüldü)", data: I.map(k => L[k].ayni), backgroundColor: "#4575b4" },

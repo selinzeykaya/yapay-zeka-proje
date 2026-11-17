@@ -132,7 +132,7 @@ Analizler Google Colab'da sırayla çalışan notebook'lardır. Bütün ayarlar 
 ### 4.2 IoU metriği
 - **Ne:** `src/ml_utils.compute_metrics`'e IoU (Jaccard = TP / (TP+FP+FN)) eklendi; 03'te sınıf bazında IoU tablosu.
 - **Neden:** GeoClimate dokümanında isteniyor; U-Net gibi segmentasyon modelleriyle aynı ölçüyle karşılaştırma sağlar. IoU = F1/(2−F1) olduğundan F1'den düşüktür.
-- **Sonuç:** macro IoU RF 0,633 · XGBoost ≈0,648 · SVM 0,644 · MLP 0,664; en zayıf sınıf Tarım (≈0,41).
+- **Sonuç (Drive'daki resmi model dosyalarından):** macro IoU RF 0,633 · XGBoost **0,657** · SVM 0,644 · MLP 0,664; en zayıf sınıf Tarım (≈0,42).
 
 ### 4.3 Mekânsal blok doğrulama (03, bölüm 10b)
 - **Ne:** Aynı modeller iki şekilde 5 katlı çapraz doğrulandı: rastgele ve **10 km'lik bloklara göre** (aynı bloktaki noktalar hep aynı katmanda).
@@ -148,7 +148,9 @@ Analizler Google Colab'da sırayla çalışan notebook'lardır. Bütün ayarlar 
 
 > **Bu ek analizler nasıl çalıştırıldı?** GPU gerektirmedikleri için Drive'daki gerçek veriyle yerel bilgisayarda çalıştırıldı. Kontrol olarak modeller
 > Faz 3 ayarlarıyla yeniden eğitildi: RF, SVM ve MLP Colab sonuçlarıyla **birebir** aynı çıktı; test bölmesi 13 251 noktada 0 farkla aynıydı.
-> XGBoost'ta kütüphane sürüm farkı nedeniyle 0,776 çıktı → **raporda ve bütün çıktılarda resmi Colab değeri (0,783) kullanılır.**
+> XGBoost yeniden eğitildiğinde 0,776 çıktı: sürüm aynı (3.4.1), ama başka bir bilgisayarda birebir aynı ağaçlar oluşmadı.
+> Bu yüzden IoU, Drive'daki **resmi model dosyaları yeniden eğitilmeden** yüklenerek hesaplandı (`tools/resmi_model_iou.py`):
+> dört modelin accuracy ve F1'i resmi tabloyla birebir aynı çıktı. **Raporda ve bütün çıktılarda resmi Colab değeri (0,783) kullanılır.**
 > Drive'daki orijinal dosyalara dokunulmadı; yalnızca 11 yeni dosya eklendi.
 
 ### 4.6 GitHub Actions (otomatik kontrol)

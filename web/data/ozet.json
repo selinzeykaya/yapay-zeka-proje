@@ -1129,7 +1129,7 @@
    "f1": 0.783,
    "auc": 0.961,
    "kappa": 0.742,
-   "iou": 0.648
+   "iou": 0.657
   },
   "SVM": {
    "acc": 0.778,
@@ -1353,12 +1353,12 @@
   }
  },
  "iou_sinif": {
-  "Orman": 0.703,
-  "Tarim": 0.406,
-  "Yapilasma": 0.655,
-  "Cayir_Cali": 0.561,
-  "Ciplak": 0.651,
-  "Su_Sulak": 0.909
+  "Orman": 0.707,
+  "Tarim": 0.415,
+  "Yapilasma": 0.669,
+  "Cayir_Cali": 0.574,
+  "Ciplak": 0.663,
+  "Su_Sulak": 0.915
  },
  "ndvi_negatif_il": 7,
  "loco_ort_dusus": 0.109

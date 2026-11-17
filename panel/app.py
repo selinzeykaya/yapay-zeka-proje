@@ -285,8 +285,8 @@ with sekmeler[4]:
                                        "f1_macro": "F1 (macro)", "roc_auc_ovr_macro": "ROC-AUC", "kappa": "Kappa",
                                        "iou_macro": "IoU"}).style.format("{:.3f}").highlight_max(axis=0, color="#c7e9c0"),
                      width="stretch")
-        st.caption("Model seçimi doğrulama kümesine göre yapıldı → XGBoost. IoU yerel çalıştırmadandır; "
-                   "XGBoost'unki xgboost sürüm farkı nedeniyle yaklaşıktır.")
+        st.caption("Model seçimi doğrulama kümesine göre yapıldı → XGBoost. IoU, Drive'daki resmi model dosyalarından "
+                   "yeniden eğitilmeden hesaplandı (tools/resmi_model_iou.py).")
     if iou is not None:
         st.subheader("Sınıf bazında IoU")
         i2 = iou.drop(index="Ortalama (macro)", errors="ignore").reset_index(names="Sınıf")

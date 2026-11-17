@@ -153,13 +153,13 @@ Tablo olarak verin:
 
 | Model | Accuracy | Precision (macro) | Recall (macro) | F1 (macro) | ROC-AUC (macro, OvR) | Kappa | IoU (macro) |
 |---|---|---|---|---|---|---|---|
-| XGBoost (doğrulamada en iyi) | 0.785 | 0.784 | 0.783 | 0.783 | 0.961 | 0.742 | 0.648* |
+| XGBoost (doğrulamada en iyi) | 0.785 | 0.784 | 0.783 | 0.783 | 0.961 | 0.742 | 0.657 |
 | MLP | 0.791 | 0.791 | 0.790 | 0.789 | 0.964 | 0.749 | 0.664 |
 | SVM | 0.778 | 0.777 | 0.775 | 0.772 | 0.959 | 0.733 | 0.644 |
 | RF | 0.768 | 0.766 | 0.765 | 0.764 | 0.957 | 0.721 | 0.633 |
 
-- Kaynak: Drive `model_karsilastirma.csv` (Faz 3). IoU: `sinif_bazinda_iou.csv` (yerel çalıştırma, 16.11.2026). RF, SVM ve MLP yerelde Faz 3 ile birebir aynı çıktı. *XGBoost yerelde xgboost 3.4.1 ile F1 0.776 verdi (Faz 3: 0.783, Colab'daki sürüm farkı); IoU'su Colab'da 03 yeniden çalıştırılınca kesinleşir.
-- Sınıf bazında IoU (XGBoost): Orman 0.70, **Tarım 0.41** (en zayıf), Yapılaşma 0.66, Çayır/Çalı 0.56, Çıplak 0.65, Su/Sulak 0.91
+- Kaynak: Drive `model_karsilastirma.csv` (Faz 3). IoU: `sinif_bazinda_iou.csv`, Drive'daki **resmi model dosyalarından** (`tools/resmi_model_iou.py`; dört modelin accuracy ve F1'i resmi tabloyla birebir aynı). Not: aynı ayarlarla başka bir bilgisayarda yeniden eğitim birebir aynı ağaçları üretmedi (xgboost sürümü Colab'dakiyle aynı, 3.4.1; olası neden işletim sistemi/işlemci farkı); bu yüzden yeniden eğitilen XGBoost 0.776 verdi, raporda resmi değerler kullanılır.
+- Sınıf bazında IoU (XGBoost, resmi): Orman 0.71, **Tarım 0.42** (en zayıf), Yapılaşma 0.67, Çayır/Çalı 0.57, Çıplak 0.66, Su/Sulak 0.92
 - **Mekânsal blok doğrulama** (`mekansal_blok_ozet.csv`, 5 katlı CV, 1 327 blok): macro-F1 rastgele → 10 km blok: RF 0.773 → 0.761, XGBoost 0.786 → 0.773, SVM 0.775 → 0.768, MLP 0.787 → 0.780. **Fark en fazla 0.013** → 300 m mesafe filtresi mekânsal sızıntıyı büyük ölçüde önlemiş; blok doğrulamada katmanlar arası std 2–4 kat büyük (±0.012–0.022).
 
 - Sınıf bazında Precision/Recall/F1: `sinif_raporu_XGBoost.csv`, `sinif_bazinda_f1.csv`; sınıf bazında ROC-AUC: `roc_auc_sinif_bazinda.csv`

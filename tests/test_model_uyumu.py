@@ -1,7 +1,7 @@
 """Web sitesi ve panel EĞİTTİĞİMİZ modelin resmi (Colab, Faz 3/4) sonuçlarını mı gösteriyor?
 
-Kural: Site ve panel yalnızca resmi sonuçları gösterir. Yerel yeniden eğitimden gelen sayılar (xgboost sürüm farkı
-nedeniyle XGBoost macro-F1 0.776 gibi) resmi değerlerin yerine geçemez. Bu testler web/data/ozet.json'daki sayıları
+Kural: Site ve panel yalnızca resmi sonuçları gösterir. Yerel yeniden eğitimden gelen sayılar (başka bilgisayarda
+yeniden eğitilen XGBoost'un macro-F1 0.776'sı gibi) resmi değerlerin yerine geçemez. Bu testler web/data/ozet.json'daki sayıları
 panel/veri/tables/ altındaki resmi Colab tablolarıyla karşılaştırır.
 """
 import csv
