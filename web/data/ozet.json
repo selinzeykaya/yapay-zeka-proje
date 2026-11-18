@@ -1440,6 +1440,7 @@
       "fark": 31.0
      }
     },
+    "uyari": null,
     "kutular": [
      {
       "kod": "Istanbul_kuzey_cevre",
@@ -1496,6 +1497,7 @@
       "fark": 5.9
      }
     },
+    "uyari": null,
     "kutular": [
      {
       "kod": "Izmir_gediz_deltasi",
@@ -1552,6 +1554,7 @@
       "fark": 0.9
      }
     },
+    "uyari": null,
     "kutular": [
      {
       "kod": "Artvin_yusufeli",
@@ -1608,6 +1611,7 @@
       "fark": 10.2
      }
     },
+    "uyari": "Kontrol edildi: Orman −89 km² / Çayır-Çalı +68 km² gerçek değişim değil. Azalmanın %96'sı tek kutuda (Yeşilırmak deltası), bütün ovaya eşit dağılmış ve neredeyse tamamı Orman→Çayır/Çalı; Landsat'ta bütün ilde yalnızca −%3,7. Büyük olasılıkla fındık bahçelerinin iki yaz arasındaki görüntü farkı. Bulgu olarak kullanılmamalı.",
     "kutular": [
      {
       "kod": "Samsun_kizilirmak_deltasi",
@@ -1664,6 +1668,7 @@
       "fark": 16.5
      }
     },
+    "uyari": null,
     "kutular": [
      {
       "kod": "Konya_cumra",
@@ -1720,6 +1725,7 @@
       "fark": 8.9
      }
     },
+    "uyari": null,
     "kutular": [
      {
       "kod": "Van_van_kent_kiyi",
@@ -1776,6 +1782,7 @@
       "fark": 10.8
      }
     },
+    "uyari": null,
     "kutular": [
      {
       "kod": "Sanliurfa_harran",

@@ -163,8 +163,10 @@ Analizler Google Colab'da sırayla çalışan notebook'lardır. Bütün ayarlar 
     (farklı veri, çözünürlük ve test alanı) ama aynı yöne işaret eder: **başarı bölgeye göre değişir** (H6).
   - **Değişim 2017 → 2025 (iki kutunun toplamı, ≈800 km²/il):** Artvin Su/Sulak **12,1 → 30,7 km²** (Yusufeli baraj gölü; Landsat MNDWI'deki +%78,9 ile
     aynı yön), İstanbul Yapılaşma **+31,0 km²** (+%12,9), Konya Yapılaşma +16,5 km², Şanlıurfa Yapılaşma +10,8 km² ve Tarım +7,3 km².
-    Samsun'da Orman −89 km², Çayır/Çalı +68 km² görünüyor: bu büyüklükte bir değişim gerçek kesimden çok **iki yazın fenoloji/görüntü farkı** olabilir
-    → haritayla kontrol edilmeden yorumlanmamalı `[DOĞRULANMADI]`.
+    Samsun'da Orman −89 km², Çayır/Çalı +68 km² görünüyor. **Kontrol edildi, gerçek değişim değil**
+    ([report/kontrol_samsun_orman.md](report/kontrol_samsun_orman.md)). Azalmanın %96'sı tek kutuda (Yeşilırmak deltası) ve bütün ovaya eşit dağılmış;
+    neredeyse tamamı Orman → Çayır/Çalı. WorldCover 2021 ile 2017 tahmini uyumlu, Landsat'ta bütün ilde yalnızca −%3,7. Muhtemel neden fındık bahçelerinin
+    iki yaz arasındaki görüntü farkı. Bulgu olarak kullanılmaz; sitede ve panelde uyarı gösterilir.
 
 ### Literatür, rapor ve sunum iskeletleri
 - 46 aday çalışma (DOI'leri doğrulanmış) `literature/` altında; rapor iskeleti hocanın bölüm sırasına göre `report/rapor_iskeleti.md`;
@@ -353,7 +355,7 @@ plan/                     Görev dağılımı, kavramlar ve yapılanlar rehberi
   İstanbul–İzmir ısı adası farkı (tanım etkisi?).
 - **U-Net:** etiket yine yalnızca 2021 (2017/2025 doğruluğu ölçülemiyor); kutular ilin tamamını temsil etmez; şerit bölmesi kutu içinde yapıldığından
   test şeritleri eğitimle aynı bölgededir (bunu LOCO ölçer); il bazında F1 nadir sınıflar yüzünden düşük görünür; LOCO modelleri 15 epoch, ana model 27 epoch
-  eğitildi; Samsun orman azalması gibi büyük değişimler fenoloji farkı olabilir.
+  eğitildi; Samsun'daki orman azalması kontrol edildi ve sahte değişim çıktı (tarımsal ağaçlıkların yıllar arası görüntü farkı).
 
 **Gelecek çalışmalar:** U-Net'i alt bölgelerden il geneline genişletme ve yıllık (2017–2025) değişim serisi; çok mevsimli veri ya da Sentinel-1 radar ile sulak alanlar;
 ERA5 ölçeğinde (~9 km) analiz; SPI kuraklık indeksi; bağımsız referans veriyle 2014/2024 doğruluk değerlendirmesi; kurak iller için bölgesel model.

@@ -418,9 +418,11 @@ function unetCiz(kod) {
   $("#unet-kartlar").innerHTML = [
     ["U-Net doğruluğu (bu il)", `F1 ${sayi(o.f1, 2)}`, `accuracy ${sayi(o.acc, 2)} · 14 bölgenin tamamında F1 ${sayi(U.test.f1, 2)}`],
     ["Hiç görülmemiş ilde", `F1 ${sayi(o.loco.baska, 2)}`, `ili görmüş model ${sayi(o.loco.ayni, 2)} · fark ${isaretli(-o.loco.dusus, 2)}`],
-    ["En büyük değişim", `${isaretli(sirali[0][1], 1)} km²`, `${sirali[0][0]} · ${U.yil0} → ${U.yil1}`],
+    ["En büyük değişim", `${isaretli(sirali[0][1], 1)} km²`, `${sirali[0][0]} · ${U.yil0} → ${U.yil1}${o.uyari ? " · ⚠ kontrol: gerçek değişim değil" : ""}`],
   ].map(([a, b, n]) => `<div class="kart"><span class="ad">${a}</span><b>${b}</b><span class="not">${n}</span></div>`).join("");
   $("#unet-degisim-baslik").textContent = `Sınıf alanı değişimi ${U.yil0} → ${U.yil1} (km², iki alt bölge)`;
+  const uy = $("#unet-uyari");
+  uy.hidden = !o.uyari; uy.textContent = o.uyari ? "⚠ " + o.uyari : "";
   const veri = { labels: SINIF.map(s => s[0]), datasets: [{ data: SINIF_KOD.map(s => o.degisim[s]?.fark ?? 0), backgroundColor: SINIF.map(s => s[1]) }] };
   if (unetGrafik) { unetGrafik.data = veri; unetGrafik.update(); }
   else unetGrafik = new Chart($("#unet-degisim-grafik"), { type: "bar", data: veri,

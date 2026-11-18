@@ -18,6 +18,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import config  # noqa: E402
+
 KOK = Path(__file__).resolve().parent
 OUT = KOK / "data"
 Y0, Y1 = 2014, 2024
@@ -209,6 +212,7 @@ def unet_ozet(oku):
             "f1": r(il.loc[kod, "f1_macro"]), "iou": r(il.loc[kod, "iou_macro"]), "acc": r(il.loc[kod, "accuracy"]),
             "loco": {"ayni": r(loco.loc[kod, "f1_ayni"]), "baska": r(loco.loc[kod, "f1_baska"]), "dusus": r(loco.loc[kod, "dusus_f1"])},
             "degisim": {s: {"y0": r(d.loc[s, yil0], 1), "y1": r(d.loc[s, yil1], 1), "fark": r(d.loc[s, "degisim_km2"], 1)} for s in d.index},
+            "uyari": config.UNET_DEGISIM_UYARI.get(kod),
             "kutular": [{"kod": k.kutu, "ad": k.alt_bolge.replace("_", " "), "lat": k.merkez_enlem, "lon": k.merkez_boylam}
                         for k in kutular[kutular.il == kod].itertuples()],
         }

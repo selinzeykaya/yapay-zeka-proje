@@ -73,8 +73,8 @@
   Birleşik 14 kutu testinde F1 0.845. Raporda il F1'i accuracy (0.71–0.92) ile birlikte verilmeli.
 - **LOCO:** LOCO modelleri 15 epoch ve erken durdurmasız, ana model 27 epoch (en iyi 20) eğitildi → kayıp biraz abartılmış olabilir. İzmir'in negatif kaybı (−0.056)
   il başına test şeridinin küçük olmasından ve eğitim farkından kaynaklanabilir. Landsat LOCO (0.109) ile farklı veri ve test alanı olduğu için doğrudan karşılaştırılmaz.
-- **Değişim:** iki tek yaz ortancası arasındaki fenoloji/atmosfer farkı sahte değişim üretebilir. Samsun Orman −89 km² / Çayır-Çalı +68 km² bu nedenle
-  `[DOĞRULANMADI]`; Artvin su artışı Landsat MNDWI ile tutarlı (Yusufeli barajı).
+- **Değişim:** iki tek yaz ortancası arasındaki fenoloji/atmosfer farkı sahte değişim üretebilir. Samsun Orman −89 km² / Çayır-Çalı +68 km² kontrol edildi:
+  **sahte değişim** (`report/kontrol_samsun_orman.md`: %96'sı tek kutuda, eşit dağılmış, Orman→Çayır/Çalı, Landsat'ta il geneli −%3,7). Artvin su artışı Landsat MNDWI ile tutarlı (Yusufeli barajı).
 - **2017 ilk yıl:** Sentinel-2 L2A Türkiye'de 2017'den itibaren düzenli; 2014 ile aynı yıl karşılaştırılamaz (Landsat 2014→2024, Sentinel-2 2017→2025).
 - **RF karşılaştırması:** RF 60 000 piksel ile eğitildi (U-Net milyonlarca piksel görüyor); RF'ye daha çok piksel vermek farkı biraz kapatabilir, ama komşuluk bilgisi yine de RF'de yok.
 

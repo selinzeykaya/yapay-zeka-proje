@@ -203,6 +203,8 @@ with sekmeler[1]:
             for col, (_, row) in zip(c, d.set_index("Sınıf").reindex(SINIF_SIRA).dropna(how="all").iterrows()):
                 col.metric(row.name, f"{row['2025']:.1f} km²", f"{row['degisim_km2']:+.1f} km²")
             st.caption("İki alt bölgenin toplamı (≈800 km²). Değerler U-Net tahmininden piksel sayımıdır.")
+        if secili in config.UNET_DEGISIM_UYARI:
+            st.warning(config.UNET_DEGISIM_UYARI[secili])
 
 # ================================================================ 3. İklim
 with sekmeler[2]:

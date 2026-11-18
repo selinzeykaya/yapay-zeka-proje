@@ -232,6 +232,13 @@ UNET_LR = 1e-3
 UNET_ORNEK_EPOCH = 1600                                 # her epoch'ta eğitim şeritlerinden rastgele parça sayısı
 UNET_LOCO_EPOCHS = 15                                   # il dışı (H6) testinde daha kısa eğitim
 UNET_RF_PIKSEL = 60000                                  # karşılaştırma için RF'nin eğitim piksel sayısı
+# 08'in değişim sonuçlarında kontrol edilip gerçek olmadığı görülen değişimler (report/kontrol_samsun_orman.md).
+# Site ve panel bu ilde uyarı gösterir.
+UNET_DEGISIM_UYARI = {
+    "Samsun": "Kontrol edildi: Orman −89 km² / Çayır-Çalı +68 km² gerçek değişim değil. Azalmanın %96'sı tek kutuda "
+              "(Yeşilırmak deltası), bütün ovaya eşit dağılmış ve neredeyse tamamı Orman→Çayır/Çalı; Landsat'ta bütün ilde yalnızca −%3,7. "
+              "Büyük olasılıkla fındık bahçelerinin iki yaz arasındaki görüntü farkı. Bulgu olarak kullanılmamalı.",
+}
 
 # ---------------------------------------------------------------------------
 # Klasörler (proje köküne göre)

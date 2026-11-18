@@ -240,7 +240,7 @@ Tablo önerisi (rapor için kısaltılmış):
 - LOCO: ortalama kayıp 0.051; Artvin 0.190, Samsun 0.084, Konya 0.051, Van 0.042, Şanlıurfa 0.027, İstanbul 0.021, İzmir −0.056
 - Değişim 2017 → 2025 (2 kutu ≈ 800 km²): Artvin Su/Sulak 12.1 → 30.7 km² (Yusufeli barajı, L43; Landsat MNDWI +%78.9 ile aynı yön);
   İstanbul Yapılaşma +31.0 km²; Konya Yapılaşma +16.5 km²; Şanlıurfa Yapılaşma +10.8 km²
-- Samsun Orman −89 km² / Çayır-Çalı +68 km² → fenoloji/görüntü farkı olabilir, `[DOĞRULANMADI]`; raporda bulgu olarak kullanmadan önce haritaya bakın
+- Samsun Orman −89 km² / Çayır-Çalı +68 km² → **kontrol edildi, sahte değişim** (`report/kontrol_samsun_orman.md`): bulgu olarak değil, sınırlılık örneği olarak yazın ("tek yaz kompozitleri tarımsal ağaçlıklarda sınıf kaymasına yol açabiliyor")
 - **Landsat (30 m, 13 251 nokta) ile doğrudan karşılaştırmayın:** farklı uydu, çözünürlük, test alanı ve örnekleme
 
 ### 4.9 Hipotezler (H1–H6) — `hipotez_ozet.csv`, `hipotez_kanit_H1_H5.png`
@@ -288,6 +288,7 @@ Sayılar otomatik; **karar sütununu siz yazın** (öneri parantez içinde, tart
   6. LOCO'da küçük test kümeleri (±0.05)
   7. Kapsam daraltma: 2 yıl, 2 000 nokta/il, n_iter=10
   8. U-Net yalnızca 14 alt bölgede (il geneli değil); test şeritleri eğitimle aynı kutularda
+  9. Tek yaz kompoziti sahte değişim üretebiliyor: Samsun–Yeşilırmak'ta orman −%54 (kontrol: `kontrol_samsun_orman.md`)
 
 ### 6.4 Gelecek çalışmalar (madde)
 - U-Net'i il geneline ve yıllık seriye genişletmek
