@@ -81,6 +81,11 @@ Bu plan yalnızca **eksikleri** listeler. Aşağıdakiler Selin tarafından tama
 9. Literatür: L01–L22 arasından 7 çalışma.
 10. Rapor bölümleri: 3.4–3.7 (yöntem), 4.2–4.6 (bulgular).
 
+> **Durum (18.11.2026): B ve C tamamlandı.** Notebook 07 (Sentinel-2, 14 alt bölge, 56 GeoTIFF) ve 08 (U-Net) yazıldı; Selin Colab'da çalıştırdı.
+> Sonuç: U-Net macro-F1 0.845 / mIoU 0.743; aynı piksellerde RF 0.740 / 0.608; LOCO ort. kayıp 0.051. Ayrıntı: `PROJE_ANLATIMI.md` (notebook 07–08).
+> Plandan farklar: kareler `.npz` yerine doğrudan GeoTIFF'ten okunuyor; bölme il/blok yerine kutu içinde kuzey→güney şeritler (320 m tampon) + ayrı LOCO;
+> il başına 2 kutu; Sentinel-2 ilk yılı 2017 (L2A kapsamı yeterli çıktı). Kalan iş: rapor bölümleri 3.6b ve 4.8'i kendi cümlelerinizle yazmak.
+
 ### B — Sentinel-2 veri hattı (GEE, GPU gerekmez) + U-Net (GPU)
 1. **00 kontrolü:** Türkiye için `COPERNICUS/S2_SR_HARMONIZED` 2017 yaz kapsamı var mı? (L2A küresel olarak Aralık 2018'den itibaren düzenli.) Yoksa başlangıç 2019 olur ya da 2017 için L1C kullanılır. Karar `config.py`'ye yazılır.
 2. Alt bölge kareleri: il başına 2–3 kare (~20 × 20 km). Konu odaklı seçilir: İstanbul kent çeperi, Artvin orman havzası, Konya tarım ovası, Van Gölü kıyısı, Şanlıurfa Harran Ovası, Samsun delta, İzmir Gediz deltası/kent.
