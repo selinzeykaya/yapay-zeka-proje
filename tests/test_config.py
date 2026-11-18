@@ -48,3 +48,19 @@ def test_degisim_yillari_ve_blok_boyu():
     y0, y1 = config.CHANGE_YEARS
     assert y0 < config.LABEL_YEAR < y1
     assert config.SPATIAL_BLOCK_M > config.GRID_SIZE_M > 0
+
+
+def test_sentinel2_alt_bolgeleri():
+    # Her ilde 2 alt bölge; merkezler Türkiye kutusu içinde; kutu adları tekil (07 ve 08 dosya adlarında kullanılır)
+    assert set(config.S2_ALT_BOLGELER) == set(config.CITIES)
+    adlar = []
+    for il, liste in config.S2_ALT_BOLGELER.items():
+        assert len(liste) == 2, il
+        for ad, lat, lon in liste:
+            assert 35.8 < lat < 42.2 and 25.6 < lon < 44.9, (il, ad)
+            assert ad.isascii() and " " not in ad, (il, ad)
+            adlar.append(f"{il}_{ad}")
+    assert len(adlar) == len(set(adlar)) == 14
+    assert sum(config.UNET_BOLME) == 1
+    assert config.S2_KUTU_KM * 1000 / config.S2_SCALE_M >= 4 * config.UNET_PATCH   # şeritlere yetecek boyut
+    assert config.S2_ETIKET_YILI == config.LABEL_YEAR

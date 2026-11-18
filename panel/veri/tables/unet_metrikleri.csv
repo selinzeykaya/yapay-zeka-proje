@@ -1,0 +1,2 @@
+﻿,accuracy,precision_macro,recall_macro,f1_macro,iou_macro,sinif_sayisi
+U-Net (Sentinel-2),0.863,0.8409,0.8511,0.8447,0.7433,6.0

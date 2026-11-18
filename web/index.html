@@ -14,19 +14,20 @@
 </head>
 <body>
 
+<nav class="ust" id="ust-menu">
+  <a class="logo" href="#">🌍 GeoClimate AI</a>
+  <span class="baglantilar">
+    <a href="#iller">İller</a><a href="#hipotezler">Hipotezler</a><a href="#modeller">Modeller</a><a href="#yontem">Yöntem</a>
+  </span>
+</nav>
 <header class="hero">
-  <nav class="ust">
-    <span class="logo">🌍 GeoClimate AI</span>
-    <span class="baglantilar">
-      <a href="#iller">İller</a><a href="#hipotezler">Hipotezler</a><a href="#modeller">Modeller</a><a href="#yontem">Yöntem</a>
-    </span>
-  </nav>
   <div class="hero-icerik">
     <div class="hero-metin">
-      <p class="ust-etiket">Uydu verisi · Yapay zekâ · 7 il · 2014 → 2024</p>
+      <p class="ust-etiket">Landsat · Sentinel-2 · 7 il · 2014 → 2025</p>
       <h1>Arazi değişince<br><span>yerel iklim</span> nasıl değişiyor?</h1>
       <p class="giris">Türkiye'nin yedi farklı coğrafyasında arazi örtüsünü Landsat görüntülerinden yapay zekâyla sınıflandırdık,
-        on yıllık değişimi ölçtük ve yüzey sıcaklığı, nem ve yağış göstergeleriyle ilişkisini inceledik.</p>
+        on yıllık değişimi ölçtük ve yüzey sıcaklığı, nem ve yağış göstergeleriyle ilişkisini inceledik.
+        Her ilin iki alt bölgesinde Sentinel-2 görüntülerini 10 m'de derin öğrenmeyle (U-Net) sınıflandırıp 2017 → 2025 değişimine baktık.</p>
       <div class="istatistikler" id="istatistikler"></div>
     </div>
     <div class="hero-harita">
@@ -83,6 +84,30 @@
       </div>
     </aside>
   </div>
+
+  <div class="unet-blok" id="unet-blok">
+    <div class="unet-baslik">
+      <p class="ust-etiket">Derin öğrenme · Sentinel-2 · 10 m · U-Net</p>
+      <h3 id="unet-baslik"></h3>
+      <p class="soru" id="unet-alt"></p>
+    </div>
+    <div class="il-duzen">
+      <figure class="unet-gorsel">
+        <div class="kutu-secici" id="kutu-secici"></div>
+        <img id="unet-img" alt="U-Net 2017 ve 2025 sınıflandırması ve değişim haritası" loading="lazy">
+        <figcaption class="kucuk" id="unet-not"></figcaption>
+      </figure>
+      <aside class="yan">
+        <div class="kartlar" id="unet-kartlar"></div>
+        <div class="grafik-kutu">
+          <h3 id="unet-degisim-baslik">Sınıf alanı değişimi (km²)</h3>
+          <p class="unet-uyari" id="unet-uyari" hidden></p>
+          <canvas id="unet-degisim-grafik" height="210"></canvas>
+          <p class="kucuk">İlin iki alt bölgesinin toplamı. Etiket yalnızca 2021 için var; 2017 ve 2025 haritalarının doğruluğu ölçülemiyor, yön büyüklükten daha güvenilir.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
 </section>
 
 <section id="hipotezler" class="bolum koyu">
@@ -93,13 +118,13 @@
 </section>
 
 <section id="modeller" class="bolum">
-  <h2>Yapay zekâ modelleri ne kadar başarılı?</h2>
+  <h2>Modeller ne kadar başarılı?</h2>
   <div class="iki-sutun">
     <div class="grafik-kutu">
       <h3>Arazi örtüsü sınıflandırması (test kümesi, 1 988 nokta)</h3>
       <canvas id="model-grafik" height="220"></canvas>
       <p class="kucuk">Faz 3'te Colab'da eğitilen modeller; seçim doğrulama kümesine göre → XGBoost. IoU = F1 / (2 − F1) olduğundan F1'den düşüktür
-        (XGBoost IoU'su yaklaşık: kütüphane sürüm farkı).</p>
+        (IoU, resmi model dosyalarından yeniden eğitilmeden hesaplandı).</p>
     </div>
     <div class="grafik-kutu">
       <h3>Model hiç görmediği bir ile taşınınca (macro-F1)</h3>
@@ -118,6 +143,18 @@
       <p class="kucuk">Yakın noktalar birbirine benzer; rastgele bölme başarıyı şişirebilir. 10 km bloklarla fark en fazla ≈ 0,013 → sızıntı küçük.
         Bu, test sonucunun yerine geçmeyen ayrı bir 5 katlı çapraz doğrulamadır (aynı hiperparametrelerle yeniden eğitildi).</p>
     </div>
+    <div class="grafik-kutu">
+      <h3>Önce RF, sonra U-Net: aynı Sentinel-2 piksellerinde sınıf bazında IoU</h3>
+      <div class="kartlar ince" id="unet-rf-kartlar"></div>
+      <canvas id="unet-rf-grafik" height="200"></canvas>
+      <p class="kucuk">RF her pikseli tek başına, U-Net komşularıyla birlikte sınıflandırır. Aynı veri, aynı şerit bölmesi, aynı 500 000 test pikseli
+        (14 alt bölge, test şeritleri; eğitimden 320 m uzakta).</p>
+    </div>
+    <div class="grafik-kutu">
+      <h3>Hiç görülmemiş ilde başarı kaybı: Landsat + XGBoost vs Sentinel-2 + U-Net</h3>
+      <canvas id="loco-karsilastirma" height="200"></canvas>
+      <p class="kucuk" id="loco-karsilastirma-not"></p>
+    </div>
   </div>
 </section>
 
@@ -130,6 +167,7 @@
     <li><b>Değişim</b><span>Her 1 km hücrede 9 nokta, 2014 ve 2024 için sınıflandırıldı</span></li>
     <li><b>İklim</b><span>Landsat LST, MODIS, ERA5-Land, CHIRPS · Mann-Kendall + Sen eğimi</span></li>
     <li><b>İlişki</b><span>Spearman, LST regresyonu (RF, XGBoost) + SHAP, il dışı test (LOCO)</span></li>
+    <li><b>Derin öğrenme</b><span>Sentinel-2 (10 m), 14 alt bölge · U-Net (ResNet-34) · RF ile karşılaştırma · 2017 → 2025</span></li>
   </ol>
   <div class="iki-sutun sinirlar">
     <div>

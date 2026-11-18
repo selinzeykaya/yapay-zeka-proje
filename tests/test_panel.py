@@ -24,8 +24,10 @@ def hatasiz(at):
 def test_ilk_acilis_ve_ana_metrikler(panel):
     hatasiz(panel)
     etiketler = [m.label for m in panel.metric]
-    assert "Sınıflandırma (XGBoost, macro-F1)" in etiketler
+    assert "XGBoost (macro-F1)" in etiketler
     assert panel.metric[0].value == "0.783"          # resmi Colab sonucu (Faz 3), yerel 0.776 değil
+    assert "U-Net (macro-F1)" in etiketler
+    assert panel.metric[etiketler.index("U-Net (macro-F1)")].value == "0.845"   # resmi Colab sonucu (08)
 
 
 def test_her_il_hatasiz(panel):

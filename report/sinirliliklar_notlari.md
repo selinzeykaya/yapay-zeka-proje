@@ -59,10 +59,24 @@
 ## Eklenen analizler (16.11.2026, `amine/geoclimate-uyum` dalı, yerel çalıştırma)
 - **Mekânsal blok doğrulama (03 bölüm 10b):** rastgele ile 10 km blok 5 katlı CV arasındaki macro-F1 farkı en fazla 0.013 (RF, XGBoost) → 300 m mesafe filtresi sızıntıyı büyük ölçüde önlemiş. Blok doğrulamada katmanlar arası std daha büyük (±0.012–0.022): bölgeden bölgeye başarı değişiyor.
 - **IoU:** macro IoU 0.63–0.66; en zayıf sınıf Tarım (0.38–0.43). IoU = F1/(2−F1) olduğundan F1'den düşük olması beklenir.
-- **Sürüm farkı:** Yerel çalıştırmada (scikit-learn 1.9.1, xgboost 3.4.1) RF, SVM, MLP Faz 3 ile birebir aynı; XGBoost macro-F1 0.776 (Faz 3: 0.783). Fark xgboost sürümünden. Raporda Faz 3 (Colab) değerleri kullanılmalı; XGBoost IoU'su Colab'da kesinleşir. LST regresyonunda RF R² 0.9203 (Faz 3: 0.9209).
+- **Yeniden eğitim farkı:** Yerel yeniden eğitimde (scikit-learn 1.9.1, xgboost 3.4.1) RF, SVM, MLP Faz 3 ile aynı F1'i verdi; XGBoost macro-F1 0.776 (Faz 3: 0.783). Neden sürüm değil: resmi model de xgboost 3.4.1 ile kaydedilmiş; aynı ayarlarla başka bir bilgisayarda yeniden eğitim birebir aynı ağaçları üretmedi (xgboost sürümü Colab'dakiyle aynı, 3.4.1; olası neden işletim sistemi/işlemci farkı). Resmi model dosyaları doğrudan değerlendirildiğinde (`tools/resmi_model_iou.py`) dört modelin accuracy ve F1'i resmi tabloyla birebir aynı çıkıyor; IoU tablosu bu resmi modellerden (XGBoost macro IoU 0.657). Raporda Faz 3 (Colab) değerleri kullanılmalı. LST regresyonunda RF R² 0.9203 (Faz 3: 0.9209).
 - **XGBoost regresyonu** RF ile aynı başarıda (R² 0.921) → regresyon sonucu modele özgü değil.
 - **scikit-learn uyarısı:** 1.9 sürümünde `SVC(probability=True)` kullanımdan kaldırılacak olarak işaretlendi (1.11'de kalkıyor). Colab scikit-learn'ü güncellediğinde 03/06'daki SVM olasılık hesabı bozulabilir; CI en yeni sürümü kurduğu için bunu ilk o gösterir. Çözüm: `CalibratedClassifierCV(SVC(), ensemble=False)`.
 - **Hipotez tablosundaki 0.1 eşiği** yaygın bir kuraldır, istatistiksel test değildir. Hücreler bağımsız olmadığından p-değerleri yorumlanmadı.
+
+## Sentinel-2 + U-Net (07, 08; Selin'in Colab çalıştırması, 17–18.11.2026)
+- **Alan:** il başına iki 20 × 20 km alt bölge (14 kutu, ≈800 km²/il). Kutular ilin konusunu göstermek için seçildi (rastgele değil) → il geneline genellenemez.
+- **Etiket:** yalnızca WorldCover 2021. Model 2021 görüntüsüyle eğitilip test edildi; 2017 ve 2025 tahminlerinin doğruluğu ölçülemiyor.
+- **Bölme:** test şeritleri eğitim şeritleriyle aynı kutuda (320 m tamponla). Bu, "aynı bölgede yeni piksel" başarısıdır; başka bölgeye taşınabilirlik LOCO ile ölçüldü.
+- **İl bazında macro-F1 düşük (0.42–0.73):** il test şeridinde nadir sınıflar birkaç yüz piksele düşer (ör. Şanlıurfa orman %0.4, Konya su ≈%0) ve tek sınıfın düşük F1'i
+  macro ortalamayı çeker. Macro yalnızca bulunan sınıflar üzerinden alınıyor (`sinif_sayisi` = 6 bütün illerde, yani metrik tanımından kaynaklanmıyor).
+  Birleşik 14 kutu testinde F1 0.845. Raporda il F1'i accuracy (0.71–0.92) ile birlikte verilmeli.
+- **LOCO:** LOCO modelleri 15 epoch ve erken durdurmasız, ana model 27 epoch (en iyi 20) eğitildi → kayıp biraz abartılmış olabilir. İzmir'in negatif kaybı (−0.056)
+  il başına test şeridinin küçük olmasından ve eğitim farkından kaynaklanabilir. Landsat LOCO (0.109) ile farklı veri ve test alanı olduğu için doğrudan karşılaştırılmaz.
+- **Değişim:** iki tek yaz ortancası arasındaki fenoloji/atmosfer farkı sahte değişim üretebilir. Samsun Orman −89 km² / Çayır-Çalı +68 km² kontrol edildi:
+  **sahte değişim** (`report/kontrol_samsun_orman.md`: %96'sı tek kutuda, eşit dağılmış, Orman→Çayır/Çalı, Landsat'ta il geneli −%3,7). Artvin su artışı Landsat MNDWI ile tutarlı (Yusufeli barajı).
+- **2017 ilk yıl:** Sentinel-2 L2A Türkiye'de 2017'den itibaren düzenli; 2014 ile aynı yıl karşılaştırılamaz (Landsat 2014→2024, Sentinel-2 2017→2025).
+- **RF karşılaştırması:** RF 60 000 piksel ile eğitildi (U-Net milyonlarca piksel görüyor); RF'ye daha çok piksel vermek farkı biraz kapatabilir, ama komşuluk bilgisi yine de RF'de yok.
 
 ## Faz 6 (bölgeler arası genelleme, AS5)
 - XGBoost macro-F1, aynı şehir → başka şehir (LOCO, aynı test noktaları): İstanbul 0.812 → 0.729 (−0.083), İzmir 0.809 → 0.716 (−0.094), Artvin 0.728 → 0.668 (−0.059), Samsun 0.742 → 0.671 (−0.071), Konya 0.794 → 0.607 (**−0.187**), Van 0.770 → 0.645 (−0.125), Şanlıurfa 0.773 → 0.626 (−0.147). Ortalama düşüş ≈ −0.11.

@@ -1,7 +1,7 @@
 """Web sitesi ve panel EĞİTTİĞİMİZ modelin resmi (Colab, Faz 3/4) sonuçlarını mı gösteriyor?
 
-Kural: Site ve panel yalnızca resmi sonuçları gösterir. Yerel yeniden eğitimden gelen sayılar (xgboost sürüm farkı
-nedeniyle XGBoost macro-F1 0.776 gibi) resmi değerlerin yerine geçemez. Bu testler web/data/ozet.json'daki sayıları
+Kural: Site ve panel yalnızca resmi sonuçları gösterir. Yerel yeniden eğitimden gelen sayılar (başka bilgisayarda
+yeniden eğitilen XGBoost'un macro-F1 0.776'sı gibi) resmi değerlerin yerine geçemez. Bu testler web/data/ozet.json'daki sayıları
 panel/veri/tables/ altındaki resmi Colab tablolarıyla karşılaştırır.
 """
 import csv
@@ -60,3 +60,23 @@ def test_hucre_dosyalari_tam(ozet):
     for kod, il in ozet["iller"].items():
         d = json.loads((KOK / "web" / "data" / "hucre" / f"{kod}.json").read_text(encoding="utf-8"))
         assert len(d["i"]) == il["hucre"] == len(d["b24"]), kod
+
+
+def test_unet_sayilari_resmi_colab(ozet):
+    """U-Net bölümü (Faz 07-08) Selin'in Colab çalıştırmasının tablolarıyla aynı olmalı."""
+    u = ozet["unet"]
+    m = oku("unet_metrikleri")[0]
+    assert u["test"]["f1"] == pytest.approx(float(m["f1_macro"]), abs=6e-4)
+    assert u["test"]["iou"] == pytest.approx(float(m["iou_macro"]), abs=6e-4)
+    assert u["test"]["acc"] == pytest.approx(float(m["accuracy"]), abs=6e-4)
+    for r in oku("unet_vs_rf"):
+        s = u["modeller"]["unet" if r["model"].startswith("U-Net") else "rf"]
+        assert s["f1"] == pytest.approx(float(r["f1_macro"]), abs=6e-4), r["model"]
+        assert s["iou"] == pytest.approx(float(r["iou_macro"]), abs=6e-4), r["model"]
+    il_tab = {r["il"]: r for r in oku("unet_il_bazinda")}
+    loco = {r["il"]: r for r in oku("unet_loco")}
+    for kod, il in u["iller"].items():
+        assert il["f1"] == pytest.approx(float(il_tab[kod]["f1_macro"]), abs=6e-4), kod
+        assert il["loco"]["dusus"] == pytest.approx(float(loco[kod]["dusus_f1"]), abs=6e-4), kod
+    ort = sum(float(r["dusus_f1"]) for r in loco.values()) / len(loco)
+    assert u["loco_ort_dusus"] == pytest.approx(ort, abs=6e-4)

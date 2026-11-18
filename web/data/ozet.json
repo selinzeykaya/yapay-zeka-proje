@@ -1129,7 +1129,7 @@
    "f1": 0.783,
    "auc": 0.961,
    "kappa": 0.742,
-   "iou": 0.648
+   "iou": 0.657
   },
   "SVM": {
    "acc": 0.778,
@@ -1353,13 +1353,455 @@
   }
  },
  "iou_sinif": {
-  "Orman": 0.703,
-  "Tarim": 0.406,
-  "Yapilasma": 0.655,
-  "Cayir_Cali": 0.561,
-  "Ciplak": 0.651,
-  "Su_Sulak": 0.909
+  "Orman": 0.707,
+  "Tarim": 0.415,
+  "Yapilasma": 0.669,
+  "Cayir_Cali": 0.574,
+  "Ciplak": 0.663,
+  "Su_Sulak": 0.915
  },
  "ndvi_negatif_il": 7,
- "loco_ort_dusus": 0.109
+ "loco_ort_dusus": 0.109,
+ "unet": {
+  "test": {
+   "acc": 0.863,
+   "precision": 0.841,
+   "recall": 0.851,
+   "f1": 0.845,
+   "iou": 0.743
+  },
+  "modeller": {
+   "unet": {
+    "acc": 0.863,
+    "f1": 0.845,
+    "iou": 0.743,
+    "iou_sinif": {
+     "Orman": 0.762,
+     "Tarim": 0.81,
+     "Yapilasma": 0.785,
+     "Cayir_Cali": 0.629,
+     "Ciplak": 0.511,
+     "Su_Sulak": 0.963
+    }
+   },
+   "rf": {
+    "acc": 0.765,
+    "f1": 0.74,
+    "iou": 0.608,
+    "iou_sinif": {
+     "Orman": 0.633,
+     "Tarim": 0.646,
+     "Yapilasma": 0.537,
+     "Cayir_Cali": 0.511,
+     "Ciplak": 0.352,
+     "Su_Sulak": 0.967
+    }
+   }
+  },
+  "iller": {
+   "Istanbul": {
+    "f1": 0.598,
+    "iou": 0.493,
+    "acc": 0.827,
+    "loco": {
+     "ayni": 0.598,
+     "baska": 0.577,
+     "dusus": 0.021
+    },
+    "degisim": {
+     "Cayir_Cali": {
+      "y0": 171.1,
+      "y1": 157.8,
+      "fark": -13.2
+     },
+     "Ciplak": {
+      "y0": 20.4,
+      "y1": 20.7,
+      "fark": 0.3
+     },
+     "Orman": {
+      "y0": 327.3,
+      "y1": 317.3,
+      "fark": -10.1
+     },
+     "Su_Sulak": {
+      "y0": 25.2,
+      "y1": 23.0,
+      "fark": -2.1
+     },
+     "Tarim": {
+      "y0": 15.4,
+      "y1": 9.5,
+      "fark": -5.9
+     },
+     "Yapilasma": {
+      "y0": 240.6,
+      "y1": 271.6,
+      "fark": 31.0
+     }
+    },
+    "uyari": null,
+    "kutular": [
+     {
+      "kod": "Istanbul_kuzey_cevre",
+      "ad": "kuzey cevre",
+      "lat": 41.13,
+      "lon": 28.78
+     },
+     {
+      "kod": "Istanbul_anadolu_yakasi",
+      "ad": "anadolu yakasi",
+      "lat": 41.02,
+      "lon": 29.25
+     }
+    ]
+   },
+   "Izmir": {
+    "f1": 0.653,
+    "iou": 0.567,
+    "acc": 0.902,
+    "loco": {
+     "ayni": 0.653,
+     "baska": 0.709,
+     "dusus": -0.056
+    },
+    "degisim": {
+     "Cayir_Cali": {
+      "y0": 143.6,
+      "y1": 155.3,
+      "fark": 11.7
+     },
+     "Ciplak": {
+      "y0": 17.8,
+      "y1": 23.3,
+      "fark": 5.5
+     },
+     "Orman": {
+      "y0": 177.5,
+      "y1": 169.3,
+      "fark": -8.2
+     },
+     "Su_Sulak": {
+      "y0": 192.7,
+      "y1": 182.7,
+      "fark": -10.0
+     },
+     "Tarim": {
+      "y0": 139.9,
+      "y1": 134.9,
+      "fark": -5.0
+     },
+     "Yapilasma": {
+      "y0": 128.4,
+      "y1": 134.4,
+      "fark": 5.9
+     }
+    },
+    "uyari": null,
+    "kutular": [
+     {
+      "kod": "Izmir_gediz_deltasi",
+      "ad": "gediz deltasi",
+      "lat": 38.57,
+      "lon": 26.88
+     },
+     {
+      "kod": "Izmir_bornova",
+      "ad": "bornova",
+      "lat": 38.45,
+      "lon": 27.22
+     }
+    ]
+   },
+   "Artvin": {
+    "f1": 0.624,
+    "iou": 0.535,
+    "acc": 0.908,
+    "loco": {
+     "ayni": 0.624,
+     "baska": 0.434,
+     "dusus": 0.19
+    },
+    "degisim": {
+     "Cayir_Cali": {
+      "y0": 266.2,
+      "y1": 241.9,
+      "fark": -24.3
+     },
+     "Ciplak": {
+      "y0": 20.9,
+      "y1": 20.4,
+      "fark": -0.5
+     },
+     "Orman": {
+      "y0": 497.9,
+      "y1": 503.2,
+      "fark": 5.3
+     },
+     "Su_Sulak": {
+      "y0": 12.1,
+      "y1": 30.7,
+      "fark": 18.6
+     },
+     "Tarim": {
+      "y0": 0.1,
+      "y1": 0.0,
+      "fark": -0.1
+     },
+     "Yapilasma": {
+      "y0": 2.9,
+      "y1": 3.8,
+      "fark": 0.9
+     }
+    },
+    "uyari": null,
+    "kutular": [
+     {
+      "kod": "Artvin_yusufeli",
+      "ad": "yusufeli",
+      "lat": 40.8,
+      "lon": 41.55
+     },
+     {
+      "kod": "Artvin_borcka",
+      "ad": "borcka",
+      "lat": 41.33,
+      "lon": 41.72
+     }
+    ]
+   },
+   "Samsun": {
+    "f1": 0.619,
+    "iou": 0.476,
+    "acc": 0.708,
+    "loco": {
+     "ayni": 0.619,
+     "baska": 0.535,
+     "dusus": 0.084
+    },
+    "degisim": {
+     "Cayir_Cali": {
+      "y0": 168.8,
+      "y1": 236.9,
+      "fark": 68.1
+     },
+     "Ciplak": {
+      "y0": 6.2,
+      "y1": 4.8,
+      "fark": -1.4
+     },
+     "Orman": {
+      "y0": 181.0,
+      "y1": 91.8,
+      "fark": -89.3
+     },
+     "Su_Sulak": {
+      "y0": 156.2,
+      "y1": 163.1,
+      "fark": 7.0
+     },
+     "Tarim": {
+      "y0": 258.7,
+      "y1": 264.1,
+      "fark": 5.4
+     },
+     "Yapilasma": {
+      "y0": 29.1,
+      "y1": 39.3,
+      "fark": 10.2
+     }
+    },
+    "uyari": "Kontrol edildi: Orman −89 km² / Çayır-Çalı +68 km² gerçek değişim değil. Azalmanın %96'sı tek kutuda (Yeşilırmak deltası), bütün ovaya eşit dağılmış ve neredeyse tamamı Orman→Çayır/Çalı; Landsat'ta bütün ilde yalnızca −%3,7. Büyük olasılıkla fındık bahçelerinin iki yaz arasındaki görüntü farkı. Bulgu olarak kullanılmamalı.",
+    "kutular": [
+     {
+      "kod": "Samsun_kizilirmak_deltasi",
+      "ad": "kizilirmak deltasi",
+      "lat": 41.62,
+      "lon": 35.98
+     },
+     {
+      "kod": "Samsun_yesilirmak_deltasi",
+      "ad": "yesilirmak deltasi",
+      "lat": 41.28,
+      "lon": 36.68
+     }
+    ]
+   },
+   "Konya": {
+    "f1": 0.545,
+    "iou": 0.452,
+    "acc": 0.877,
+    "loco": {
+     "ayni": 0.545,
+     "baska": 0.494,
+     "dusus": 0.051
+    },
+    "degisim": {
+     "Cayir_Cali": {
+      "y0": 147.9,
+      "y1": 155.1,
+      "fark": 7.3
+     },
+     "Ciplak": {
+      "y0": 179.7,
+      "y1": 163.1,
+      "fark": -16.6
+     },
+     "Orman": {
+      "y0": 2.5,
+      "y1": 1.1,
+      "fark": -1.4
+     },
+     "Su_Sulak": {
+      "y0": 3.8,
+      "y1": 0.7,
+      "fark": -3.1
+     },
+     "Tarim": {
+      "y0": 435.9,
+      "y1": 434.1,
+      "fark": -1.8
+     },
+     "Yapilasma": {
+      "y0": 28.6,
+      "y1": 45.2,
+      "fark": 16.5
+     }
+    },
+    "uyari": null,
+    "kutular": [
+     {
+      "kod": "Konya_cumra",
+      "ad": "cumra",
+      "lat": 37.57,
+      "lon": 32.78
+     },
+     {
+      "kod": "Konya_karapinar",
+      "ad": "karapinar",
+      "lat": 37.73,
+      "lon": 33.55
+     }
+    ]
+   },
+   "Van": {
+    "f1": 0.728,
+    "iou": 0.604,
+    "acc": 0.916,
+    "loco": {
+     "ayni": 0.728,
+     "baska": 0.685,
+     "dusus": 0.042
+    },
+    "degisim": {
+     "Cayir_Cali": {
+      "y0": 318.7,
+      "y1": 328.7,
+      "fark": 10.1
+     },
+     "Ciplak": {
+      "y0": 25.8,
+      "y1": 32.3,
+      "fark": 6.5
+     },
+     "Orman": {
+      "y0": 24.3,
+      "y1": 16.7,
+      "fark": -7.6
+     },
+     "Su_Sulak": {
+      "y0": 175.5,
+      "y1": 166.9,
+      "fark": -8.6
+     },
+     "Tarim": {
+      "y0": 182.0,
+      "y1": 172.7,
+      "fark": -9.3
+     },
+     "Yapilasma": {
+      "y0": 73.7,
+      "y1": 82.5,
+      "fark": 8.9
+     }
+    },
+    "uyari": null,
+    "kutular": [
+     {
+      "kod": "Van_van_kent_kiyi",
+      "ad": "van kent kiyi",
+      "lat": 38.5,
+      "lon": 43.38
+     },
+     {
+      "kod": "Van_ercis_kiyi",
+      "ad": "ercis kiyi",
+      "lat": 39.02,
+      "lon": 43.35
+     }
+    ]
+   },
+   "Sanliurfa": {
+    "f1": 0.42,
+    "iou": 0.323,
+    "acc": 0.903,
+    "loco": {
+     "ayni": 0.42,
+     "baska": 0.393,
+     "dusus": 0.027
+    },
+    "degisim": {
+     "Cayir_Cali": {
+      "y0": 29.8,
+      "y1": 14.5,
+      "fark": -15.3
+     },
+     "Ciplak": {
+      "y0": 8.0,
+      "y1": 5.1,
+      "fark": -2.9
+     },
+     "Orman": {
+      "y0": 0.4,
+      "y1": 0.6,
+      "fark": 0.1
+     },
+     "Su_Sulak": {
+      "y0": 0.1,
+      "y1": 0.1,
+      "fark": 0.0
+     },
+     "Tarim": {
+      "y0": 743.3,
+      "y1": 750.6,
+      "fark": 7.3
+     },
+     "Yapilasma": {
+      "y0": 18.4,
+      "y1": 29.1,
+      "fark": 10.8
+     }
+    },
+    "uyari": null,
+    "kutular": [
+     {
+      "kod": "Sanliurfa_harran",
+      "ad": "harran",
+      "lat": 36.86,
+      "lon": 39.03
+     },
+     {
+      "kod": "Sanliurfa_suruc",
+      "ad": "suruc",
+      "lat": 36.97,
+      "lon": 38.42
+     }
+    ]
+   }
+  },
+  "yil0": 2017,
+  "yil1": 2025,
+  "loco_ort_dusus": 0.051,
+  "kutu_km": 20
+ }
 }

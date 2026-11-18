@@ -10,7 +10,7 @@
 ## İçindekiler
 1. [Proje ne soruyor?](#1-proje-ne-soruyor)
 2. [Kim ne yaptı? (zaman çizelgesi)](#2-kim-ne-yaptı-zaman-çizelgesi)
-3. [Temel analiz hattı — Faz 0–8](#3-temel-analiz-hattı--faz-08)
+3. [Temel analiz hattı — notebook 00–08](#3-temel-analiz-hattı--notebook-0008)
 4. [Sonradan eklenenler](#4-sonradan-eklenenler)
 5. [Sonuçların özeti](#5-sonuçların-özeti)
 6. [Nasıl çalıştırılır?](#6-nasıl-çalıştırılır)
@@ -53,12 +53,15 @@ Analizler **ilişki** gösterir; neden-sonuç iddiası yoktur.
 | 16 Kasım | **Sena Öz** | Kapsamı GeoClimate dokümanına uyarlama, İDA'nın çıkarılması, görev planı, IoU · mekânsal blok doğrulama · XGBoost regresyonu · H1–H6 kanıt tabloları (gerçek veriyle çalıştırıldı), kavram rehberi |
 | 16 Kasım | **Zeynep Selin Kaya** · **Sena Öz** | GitHub Actions otomatik kontrolleri (iki ayrı iş akışı) |
 | 16–17 Kasım | **Sena Öz** | Streamlit sonuç paneli, QGIS harita üretimi (29 harita + proje), etkileşimli web sitesi, model uyumu testi |
+| 17 Kasım | **Sena Öz** | Sentinel-2 veri (07) ve U-Net (08) notebook'larının yazılması; tokensiz kurulum |
+| 17–18 Kasım | **Zeynep Selin Kaya** | 07 ve 08'i Colab'da (GPU) çalıştırma: 56 GeoTIFF, U-Net eğitimi, RF karşılaştırması, LOCO, 2017→2025 değişim |
+| 18 Kasım | **Sena Öz** | U-Net sonuçlarının web sitesine, panele, rapor iskeletine ve bu belgeye işlenmesi; U-Net uyum testi |
 
-Ayrıntılı geçmiş: `git log`. Birleştirmeler Pull Request #1 ve #2 ile yapıldı.
+Ayrıntılı geçmiş: `git log`. Birleştirmeler Pull Request #1, #2 ve #3 ile yapıldı.
 
 ---
 
-## 3. Temel analiz hattı — Faz 0–8
+## 3. Temel analiz hattı — notebook 00–08
 
 Analizler Google Colab'da sırayla çalışan notebook'lardır. Bütün ayarlar tek dosyadadır (`config.py`), her yerde `RANDOM_STATE = 42`.
 **Kod GitHub'da, veri ve sonuçlar Google Drive'da** (`Drive'ım/yapay-zeka-proje/`).
@@ -117,7 +120,55 @@ Analizler Google Colab'da sırayla çalışan notebook'lardır. Bütün ayarlar 
 - **Sonuç:** XGBoost ortalama **0,109** macro-F1 kaybediyor; en çok Konya (−0,187), en az Artvin (−0,059). Kayıp kurak ve sıcak illerde büyük
   (yağışla ρ ≈ −0,96; n = 7, yalnızca örüntü).
 
-### Faz 7–8 — Literatür, rapor ve sunum iskeletleri
+### Notebook 07 — Sentinel-2 verisi (`07_sentinel2_veri`)
+- **Ne:** GeoClimate dokümanındaki "Sentinel-2 + U-Net" adımının verisi. Her ilde ilin konusunu en iyi gösteren **iki alt bölge**
+  (20 km × 20 km, toplam 14 kutu; ör. Artvin–Yusufeli, İstanbul kuzey çevresi, Konya–Karapınar, Van kent kıyısı), 10 m çözünürlükte.
+- **Nasıl:** `COPERNICUS/S2_SR_HARMONIZED` yaz görüntüleri; bulut maskesi **s2cloudless** (olasılık < %40) + sahne sınıflandırma katmanı (SCL: bulut, gölge, kar).
+  6 bant (B2, B3, B4, B8, B11, B12), yaz ortancası, EPSG:3035, 10 m. Yıllar: **2017** (2017–2019 arasından, bütün kutularda yeterli görüntü olan ilk yıl,
+  otomatik seçildi), **2021** (etiket yılı) ve **2025**. Etiket: ESA WorldCover 2021 → aynı 6 sınıf.
+  Çıktı: 14 kutu × (3 yıl + etiket) = **56 GeoTIFF** (`data/raw/s2/`).
+- **Neden alt bölge:** 7 ilin tamamı 10 m'de yüzlerce GB eder ve GEE/Colab kotasını aşar; 20 km'lik kutular U-Net eğitimi için yeterli piksel
+  (her kutu 4 milyon) verir. Sınırlılık: kutular ilin tamamını temsil etmez.
+- **Kontrol:** Verisiz piksel oranı her yılda < %0,4 (en yüksek Konya–Karapınar 2017: %0,39), etiketsiz piksel yok (`s2_veri_ozeti.csv`).
+
+### Notebook 08 — U-Net ile sınıflandırma (`08_unet_siniflandirma`)
+- **Ne:** **U-Net**, görüntüyü 256 × 256 piksellik parçalar halinde okuyup her piksele sınıf veren bir evrişimli sinir ağıdır (segmentasyon).
+  03'teki modeller her pikseli **tek başına** sınıflandırır; U-Net pikselin **komşularına da bakar** (tarla şekli, kent dokusu, kıyı çizgisi).
+- **Nasıl:**
+  - **Bölme:** Her kutu kuzeyden güneye şeritlere ayrıldı: %70 eğitim, %15 doğrulama, %15 test; şeritler arasında **320 m tampon**
+    (yan yana pikseller hem eğitimde hem testte olmasın diye; 03'teki 300 m kuralının karşılığı).
+  - **Model:** ResNet-34 kodlayıcılı U-Net (`segmentation_models_pytorch`), **ImageNet ağırlıklarıyla başlatıldı** (transfer öğrenme), ilk katman 6 banda uyarlandı.
+    Kayıp: sınıf ağırlıklı çapraz entropi + Dice (az görülen yapılaşma, çıplak ve su sınıfları öne çıksın diye). Veri artırma: döndürme/yansıtma.
+  - **Eğitim:** Colab GPU, karma hassasiyet (AMP), her epoch 1 600 rastgele parça; doğrulama mIoU'su 6 epoch iyileşmeyince durdu →
+    27 epoch, **en iyi epoch 20** (doğrulama mIoU 0,715), ≈8 dakika. Her epoch Drive'a kaydedildiği için oturum koparsa kaldığı yerden devam eder.
+  - **Önce RF, sonra U-Net:** GeoClimate dokümanı temel model olarak Random Forest ister. RF **aynı Sentinel-2 verisi ve aynı şeritlerle** eğitildi
+    (60 000 piksel; 6 bant + NDVI, NDBI, MNDWI) ve iki model **aynı 500 000 test pikselinde** karşılaştırıldı. Fark yalnızca komşuluk bilgisinden gelir.
+  - **H6 (LOCO):** Bir ilin iki kutusu eğitimden çıkarıldı, model kalan 6 ille (15 epoch) eğitilip o ilin test şeritlerinde ölçüldü (7 tur).
+  - **Değişim:** Ana model 2017 ve 2025 görüntülerine uygulandı; geçiş matrisi km² olarak (1 piksel = 100 m²) ve değişim haritası
+    (`results/unet_tahmin/*.tif`, QGIS'te açılır).
+- **Sonuç (test şeritleri, 14 kutu):**
+
+  | Model (aynı Sentinel-2 test pikselleri) | Accuracy | macro-F1 | mIoU |
+  |---|---|---|---|
+  | Random Forest (piksel) | 0,765 | 0,740 | 0,608 |
+  | **U-Net (komşuluk)** | **0,863** | **0,845** | **0,743** |
+
+  - Komşuluk bilgisi macro-F1'i **+0,105**, mIoU'yu **+0,135** artırdı. En büyük kazanç Yapılaşma (IoU 0,54 → 0,79), Tarım (0,65 → 0,81) ve
+    Çıplak (0,35 → 0,51); Su/Sulak iki modelde de ≈0,96 (su zaten tek pikselde kolay tanınır).
+  - **İl bazında** macro-F1 0,42 (Şanlıurfa) … 0,73 (Van); accuracy ise 0,71 (Samsun) … 0,92 (Van). İl bazında F1'in düşük görünmesi hata değil:
+    bir ilin test şeridinde nadir sınıflar (ör. Şanlıurfa'da orman %0,4) birkaç piksele düşer ve o sınıfın F1'i macro ortalamayı aşağı çeker.
+    14 kutunun birleşik testinde her sınıfın yeterli pikseli olduğu için F1 0,845'tir.
+  - **LOCO (H6):** ili hiç görmeyen model ortalama **0,051** macro-F1 kaybediyor; en çok **Artvin (−0,190)**: dağlık orman/çayır dokusu başka illerde yok.
+    İzmir'de kayıp yok (+0,056: başka illerin kıyı ve delta örnekleri yeterli). Landsat + XGBoost'taki 0,109'la **doğrudan karşılaştırılamaz**
+    (farklı veri, çözünürlük ve test alanı) ama aynı yöne işaret eder: **başarı bölgeye göre değişir** (H6).
+  - **Değişim 2017 → 2025 (iki kutunun toplamı, ≈800 km²/il):** Artvin Su/Sulak **12,1 → 30,7 km²** (Yusufeli baraj gölü; Landsat MNDWI'deki +%78,9 ile
+    aynı yön), İstanbul Yapılaşma **+31,0 km²** (+%12,9), Konya Yapılaşma +16,5 km², Şanlıurfa Yapılaşma +10,8 km² ve Tarım +7,3 km².
+    Samsun'da Orman −89 km², Çayır/Çalı +68 km² görünüyor. **Kontrol edildi, gerçek değişim değil**
+    ([report/kontrol_samsun_orman.md](report/kontrol_samsun_orman.md)). Azalmanın %96'sı tek kutuda (Yeşilırmak deltası) ve bütün ovaya eşit dağılmış;
+    neredeyse tamamı Orman → Çayır/Çalı. WorldCover 2021 ile 2017 tahmini uyumlu, Landsat'ta bütün ilde yalnızca −%3,7. Muhtemel neden fındık bahçelerinin
+    iki yaz arasındaki görüntü farkı. Bulgu olarak kullanılmaz; sitede ve panelde uyarı gösterilir.
+
+### Literatür, rapor ve sunum iskeletleri
 - 46 aday çalışma (DOI'leri doğrulanmış) `literature/` altında; rapor iskeleti hocanın bölüm sırasına göre `report/rapor_iskeleti.md`;
   sunum iskeleti ve olası sorular `presentation/`; teslim kontrol listesi `report/teslim_kontrol_listesi.md`.
 
@@ -127,12 +178,12 @@ Analizler Google Colab'da sırayla çalışan notebook'lardır. Bütün ayarlar 
 
 ### 4.1 Kapsam: GeoClimate çerçevesi ve İDA'nın çıkarılması
 - **Ne:** Proje başlığı ve alt sorular GeoClimate AI dokümanına göre düzenlendi; İDA modülü çıkarıldı (bkz. Faz 5); 7 il korundu.
-- **Neden:** Araştırmanın bilimsel bütünlüğü. Görev planı ve U-Net/Sentinel-2 önerisi `plan/gorev_dagilimi.md`'de (ekip kararı bekleniyor).
+- **Neden:** Araştırmanın bilimsel bütünlüğü. Dokümandaki Sentinel-2 + U-Net adımı notebook 07–08 ile yapıldı; görev planı `plan/gorev_dagilimi.md`'de.
 
 ### 4.2 IoU metriği
 - **Ne:** `src/ml_utils.compute_metrics`'e IoU (Jaccard = TP / (TP+FP+FN)) eklendi; 03'te sınıf bazında IoU tablosu.
 - **Neden:** GeoClimate dokümanında isteniyor; U-Net gibi segmentasyon modelleriyle aynı ölçüyle karşılaştırma sağlar. IoU = F1/(2−F1) olduğundan F1'den düşüktür.
-- **Sonuç:** macro IoU RF 0,633 · XGBoost ≈0,648 · SVM 0,644 · MLP 0,664; en zayıf sınıf Tarım (≈0,41).
+- **Sonuç (Drive'daki resmi model dosyalarından):** macro IoU RF 0,633 · XGBoost **0,657** · SVM 0,644 · MLP 0,664; en zayıf sınıf Tarım (≈0,42).
 
 ### 4.3 Mekânsal blok doğrulama (03, bölüm 10b)
 - **Ne:** Aynı modeller iki şekilde 5 katlı çapraz doğrulandı: rastgele ve **10 km'lik bloklara göre** (aynı bloktaki noktalar hep aynı katmanda).
@@ -148,7 +199,9 @@ Analizler Google Colab'da sırayla çalışan notebook'lardır. Bütün ayarlar 
 
 > **Bu ek analizler nasıl çalıştırıldı?** GPU gerektirmedikleri için Drive'daki gerçek veriyle yerel bilgisayarda çalıştırıldı. Kontrol olarak modeller
 > Faz 3 ayarlarıyla yeniden eğitildi: RF, SVM ve MLP Colab sonuçlarıyla **birebir** aynı çıktı; test bölmesi 13 251 noktada 0 farkla aynıydı.
-> XGBoost'ta kütüphane sürüm farkı nedeniyle 0,776 çıktı → **raporda ve bütün çıktılarda resmi Colab değeri (0,783) kullanılır.**
+> XGBoost yeniden eğitildiğinde 0,776 çıktı: sürüm aynı (3.4.1), ama başka bir bilgisayarda birebir aynı ağaçlar oluşmadı.
+> Bu yüzden IoU, Drive'daki **resmi model dosyaları yeniden eğitilmeden** yüklenerek hesaplandı (`tools/resmi_model_iou.py`):
+> dört modelin accuracy ve F1'i resmi tabloyla birebir aynı çıktı. **Raporda ve bütün çıktılarda resmi Colab değeri (0,783) kullanılır.**
 > Drive'daki orijinal dosyalara dokunulmadı; yalnızca 11 yeni dosya eklendi.
 
 ### 4.6 GitHub Actions (otomatik kontrol)
@@ -160,6 +213,8 @@ Analizler Google Colab'da sırayla çalışan notebook'lardır. Bütün ayarlar 
 
 ### 4.7 Streamlit sonuç paneli (`panel/`)
 - 5 sekmeli etkileşimli panel (genel bakış, arazi değişimi, iklim, ilişkiler ve hipotezler, model başarısı). Hesap yapmaz; notebook çıktılarını gösterir.
+- U-Net: *Arazi değişimi* sekmesinde seçili ilin iki alt bölgesinin 2017→2025 değişim görselleri ve km² kartları; *Model başarısı* sekmesinde
+  RF–U-Net karşılaştırması, sınıf bazında IoU, LOCO tablosu, eğitim eğrileri ve karışıklık matrisi.
 
 ### 4.8 QGIS haritaları (`qgis/haritalar.py`)
 - **Ne:** PyQGIS ile rapor ve sunum için **29 harita** (çalışma alanları + her il için 2024 arazi örtüsü, 2014→2024 değişim, göreli ΔLST, ΔNDVI);
@@ -172,10 +227,12 @@ Analizler Google Colab'da sırayla çalışan notebook'lardır. Bütün ayarlar 
 - **Ne:** Sonuçları görsel olarak anlatan tek sayfalık site. Türkiye haritasından il seçilir; her ilin **kendi araştırma sorusu** etkileşimli 1 km hücre
   haritası (sade ya da uydu altlık, katman seçimi, hücre üzerine gelince değerler), sayı kartları, kısa yorum ve grafiklerle gösterilir.
   Hipotezler, model başarısı ve yöntem bölümleri vardır.
+- **U-Net bölümü:** il seçilince ilin iki Sentinel-2 alt bölgesi (10 m, 2017 → 2025 değişim görseli), il bazında F1 ve km² kartları; model bölümünde
+  RF–U-Net sınıf bazında IoU grafiği ve Landsat + XGBoost ile U-Net'in il dışı (LOCO) kayıp karşılaştırması.
 - **Nasıl:** Düz HTML + MapLibre GL (harita) + proj4js + Chart.js; sunucu gerektirmez. Hücre verisi kompakt tutuldu (37 MB → 7 MB): her hücrenin yalnızca
   numarası saklanır, köşeleri tarayıcı EPSG:3035'ten hesaplar.
 - **Model uyumu:** Haritalardaki sınıflar **eğittiğimiz XGBoost modelinin** 2014/2024 sınıflandırmasıdır; bütün sayılar resmi Colab tablolarından gelir.
-  Site hiçbir şeyi yeniden hesaplamaz; CI bunu denetler.
+  U-Net sayıları Selin'in Colab çalıştırmasının tablolarından gelir. Site hiçbir şeyi yeniden hesaplamaz; CI bunu denetler.
 
 ---
 
@@ -193,6 +250,10 @@ Analizler Google Colab'da sırayla çalışan notebook'lardır. Bütün ayarlar 
 | LST regresyonu | R² **0,921**, RMSE 2,04 °C (RF, 10 km blok CV); en etkili NDVI ve rakım | `lst_regresyon_metrikleri.csv` |
 | Genelleme | başka ilde ortalama −0,109 macro-F1; en çok Konya | `genelleme_dusus.csv` |
 | Su alanı (MNDWI) | Artvin +%78,9 · Van +%12,1 · İstanbul +%9,8 · Samsun +%9,0 · İzmir −%6,0 | `su_alani_karsilastirma.csv` |
+| U-Net (Sentinel-2, 10 m) | macro-F1 **0,845**, mIoU **0,743**, Accuracy 0,863 (14 alt bölge, test şeritleri) | `unet_metrikleri.csv` |
+| Önce RF, sonra U-Net | aynı piksellerde RF 0,740 → U-Net 0,845 macro-F1 (+0,105); mIoU 0,608 → 0,743 | `unet_vs_rf.csv` |
+| U-Net il dışı (LOCO) | ortalama −0,051 macro-F1; en çok Artvin −0,190 | `unet_loco.csv` |
+| U-Net değişim 2017→2025 | Artvin su 12,1 → 30,7 km² · İstanbul yapılaşma +31,0 km² | `unet_degisim_ozet.csv` |
 
 ---
 
@@ -201,13 +262,17 @@ Analizler Google Colab'da sırayla çalışan notebook'lardır. Bütün ayarlar 
 ### 6.1 Analiz notebook'ları (Google Colab)
 1. **Earth Engine kaydı (bir kez):** https://code.earthengine.google.com/register → *Noncommercial* → *Academia & Research* → yeni Cloud projesi.
    Project ID'yi `config.py` → `GEE_PROJECT` satırına yazın.
-2. **GitHub token (bir kez):** GitHub → Settings → Developer settings → *Fine-grained tokens* → yalnızca bu repo, *Contents: Read-only*.
-   Colab'da sol menüdeki 🔑 **Secrets** → ad `GITHUB_TOKEN` → *Not defteri erişimi* açık.
+2. **GitHub token gerekmez:** repo herkese açık; kurulum hücresi kodu doğrudan çeker. (Repo gizli yapılırsa: *Contents: Read-only* izinli bir
+   fine-grained token oluşturup Colab'ın 🔑 **Secrets** bölümüne `GITHUB_TOKEN` adıyla ekleyin. Token'ı kodun içine yazmayın.)
 3. **Drive:** Proje klasörü `Drive'ım/yapay-zeka-proje/` olmalı (paylaşılan klasörse: sağ tık → *Kısayol ekle → Drive'ım*).
 4. **Açma:** Colab → *Dosya → Not defteri aç → GitHub* → `selinzeykaya/yapay-zeka-proje` → notebook'u seçin.
    Başka bir dalı denemek için kurulum hücresinde `GITHUB_BRANCH = "dal-adı"` yapın.
-5. **Sıra:** 00 → 01 → 02 → 03 → 04 → 06 (*Çalışma zamanı → Tümünü çalıştır*). 01 ve 04'ün baş kısmı GEE kotası harcar; sonuçlar önbelleğe yazılır,
-   tekrar çalıştırmada yeniden hesaplanmaz. GPU gerekmez.
+5. **Sıra:** 00 → 01 → 02 → 03 → 04 → 06 → 07 → 08 (*Çalışma zamanı → Tümünü çalıştır*). 01, 04 ve 07'nin baş kısmı GEE kotası harcar; sonuçlar
+   önbelleğe yazılır, tekrar çalıştırmada yeniden hesaplanmaz. 00–07 GPU gerektirmez.
+   - **07:** GEE'ye 56 GeoTIFF dışa aktarma görevi gönderir; görevler GEE'nin sunucusunda çalışır (≈1–2 saat). Hücre görevlerin bitmesini bekler;
+     oturum koparsa tekrar çalıştırın, biten dosyalar atlanır.
+   - **08:** *Çalışma zamanı → Çalışma zamanı türünü değiştir → T4 GPU* seçin. Eğitim ≈10 dakika, LOCO (7 tur) ≈30 dakika. Her epoch Drive'a kaydedilir;
+     oturum koparsa aynı hücreyi tekrar çalıştırın, kaldığı yerden devam eder. Tabloları eğitmeden yenilemek için `YENIDEN_DEGERLENDIR = True`.
 6. **Kaydetmeden önce:** Colab → *Düzenle → Tüm çıktıları temizle* (repo çıktısız notebook tutar; CI çıktılı notebook'u reddeder).
 
 ### 6.2 Otomatik kontrolleri yerelde çalıştırma
@@ -253,7 +318,7 @@ $q = "<QGIS klasörü>\bin\python-qgis-ltr.bat"
 config.py                 Tüm ayarlar: iller, yıllar, sınıflar, model aralıkları, hipotezler (HYPOTHESES)
 src/gee_utils.py          Earth Engine yardımcıları (kompozit, export, sınıflandırıcı)
 src/ml_utils.py           Modeller ve metrikler (Accuracy … ROC-AUC, Kappa, IoU)
-notebooks/00 … 06         Analiz hattı (05 yok: İDA çıkarıldı)
+notebooks/00 … 08         Analiz hattı (05 yok: İDA çıkarıldı; 07–08 Sentinel-2 + U-Net)
 tests/, tools/            Otomatik kontroller (pytest, notebook kontrolü)
 .github/workflows/        GitHub Actions (ci.yml, kontrol.yml)
 panel/                    Streamlit paneli + özet veri (panel/veri/)
@@ -272,6 +337,8 @@ plan/                     Görev dağılımı, kavramlar ve yapılanlar rehberi
 | 03 | `model_karsilastirma.csv`, `best_model.joblib`, `sinif_bazinda_iou.csv`, `mekansal_blok_ozet.csv`, karışıklık matrisleri, ROC, SHAP |
 | 04 | `grid_1km_lc_iklim.csv`, `sinif_alanlari_degisim.csv`, `gecis_matrisi.csv`, `iklim_trend_mann_kendall.csv`, `spearman_degisim_iklim.csv`, `kentsel_isi_adasi.csv`, `lst_regresyon_metrikleri.csv`, `hipotez_ozet_H1_H5.csv` |
 | 06 | `genelleme.csv`, `genelleme_dusus.csv`, `genelleme_neden_spearman.csv`, `hipotez_ozet.csv` |
+| 07 | `data/raw/s2/s2_<kutu>_<yıl>.tif`, `s2_<kutu>_etiket.tif`, `s2_yillar.json`, `s2_alt_bolgeler.csv`, `s2_veri_ozeti.csv`, `s2_kutular.png` |
+| 08 | `unet_metrikleri.csv`, `unet_vs_rf.csv`, `unet_il_bazinda.csv`, `unet_loco.csv`, `unet_degisim_ozet.csv`, `unet_degisim_<kutu>.png`, `results/unet_tahmin/*.tif`, `results/models/unet/` |
 
 ---
 
@@ -286,7 +353,10 @@ plan/                     Görev dağılımı, kavramlar ve yapılanlar rehberi
 - ERA5-Land ~9–11 km çözünürlükte, yalnızca il ölçeğinde kullanıldı; 1 km'de nem göstergesi NDMI (doğrudan toprak nemi değil).
 - Doğrulanması gereken yorumlar: Artvin su artışı (Yusufeli barajı?), Şanlıurfa (GAP sulaması?), Van su artışı (göl seviyesi mi, kompozit mi?),
   İstanbul–İzmir ısı adası farkı (tanım etkisi?).
+- **U-Net:** etiket yine yalnızca 2021 (2017/2025 doğruluğu ölçülemiyor); kutular ilin tamamını temsil etmez; şerit bölmesi kutu içinde yapıldığından
+  test şeritleri eğitimle aynı bölgededir (bunu LOCO ölçer); il bazında F1 nadir sınıflar yüzünden düşük görünür; LOCO modelleri 15 epoch, ana model 27 epoch
+  eğitildi; Samsun'daki orman azalması kontrol edildi ve sahte değişim çıktı (tarımsal ağaçlıkların yıllar arası görüntü farkı).
 
-**Gelecek çalışmalar:** Sentinel-2 (10 m) ve U-Net ile alt bölgelerde piksel düzeyinde sınıflandırma; çok mevsimli veri ya da Sentinel-1 radar ile sulak alanlar;
+**Gelecek çalışmalar:** U-Net'i alt bölgelerden il geneline genişletme ve yıllık (2017–2025) değişim serisi; çok mevsimli veri ya da Sentinel-1 radar ile sulak alanlar;
 ERA5 ölçeğinde (~9 km) analiz; SPI kuraklık indeksi; bağımsız referans veriyle 2014/2024 doğruluk değerlendirmesi; kurak iller için bölgesel model.
 Ayrıntılı plan: [plan/gorev_dagilimi.md](plan/gorev_dagilimi.md).

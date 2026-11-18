@@ -113,7 +113,7 @@ Veri üçe bölünür:
 | **XGBoost** | Ağaçlar sırayla eklenir; her yeni ağaç öncekilerin hatasını düzeltir (boosting) | Tablo verisinde genelde en güçlüsü. Projede en iyi model |
 | **SVM** | Sınıflar arasına mümkün olan en geniş boşluklu sınırı çizer | Klasik uzaktan algılamada çok kullanılmış; karşılaştırma için |
 | **MLP** | Basit yapay sinir ağı (katmanlı nöronlar) | Derin öğrenmeye giriş; esnek |
-| **U-Net** *(planlanan)* | Görüntünün tamamına bakıp her piksele sınıf veren derin öğrenme ağı (segmentasyon). Pikselin komşularını da görür | GeoClimate'te isteniyor. Mevcut 4 model pikselleri tek tek, komşusuz sınıflandırıyor |
+| **U-Net** *(08'de yapıldı)* | Görüntünün tamamına bakıp her piksele sınıf veren derin öğrenme ağı (segmentasyon). Pikselin komşularını da görür | GeoClimate'te isteniyor. 4 klasik model pikselleri tek tek, komşusuz sınıflandırıyor. Sonuç: aynı piksellerde RF 0.740 → U-Net 0.845 macro-F1 |
 
 ### Metrikler
 Bir sınıf için, örneğin "Su":
@@ -265,9 +265,9 @@ Eskiden yalnızca ekrana yazdırılıyordu. Şimdi `genelleme_neden_spearman.csv
 
 ### 5.11 Sonuçlar (gerçek veriyle, 16.11.2026)
 
-**Önce kontrol:** Modeller Faz 3'teki ayarlarla yeniden eğitildi. RF, SVM, MLP Drive'daki sonuçlarla **birebir** aynı çıktı → veri ve bölme doğru kuruldu. XGBoost 0.776 (Drive: 0.783) → xgboost sürüm farkı; raporda Drive değeri kullanılır.
+**Önce kontrol:** Modeller Faz 3'teki ayarlarla yeniden eğitildi. RF, SVM, MLP Drive'daki sonuçlarla **birebir** aynı çıktı → veri ve bölme doğru kuruldu. XGBoost 0.776 (Drive: 0.783): sürüm aynı (3.4.1), yeniden eğitim başka bilgisayarda birebir aynı ağaçları üretmedi. Resmi model dosyası doğrudan değerlendirilince 0.783 birebir çıkıyor (`tools/resmi_model_iou.py`); raporda Drive değeri kullanılır.
 
-**IoU (macro):** RF 0.633 · XGBoost ≈0.648 · SVM 0.644 · MLP 0.664. En zayıf Tarım (≈0.41), en güçlü Su (≈0.91).
+**IoU (macro, resmi modellerden):** RF 0.633 · XGBoost 0.657 · SVM 0.644 · MLP 0.664. En zayıf Tarım (≈0.42), en güçlü Su (≈0.92).
 
 **Mekânsal blok doğrulama (macro-F1, rastgele → 10 km blok):** RF 0.773 → 0.761 · XGBoost 0.786 → 0.773 · SVM 0.775 → 0.768 · MLP 0.787 → 0.780. Fark en fazla 0.013 → sızıntı küçük, 03'ün sonuçları güvenilir.
 
@@ -352,7 +352,7 @@ results/ida/      Eski İDA çıktıları (artık kullanılmıyor)
 
 **Neden 7 il?** Türkiye'nin farklı iklim ve coğrafyalarını temsil ediyorlar: kent (İstanbul, İzmir), nemli orman (Artvin, Samsun), kurak tarım (Konya, Şanlıurfa), göl havzası (Van). Ana odak GeoClimate'teki 4 il; diğer 3 il genelleme testini güçlendiriyor.
 
-**Neden Landsat, Sentinel-2 değil?** 2014'ü 2024 ile karşılaştırıyoruz; Sentinel-2 2015'te fırlatıldı. Landsat 2013'ten beri aynı sensörle çalışıyor. Sentinel-2 + U-Net, 2017–2025 için ek adım olarak planlandı.
+**Neden Landsat, Sentinel-2 değil?** 2014'ü 2024 ile karşılaştırıyoruz; Sentinel-2 2015'te fırlatıldı. Landsat 2013'ten beri aynı sensörle çalışıyor. Sentinel-2 (10 m) + U-Net, 14 alt bölgede 2017–2025 için ek adım olarak yapıldı (notebook 07–08).
 
 **Neden etiket 2021?** ESA WorldCover yalnızca 2020 ve 2021 için var; 2021 (v200) daha doğru sürüm. Sınırlılık: 2014 ve 2024 haritalarının doğruluğunu ölçemiyoruz.
 
@@ -380,4 +380,10 @@ results/ida/      Eski İDA çıktıları (artık kullanılmıyor)
 
 **SHAP'ta NDVI en önemli çıktı, demek ki bitki sıcaklığı düşürüyor mu?** SHAP modelin neye baktığını söyler, neden-sonucu değil. Literatürle (NDVI–LST negatif ilişkisi) tutarlı olduğunu söyleyebiliriz.
 
-**Neden GPU yok, nasıl U-Net eğiteceksiniz?** Colab'ın ücretsiz T4 GPU'sunda; küçük alt bölgelerde, küçük modelle (ResNet-34), karma hassasiyetle ve her epoch'ta kayıt alarak.
+**Neden GPU yok, nasıl U-Net eğittiniz?** Colab'ın ücretsiz T4 GPU'sunda; küçük alt bölgelerde, küçük modelle (ResNet-34), karma hassasiyetle ve her epoch'ta kayıt alarak. Ana eğitim ≈8 dakika sürdü.
+
+**U-Net neden RF'den iyi?** RF her pikseli tek başına görür; U-Net 256 × 256'lık parçanın tamamına bakar, tarla sınırı ve kent dokusu gibi şekilleri kullanır. Aynı veri ve aynı test piksellerinde macro-F1 0.740 → 0.845; en çok yapılaşma ve tarım iyileşti.
+
+**U-Net il bazında F1 neden 0.42–0.73, toplamda 0.845?** İl içinde nadir sınıflar (ör. Şanlıurfa'da orman) birkaç piksele düşer, o sınıfın F1'i düşük çıkar ve macro ortalamayı çeker. Accuracy il bazında 0.71–0.92.
+
+**U-Net LOCO 0.051, XGBoost 0.109: U-Net daha mı iyi genelliyor?** Doğrudan söylenemez: farklı uydu, çözünürlük ve test alanı. İkisi de aynı şeyi gösteriyor: başarı bölgeye göre değişiyor (H6).

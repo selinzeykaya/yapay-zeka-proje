@@ -87,7 +87,7 @@ with st.sidebar:
     st.markdown(f"**Konu:** {IL_KONUSU[secili]}")
     st.caption("★ GeoClimate dokümanındaki ana odak illeri")
     st.divider()
-    st.caption("Veri: Landsat 8/9, ESA WorldCover 2021, MODIS, ERA5-Land, CHIRPS · "
+    st.caption("Veri: Landsat 8/9, Sentinel-2, ESA WorldCover 2021, MODIS, ERA5-Land, CHIRPS · "
                f"Değişim: {config.CHANGE_YEARS[0]} → {config.CHANGE_YEARS[1]} yaz kompozitleri")
     st.caption("⚠️ Bulgular **ilişki** gösterir, neden-sonuç değil.")
 
@@ -98,24 +98,31 @@ sekmeler = st.tabs(["Genel bakış", "Arazi değişimi", "İklim", "İlişkiler 
 with sekmeler[0]:
     st.header("Genel bakış")
     st.write("7 ilde uydu görüntülerinden arazi örtüsü yapay zekâyla sınıflandırıldı, "
-             f"{Y0} ile {Y1} arasındaki değişim ölçüldü ve yüzey sıcaklığı, nem ve yağış göstergeleriyle ilişkisi incelendi.")
+             f"{Y0} ile {Y1} arasındaki değişim ölçüldü ve yüzey sıcaklığı, nem ve yağış göstergeleriyle ilişkisi incelendi. "
+             "Her ilin iki alt bölgesinde Sentinel-2 görüntüleri 10 m'de derin öğrenmeyle (U-Net) sınıflandırıldı (2017 → 2025).")
     mk, lst_m, gen_d, hk = (tablo("model_karsilastirma", 0), tablo("lst_regresyon_metrikleri"),
                             tablo("genelleme_dusus"), tablo("hipotez_kanit_H1_H5"))
-    k = st.columns(4)
+    um = tablo("unet_vs_rf", 0)
+    k = st.columns(5)
     if mk is not None:
-        k[0].metric("Sınıflandırma (XGBoost, macro-F1)", f"{mk.loc['XGBoost', 'f1_macro']:.3f}",
+        k[0].metric("XGBoost (macro-F1)", f"{mk.loc['XGBoost', 'f1_macro']:.3f}",
                     help="Test kümesi, Faz 3 (Colab). 6 sınıf.")
     if lst_m is not None:
-        k[1].metric("Yüzey sıcaklığı regresyonu (R²)", f"{lst_m['R2_ort'].iloc[0]:.3f}",
+        k[1].metric("LST regresyonu (R²)", f"{lst_m['R2_ort'].iloc[0]:.3f}",
                     help="Random Forest, 10 km mekânsal blok çapraz doğrulama, 111 950 hücre.")
     if gen_d is not None:
         d = gen_d[gen_d["model"] == "XGBoost"]["dusus_f1_macro"]
-        k[2].metric("Başka ile taşınınca F1 kaybı", f"−{d.mean():.3f}",
+        k[2].metric("Başka ilde F1 kaybı", f"−{d.mean():.3f}",
                     help="Leave-One-City-Out: model hiç görmediği ilde test edildi (7 il ortalaması).")
     if hk is not None:
         n = hk[(hk["iliski"].str.startswith("ΔNDVI")) & (hk["rho"] < 0)]["city"].nunique()
-        k[3].metric("Bitki ↓ ↔ sıcaklık ↑ (ΔNDVI–ΔLST)", f"{n}/7 il",
+        k[3].metric("Bitki ↓ ↔ sıcaklık ↑", f"{n}/7 il",
                     help="7 ilin kaçında ilişki negatif (H2). En güçlü bulgu.")
+    if um is not None:
+        u, rf = um.loc["U-Net (Sentinel-2)"], um.loc["Random Forest (piksel, Sentinel-2)"]
+        k[4].metric("U-Net (macro-F1)", f"{u['f1_macro']:.3f}", f"RF'ye göre {u['f1_macro'] - rf['f1_macro']:+.3f}",
+                    help="Sentinel-2 (10 m), 14 alt bölgenin test şeritleri. Aynı piksellerde Random Forest "
+                         f"{rf['f1_macro']:.3f}. Landsat sonuçlarıyla doğrudan karşılaştırılamaz.")
     sol, sag = st.columns([3, 2])
     with sol:
         if (VERI / "sehir_sinirlari.png").exists():
@@ -183,6 +190,28 @@ with sekmeler[1]:
                                                    color=alt.condition("datum.satir_yuzde > 50", alt.value("white"),
                                                                        alt.value("black"))))
             .properties(height=320), width="stretch")
+
+    # ---- Faz 07-08: Sentinel-2 (10 m) + U-Net, ilin 2 alt bölgesi
+    ud = tablo("unet_degisim_ozet")
+    kutular = tablo("s2_alt_bolgeler")
+    if ud is not None and kutular is not None:
+        st.subheader("10 m çözünürlükte yakından bakış: Sentinel-2 + U-Net (2017 → 2025)")
+        st.caption("İlin tamamı değil, ilin konusunu en iyi gösteren 20 km × 20 km'lik iki alt bölge. "
+                   "Model: ResNet-34 kodlayıcılı U-Net; etiket ESA WorldCover 2021.")
+        k = kutular[kutular["il"] == secili]
+        if len(k):
+            secenek = {v.split("_", 1)[1].replace("_", " ").title(): v for v in k["kutu"]}
+            ad = secenek[st.radio("Alt bölge", list(secenek), horizontal=True, key=f"kutu_{secili}")]
+            gorsel("unet", ad, f"{ad}: 2017 ve 2025 U-Net tahmini, değişen pikseller")
+        d = ud[ud["il"] == secili].copy()
+        if len(d):
+            d["Sınıf"] = d["sinif"].map(SINIF_ADI)
+            c = st.columns(len(d))
+            for col, (_, row) in zip(c, d.set_index("Sınıf").reindex(SINIF_SIRA).dropna(how="all").iterrows()):
+                col.metric(row.name, f"{row['2025']:.1f} km²", f"{row['degisim_km2']:+.1f} km²")
+            st.caption("İki alt bölgenin toplamı (≈800 km²). Değerler U-Net tahmininden piksel sayımıdır.")
+        if secili in config.UNET_DEGISIM_UYARI:
+            st.warning(config.UNET_DEGISIM_UYARI[secili])
 
 # ================================================================ 3. İklim
 with sekmeler[2]:
@@ -285,8 +314,8 @@ with sekmeler[4]:
                                        "f1_macro": "F1 (macro)", "roc_auc_ovr_macro": "ROC-AUC", "kappa": "Kappa",
                                        "iou_macro": "IoU"}).style.format("{:.3f}").highlight_max(axis=0, color="#c7e9c0"),
                      width="stretch")
-        st.caption("Model seçimi doğrulama kümesine göre yapıldı → XGBoost. IoU yerel çalıştırmadandır; "
-                   "XGBoost'unki xgboost sürüm farkı nedeniyle yaklaşıktır.")
+        st.caption("Model seçimi doğrulama kümesine göre yapıldı → XGBoost. IoU, Drive'daki resmi model dosyalarından "
+                   "yeniden eğitilmeden hesaplandı (tools/resmi_model_iou.py).")
     if iou is not None:
         st.subheader("Sınıf bazında IoU")
         i2 = iou.drop(index="Ortalama (macro)", errors="ignore").reset_index(names="Sınıf")
@@ -353,3 +382,41 @@ with sekmeler[4]:
                 tooltip=["Değişken", alt.Tooltip("ortalama_abs_shap_C:Q", format=".2f"), "Yön"]).properties(height=320),
             width="stretch")
         st.caption("SHAP, modelin neye baktığını gösterir; neden-sonuç değildir.")
+
+    # ---- Faz 07-08: derin öğrenme
+    um = tablo("unet_vs_rf", 0)
+    if um is not None:
+        st.subheader("Derin öğrenme: Sentinel-2 (10 m) üzerinde U-Net")
+        st.write("Aynı Sentinel-2 test piksellerinde (14 alt bölge, test şeritleri, 500 000 piksel) "
+                 "her pikseli tek başına sınıflandıran Random Forest ile komşuluğa bakan U-Net karşılaştırıldı.")
+        c = st.columns(len(um))
+        for col, (ad, row) in zip(c, um.iterrows()):
+            col.metric(ad, f"F1 {row['f1_macro']:.3f}", f"mIoU {row['iou_macro']:.3f} · acc {row['accuracy']:.3f}",
+                       delta_color="off")
+        iu = um[[k for k in um.columns if k.startswith("IoU_")]].T
+        iu.index = [SINIF_ADI[i.removeprefix("IoU_")] for i in iu.index]
+        uz = iu.reset_index(names="Sınıf").melt(id_vars="Sınıf", var_name="Model", value_name="IoU")
+        st.altair_chart(
+            alt.Chart(uz).mark_bar().encode(
+                x=alt.X("Sınıf:N", sort=SINIF_SIRA, title=None), xOffset="Model:N",
+                y=alt.Y("IoU:Q", scale=alt.Scale(domain=[0, 1])),
+                color=alt.Color("Model:N", scale=alt.Scale(range=["#bdbdbd", "#1b7837"])),
+                tooltip=["Sınıf", "Model", alt.Tooltip("IoU:Q", format=".3f")]).properties(height=300),
+            width="stretch")
+        st.caption("Bu sayılar Landsat tablosuyla doğrudan karşılaştırılamaz: farklı uydu, çözünürlük ve test alanı.")
+    ul = tablo("unet_loco")
+    if ul is not None:
+        st.markdown("**U-Net hiç görmediği ile taşınınca**")
+        ul = ul.assign(İl=ul["il"].map(il))
+        st.dataframe(ul[["İl", "f1_ayni", "f1_baska", "dusus_f1"]].rename(
+            columns={"f1_ayni": "F1 (il eğitimde)", "f1_baska": "F1 (il hiç görülmedi)", "dusus_f1": "Kayıp"})
+            .style.format({"F1 (il eğitimde)": "{:.3f}", "F1 (il hiç görülmedi)": "{:.3f}", "Kayıp": "{:+.3f}"}),
+            width="stretch", hide_index=True)
+        st.caption(f"Ortalama kayıp {ul['dusus_f1'].mean():.3f} (Landsat + XGBoost'ta 0.109). İl bazında F1'ler düşük "
+                   "görünür çünkü her ilde nadir sınıflar (ör. Şanlıurfa'da orman) birkaç piksele düşer.")
+    with st.expander("Eğitim eğrileri ve karışıklık matrisi"):
+        g = st.columns(2)
+        with g[0]:
+            gorsel("unet", "unet_egitim_egrileri", "Eğitim ve doğrulama kaybı / mIoU")
+        with g[1]:
+            gorsel("unet", "unet_karisiklik_matrisi", "U-Net test karışıklık matrisi")

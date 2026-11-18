@@ -127,6 +127,17 @@ Tablo olarak verin:
 - Leave-One-City-Out: 6 ilde eğit, 7.'de test; aynı-şehir sonuçlarıyla aynı test noktalarında karşılaştırma → L22, L23
 - Neden göstergeleri: spektral kayma, sınıf dağılımı farkı, iklim ortalamaları
 
+### 3.6b Derin öğrenme: Sentinel-2 + U-Net (07, 08)
+- Veri: Sentinel-2 L2A (`S2_SR_HARMONIZED`), s2cloudless (< %40) + SCL maskesi, 6 bant, yaz ortancası, 10 m, EPSG:3035; 2017 / 2021 / 2025
+- Alan: il başına 2 alt bölge, 20 × 20 km (14 kutu, `s2_alt_bolgeler.csv`, şekil `s2_kutular.png`); neden: il geneli 10 m'de kota ve disk sınırını aşar
+- Etiket: WorldCover 2021 → 6 sınıf (Landsat analiziyle aynı eşleme)
+- Bölme: kutu içinde kuzey→güney şeritler %70/15/15, 320 m tampon (mekânsal sızıntıya karşı)
+- Model: U-Net, ResNet-34 kodlayıcı (ImageNet ön eğitimli, 6 kanala uyarlandı); kayıp ağırlıklı CE + Dice; 256 px parça, döndürme/yansıtma; AMP;
+  erken durdurma (sabır 6, doğrulama mIoU) → 27 epoch, en iyi 20
+- Temel model: aynı veride piksel tabanlı RF (60 000 eğitim pikseli, 6 bant + NDVI/NDBI/MNDWI); karşılaştırma aynı 500 000 test pikselinde
+- H6: U-Net LOCO (il dışarıda, 15 epoch)
+- Değişim: 2017 ve 2025 tahmini → km² geçiş matrisi
+
 ### 3.7 Hiperparametreler ve yapılan değişiklikler
 - Tablo 1 — arama uzayı ve seçilen değerler: `hiperparametre_arama.csv` (model × parametre × aralık × seçilen); arama ayarları `config.py`
 - Tablo 2 — süreç içinde yapılan değişiklikler (neden + etkisi), maddeler:
@@ -153,13 +164,13 @@ Tablo olarak verin:
 
 | Model | Accuracy | Precision (macro) | Recall (macro) | F1 (macro) | ROC-AUC (macro, OvR) | Kappa | IoU (macro) |
 |---|---|---|---|---|---|---|---|
-| XGBoost (doğrulamada en iyi) | 0.785 | 0.784 | 0.783 | 0.783 | 0.961 | 0.742 | 0.648* |
+| XGBoost (doğrulamada en iyi) | 0.785 | 0.784 | 0.783 | 0.783 | 0.961 | 0.742 | 0.657 |
 | MLP | 0.791 | 0.791 | 0.790 | 0.789 | 0.964 | 0.749 | 0.664 |
 | SVM | 0.778 | 0.777 | 0.775 | 0.772 | 0.959 | 0.733 | 0.644 |
 | RF | 0.768 | 0.766 | 0.765 | 0.764 | 0.957 | 0.721 | 0.633 |
 
-- Kaynak: Drive `model_karsilastirma.csv` (Faz 3). IoU: `sinif_bazinda_iou.csv` (yerel çalıştırma, 16.11.2026). RF, SVM ve MLP yerelde Faz 3 ile birebir aynı çıktı. *XGBoost yerelde xgboost 3.4.1 ile F1 0.776 verdi (Faz 3: 0.783, Colab'daki sürüm farkı); IoU'su Colab'da 03 yeniden çalıştırılınca kesinleşir.
-- Sınıf bazında IoU (XGBoost): Orman 0.70, **Tarım 0.41** (en zayıf), Yapılaşma 0.66, Çayır/Çalı 0.56, Çıplak 0.65, Su/Sulak 0.91
+- Kaynak: Drive `model_karsilastirma.csv` (Faz 3). IoU: `sinif_bazinda_iou.csv`, Drive'daki **resmi model dosyalarından** (`tools/resmi_model_iou.py`; dört modelin accuracy ve F1'i resmi tabloyla birebir aynı). Not: aynı ayarlarla başka bir bilgisayarda yeniden eğitim birebir aynı ağaçları üretmedi (xgboost sürümü Colab'dakiyle aynı, 3.4.1; olası neden işletim sistemi/işlemci farkı); bu yüzden yeniden eğitilen XGBoost 0.776 verdi, raporda resmi değerler kullanılır.
+- Sınıf bazında IoU (XGBoost, resmi): Orman 0.71, **Tarım 0.42** (en zayıf), Yapılaşma 0.67, Çayır/Çalı 0.57, Çıplak 0.66, Su/Sulak 0.92
 - **Mekânsal blok doğrulama** (`mekansal_blok_ozet.csv`, 5 katlı CV, 1 327 blok): macro-F1 rastgele → 10 km blok: RF 0.773 → 0.761, XGBoost 0.786 → 0.773, SVM 0.775 → 0.768, MLP 0.787 → 0.780. **Fark en fazla 0.013** → 300 m mesafe filtresi mekânsal sızıntıyı büyük ölçüde önlemiş; blok doğrulamada katmanlar arası std 2–4 kat büyük (±0.012–0.022).
 
 - Sınıf bazında Precision/Recall/F1: `sinif_raporu_XGBoost.csv`, `sinif_bazinda_f1.csv`; sınıf bazında ROC-AUC: `roc_auc_sinif_bazinda.csv`
@@ -215,6 +226,23 @@ Tablo önerisi (rapor için kısaltılmış):
 - Gözlemler: ortalama düşüş ≈ 0.11; en çok Konya (−0.187), Şanlıurfa (−0.147), Van (−0.125); en az Artvin (−0.059); en zor sınıf Tarım; Konya Su/Sulak 0.89 → 0.39
 - `genelleme_neden_gostergeleri.csv`: düşüş yağışla ρ ≈ −0.96 (n = 7, `genelleme_neden_spearman.csv` — raporda n'yi belirtin)
 
+### 4.8 Derin öğrenme sonuçları (08) — `unet_metrikleri.csv`, `unet_vs_rf.csv`, `unet_loco.csv`, `unet_degisim_ozet.csv`
+
+| Model (aynı Sentinel-2 test pikselleri) | Accuracy | macro-F1 | mIoU |
+|---|---|---|---|
+| Random Forest (piksel) | 0.765 | 0.740 | 0.608 |
+| U-Net (ResNet-34) | **0.863** | **0.845** | **0.743** |
+
+- Şekiller: `unet_vs_rf.png`, `unet_karisiklik_matrisi.png`, `unet_egitim_egrileri.png`, `unet_loco.png`, `unet_degisim_<kutu>.png`
+- Sınıf IoU (RF → U-Net): Orman 0.63 → 0.76, Tarım 0.65 → 0.81, Yapılaşma 0.54 → 0.79, Çayır/Çalı 0.51 → 0.63, Çıplak 0.35 → 0.51, Su/Sulak 0.97 → 0.96
+  → komşuluk (doku/şekil) bilgisi en çok yapılaşma ve tarımda işe yarıyor
+- İl bazında macro-F1 0.42 (Şanlıurfa) … 0.73 (Van); accuracy 0.71 … 0.92. Düşük il F1'i nadir sınıflardan (il içinde birkaç piksel) — raporda açıklayın
+- LOCO: ortalama kayıp 0.051; Artvin 0.190, Samsun 0.084, Konya 0.051, Van 0.042, Şanlıurfa 0.027, İstanbul 0.021, İzmir −0.056
+- Değişim 2017 → 2025 (2 kutu ≈ 800 km²): Artvin Su/Sulak 12.1 → 30.7 km² (Yusufeli barajı, L43; Landsat MNDWI +%78.9 ile aynı yön);
+  İstanbul Yapılaşma +31.0 km²; Konya Yapılaşma +16.5 km²; Şanlıurfa Yapılaşma +10.8 km²
+- Samsun Orman −89 km² / Çayır-Çalı +68 km² → **kontrol edildi, sahte değişim** (`report/kontrol_samsun_orman.md`): bulgu olarak değil, sınırlılık örneği olarak yazın ("tek yaz kompozitleri tarımsal ağaçlıklarda sınıf kaymasına yol açabiliyor")
+- **Landsat (30 m, 13 251 nokta) ile doğrudan karşılaştırmayın:** farklı uydu, çözünürlük, test alanı ve örnekleme
+
 ### 4.9 Hipotezler (H1–H6) — `hipotez_ozet.csv`, `hipotez_kanit_H1_H5.png`
 Sayılar otomatik; **karar sütununu siz yazın** (öneri parantez içinde, tartışarak kesinleştirin):
 
@@ -225,7 +253,7 @@ Sayılar otomatik; **karar sütununu siz yazın** (öneri parantez içinde, tart
 | H3 Tarım ↔ bitki/nem | Δtarım–ΔNDMI 4 ilde ≥ 0.1, en güçlü Konya +0.39; Δtarım–ΔLST zayıf | (kısmen; kurak iç illerde belirgin) |
 | H4 Su ↔ sıcaklık/nem | Δsu–ΔLST yalnızca Artvin −0.19, İstanbul −0.13; Δsu–ΔNDMI hiçbir ilde ≥ 0.1 | (büyük ölçüde desteklenmedi; 1 km'de su değişimi küçük) |
 | H5 Bölgeye göre farklılaşır | Aynı ilişkinin iller arası ρ aralığı 0.07–0.33 (en geniş Δtarım–ΔNDMI); işaret değişen ilişki yok | (kısmen: güç değişiyor, yön değişmiyor) |
-| H6 Genelleme bölgeye göre değişir | LOCO macro-F1 düşüşü XGBoost ort. 0.109 (Artvin 0.059 … Konya 0.187); düşüş–yağış ρ = −0.96 (n = 7) | (desteklendi; kurak illerde daha büyük düşüş) |
+| H6 Genelleme bölgeye göre değişir | LOCO macro-F1 düşüşü XGBoost ort. 0.109 (Artvin 0.059 … Konya 0.187); düşüş–yağış ρ = −0.96 (n = 7); U-Net (Sentinel-2) LOCO ort. 0.051, Artvin 0.190 … İzmir −0.056 | (desteklendi; iki farklı veri/modelde de başarı bölgeye göre değişiyor; en zor il veri setine göre farklı) |
 
 ## 5. Tartışma (Discussion) — `[SEN YAZ]` (her madde için 2–4 cümle, literatürle)
 - **Hoca: sonuçlar literatürle karşılaştırılmalı** → her maddede en az bir çalışmanın değeriyle yan yana koyun (`literatur_karsilastirma.csv`); veri/bölge/sınıf farkını mutlaka belirtin
@@ -236,6 +264,7 @@ Sayılar otomatik; **karar sütununu siz yazın** (öneri parantez içinde, tart
 - İstanbul–İzmir UHI farkı neden bu kadar büyük? (tanım, kırsal referans, deniz etkisi) → L28, L29, L30, L36
 - Korelasyonların zayıf olması: 9 noktalı hücre gürültüsü, iki tek yaz kompoziti, otokorelasyon
 - Genelleme: kurak illerde daha büyük düşüş; mekânsal doğrulama literatürüyle uyum → L22, L23, L46
+- U-Net piksel tabanlı RF'den neden iyi? (mekânsal bağlam, doku) — segmentasyon literatürüyle karşılaştırın; U-Net'te en zor il Artvin, Landsat'ta Konya: neden?
 
 ## 6. Sonuç (Conclusion)
 > Hocanın yapısında sınırlılıklar ve gelecek çalışmalar Sonuç bölümünün içinde.
@@ -243,7 +272,7 @@ Sayılar otomatik; **karar sütununu siz yazın** (öneri parantez içinde, tart
 ### 6.1 Genel değerlendirme — `[SEN YAZ]` (her alt soruya bir cümlelik cevap: AS1 … AS5)
 
 ### 6.2 Güçlü yönler (madde → cümleye çevirin)
-- 7 il aynı yöntem ve aynı veriyle; 4 model karşılaştırması
+- 7 il aynı yöntem ve aynı veriyle; 4 model karşılaştırması + Sentinel-2 üzerinde U-Net (önce RF, sonra U-Net, aynı test pikselleri)
 - Mekânsal blok CV ve LOCO ile gerçekçi başarı ölçümü (sızıntıya karşı)
 - SHAP ile açıklanabilirlik
 - 22 yıllık iklim serisi + iki yıllık değişim
@@ -258,8 +287,11 @@ Sayılar otomatik; **karar sütununu siz yazın** (öneri parantez içinde, tart
   5. Su/Sulak sınıfı iki farklı yüzeyi birleştiriyor
   6. LOCO'da küçük test kümeleri (±0.05)
   7. Kapsam daraltma: 2 yıl, 2 000 nokta/il, n_iter=10
+  8. U-Net yalnızca 14 alt bölgede (il geneli değil); test şeritleri eğitimle aynı kutularda
+  9. Tek yaz kompoziti sahte değişim üretebiliyor: Samsun–Yeşilırmak'ta orman −%54 (kontrol: `kontrol_samsun_orman.md`)
 
 ### 6.4 Gelecek çalışmalar (madde)
+- U-Net'i il geneline ve yıllık seriye genişletmek
 - Çok mevsimli kompozit / Sentinel-1 ile sulak alan
 - 2019 ara yılı ve yıllık zaman serisi
 - Bağımsız referans verisiyle 2014/2024 doğruluk değerlendirmesi (L19)

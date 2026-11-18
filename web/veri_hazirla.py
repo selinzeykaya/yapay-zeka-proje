@@ -7,7 +7,8 @@ Kullanım (proje kökünden):
 Üretilenler:
     web/data/hucre/<il>.json   1 km hücreler (sütunlu: hücre numarası + değerler; köşeler tarayıcıda proj4js ile)
     web/data/iller.json        7 çalışma ilinin sınırı + Türkiye'nin 81 il sınırı (sadeleştirilmiş)
-    web/data/ozet.json         sayı kartları, hipotezler, model sonuçları, iklim serileri, sınıf payları
+    web/data/ozet.json         sayı kartları, hipotezler, model sonuçları, iklim serileri, sınıf payları, U-Net (08)
+    web/data/unet/<kutu>.jpg   U-Net 2017→2025 değişim görselleri (08 çıktısından, küçültülmüş; elle kopyalanır)
 Gerekenler: pandas, numpy.
 """
 import json
@@ -16,6 +17,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import config  # noqa: E402
 
 KOK = Path(__file__).resolve().parent
 OUT = KOK / "data"
@@ -181,7 +185,41 @@ def ozet(c, tablolar):
         "ndvi_negatif_il": ndvi_neg,
         "loco_ort_dusus": round(float(np.mean([v["ayni"] - v["baska"] for v in loco["XGBoost"].values()])), 3),
     }
+    if (T / "unet_metrikleri.csv").exists():
+        veri["unet"] = unet_ozet(oku)
     (OUT / "ozet.json").write_text(json.dumps(veri, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
+def unet_ozet(oku):
+    """08'in (Colab, T4 GPU) resmi sonuçları: U-Net ve aynı piksellerde RF, il bazında, LOCO, 2017→2025 değişim."""
+    r = lambda x, n=3: None if pd.isna(x) else round(float(x), n)
+    vs = oku("unet_vs_rf").set_index("model")
+    modeller = {}
+    for ad, anahtar in [("U-Net (Sentinel-2)", "unet"), ("Random Forest (piksel, Sentinel-2)", "rf")]:
+        s = vs.loc[ad]
+        modeller[anahtar] = {"acc": r(s.accuracy), "f1": r(s.f1_macro), "iou": r(s.iou_macro),
+                             "iou_sinif": {k: r(s[f"IoU_{k}"]) for k in ["Orman", "Tarim", "Yapilasma", "Cayir_Cali", "Ciplak", "Su_Sulak"]}}
+    test = oku("unet_metrikleri", index_col=0).iloc[0]
+    il = oku("unet_il_bazinda").set_index("il")
+    loco = oku("unet_loco").set_index("il")
+    deg = oku("unet_degisim_ozet")
+    yil0, yil1 = [c for c in deg.columns if c.isdigit()]
+    kutular = oku("s2_alt_bolgeler")
+    iller = {}
+    for kod in ILLER:
+        d = deg[deg.il == kod].set_index("sinif")
+        iller[kod] = {
+            "f1": r(il.loc[kod, "f1_macro"]), "iou": r(il.loc[kod, "iou_macro"]), "acc": r(il.loc[kod, "accuracy"]),
+            "loco": {"ayni": r(loco.loc[kod, "f1_ayni"]), "baska": r(loco.loc[kod, "f1_baska"]), "dusus": r(loco.loc[kod, "dusus_f1"])},
+            "degisim": {s: {"y0": r(d.loc[s, yil0], 1), "y1": r(d.loc[s, yil1], 1), "fark": r(d.loc[s, "degisim_km2"], 1)} for s in d.index},
+            "uyari": config.UNET_DEGISIM_UYARI.get(kod),
+            "kutular": [{"kod": k.kutu, "ad": k.alt_bolge.replace("_", " "), "lat": k.merkez_enlem, "lon": k.merkez_boylam}
+                        for k in kutular[kutular.il == kod].itertuples()],
+        }
+    return {"test": {"acc": r(test.accuracy), "precision": r(test.precision_macro), "recall": r(test.recall_macro),
+                     "f1": r(test.f1_macro), "iou": r(test.iou_macro)},
+            "modeller": modeller, "iller": iller, "yil0": int(yil0), "yil1": int(yil1),
+            "loco_ort_dusus": r(loco["dusus_f1"].mean()), "kutu_km": int(kutular.boyut_km.iloc[0])}
 
 
 if __name__ == "__main__":
