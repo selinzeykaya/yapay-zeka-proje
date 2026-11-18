@@ -98,24 +98,31 @@ sekmeler = st.tabs(["Genel bakış", "Arazi değişimi", "İklim", "İlişkiler 
 with sekmeler[0]:
     st.header("Genel bakış")
     st.write("7 ilde uydu görüntülerinden arazi örtüsü yapay zekâyla sınıflandırıldı, "
-             f"{Y0} ile {Y1} arasındaki değişim ölçüldü ve yüzey sıcaklığı, nem ve yağış göstergeleriyle ilişkisi incelendi.")
+             f"{Y0} ile {Y1} arasındaki değişim ölçüldü ve yüzey sıcaklığı, nem ve yağış göstergeleriyle ilişkisi incelendi. "
+             "Her ilin iki alt bölgesinde Sentinel-2 görüntüleri 10 m'de derin öğrenmeyle (U-Net) sınıflandırıldı (2017 → 2025).")
     mk, lst_m, gen_d, hk = (tablo("model_karsilastirma", 0), tablo("lst_regresyon_metrikleri"),
                             tablo("genelleme_dusus"), tablo("hipotez_kanit_H1_H5"))
-    k = st.columns(4)
+    um = tablo("unet_vs_rf", 0)
+    k = st.columns(5)
     if mk is not None:
-        k[0].metric("Sınıflandırma (XGBoost, macro-F1)", f"{mk.loc['XGBoost', 'f1_macro']:.3f}",
+        k[0].metric("XGBoost (macro-F1)", f"{mk.loc['XGBoost', 'f1_macro']:.3f}",
                     help="Test kümesi, Faz 3 (Colab). 6 sınıf.")
     if lst_m is not None:
-        k[1].metric("Yüzey sıcaklığı regresyonu (R²)", f"{lst_m['R2_ort'].iloc[0]:.3f}",
+        k[1].metric("LST regresyonu (R²)", f"{lst_m['R2_ort'].iloc[0]:.3f}",
                     help="Random Forest, 10 km mekânsal blok çapraz doğrulama, 111 950 hücre.")
     if gen_d is not None:
         d = gen_d[gen_d["model"] == "XGBoost"]["dusus_f1_macro"]
-        k[2].metric("Başka ile taşınınca F1 kaybı", f"−{d.mean():.3f}",
+        k[2].metric("Başka ilde F1 kaybı", f"−{d.mean():.3f}",
                     help="Leave-One-City-Out: model hiç görmediği ilde test edildi (7 il ortalaması).")
     if hk is not None:
         n = hk[(hk["iliski"].str.startswith("ΔNDVI")) & (hk["rho"] < 0)]["city"].nunique()
-        k[3].metric("Bitki ↓ ↔ sıcaklık ↑ (ΔNDVI–ΔLST)", f"{n}/7 il",
+        k[3].metric("Bitki ↓ ↔ sıcaklık ↑", f"{n}/7 il",
                     help="7 ilin kaçında ilişki negatif (H2). En güçlü bulgu.")
+    if um is not None:
+        u, rf = um.loc["U-Net (Sentinel-2)"], um.loc["Random Forest (piksel, Sentinel-2)"]
+        k[4].metric("U-Net (macro-F1)", f"{u['f1_macro']:.3f}", f"RF'ye göre {u['f1_macro'] - rf['f1_macro']:+.3f}",
+                    help="Sentinel-2 (10 m), 14 alt bölgenin test şeritleri. Aynı piksellerde Random Forest "
+                         f"{rf['f1_macro']:.3f}. Landsat sonuçlarıyla doğrudan karşılaştırılamaz.")
     sol, sag = st.columns([3, 2])
     with sol:
         if (VERI / "sehir_sinirlari.png").exists():

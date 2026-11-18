@@ -160,6 +160,7 @@ function istatistikler() {
     [sayi(r.r2, 2), "yüzey sıcaklığını açıklama gücü (R²)"],
     [OZET.ndvi_negatif_il + "/7", "ilde bitki azalan yer görece ısınıyor"],
     ["−" + sayi(OZET.loco_ort_dusus, 2), "F1 kaybı: model hiç görmediği ile taşınınca"],
+    ...(OZET.unet ? [[sayi(OZET.unet.test.f1, 3), `10 m'de derin öğrenme (U-Net, Sentinel-2, macro-F1; aynı piksellerde RF ${sayi(OZET.unet.modeller.rf.f1, 2)})`]] : []),
   ].map(([b, s]) => `<div class="istatistik"><b>${b}</b><span>${s}</span></div>`).join("");
 }
 

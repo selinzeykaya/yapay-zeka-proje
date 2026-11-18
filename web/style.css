@@ -33,7 +33,7 @@ h3 { font-size: 0.95rem; font-weight: 700; }
 .hero h1 { font-size: clamp(2.2rem, 4.6vw, 3.8rem); font-weight: 800; }
 .hero h1 span { color: #8fd3a8; }
 .giris { font-size: 1.05rem; color: #c3d3cb; max-width: 560px; margin: 18px 0 28px; }
-.istatistikler { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.istatistikler { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 10px; }
 .istatistik { background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .1); border-radius: 12px; padding: 14px; }
 .istatistik b { display: block; font-size: 1.6rem; font-weight: 800; color: #fff; }
 .istatistik span { font-size: .74rem; color: #a9bdb4; }
