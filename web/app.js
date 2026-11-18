@@ -279,7 +279,7 @@ async function ilSec(kod, kaydir) {
     ILLER_GEO.features.forEach((f, i) => f.properties.calisma && GENEL.setFeatureState({ source: "iller", id: i }, { secili: f.properties.il === kod }));
   }
   if (kaydir) document.getElementById("iller").scrollIntoView({ behavior: "smooth" });
-  iklimCiz(); sinifCiz();
+  iklimCiz(); sinifCiz(); unetCiz(kod);
   const [veri] = await Promise.all([hucreleriYukle(kod), haritaHazir]);
   if (seciliIl !== kod) return;          // yükleme sırasında başka il seçildiyse
   ["sinir", "sinir-dis"].forEach(l => HARITA.setFilter(l, ["==", ["get", "il"], kod]));
@@ -337,7 +337,8 @@ function hipotezler() {
     ["H5", "İlişkiler bölgeye göre farklılaşır", "kismen", "Kısmen",
       "Aynı ilişkinin gücü ilden ile değişiyor (ör. ΔNDVI–ΔLST); yönü değişmiyor.", serit(k => il(k).rho.ndvi)],
     ["H6", "Model başarısı bölgeye göre değişir", "evet", "Destekleniyor",
-      `Model hiç görmediği ilde ortalama ${sayi(OZET.loco_ort_dusus, 3)} macro-F1 kaybediyor; kurak illerde daha çok.`,
+      `Model hiç görmediği ilde ortalama ${sayi(OZET.loco_ort_dusus, 3)} macro-F1 kaybediyor; kurak illerde daha çok.`
+        + (OZET.unet ? ` U-Net'te (Sentinel-2, 10 m) kayıp daha küçük: ortalama ${sayi(OZET.unet.loco_ort_dusus, 3)}.` : ""),
       serit(k => -(loco[k].ayni - loco[k].baska))],
   ];
   $("#hipotezler-izgara").innerHTML = H.map(([k, i, c, e, kn, s]) =>
@@ -373,6 +374,58 @@ function modelGrafikleri() {
     { label: "Rastgele bölme", data: M.map(m => B[m]["Rastgele"]), backgroundColor: "#9ecae1" },
     { label: "10 km mekânsal blok", data: M.map(m => B[m]["Mekânsal blok (10 km)"]), backgroundColor: "#08519c" }] },
     options: { scales: { y: { min: 0.7, max: 0.82 } }, plugins: { legend: { position: "bottom" } } } });
+
+  // U-Net (08): aynı piksellerde RF ile karşılaştırma ve il dışı test
+  const U = OZET.unet;
+  if (!U) return;
+  const um = U.modeller;
+  $("#unet-rf-kartlar").innerHTML = [["Random Forest", um.rf], ["U-Net", um.unet]].map(([a, v]) =>
+    `<div class="kart"><span class="ad">${a}</span><b>F1 ${sayi(v.f1, 3)}</b><span class="not">mIoU ${sayi(v.iou, 3)} · accuracy ${sayi(v.acc, 3)}</span></div>`).join("")
+    + `<div class="kart"><span class="ad">U-Net'in kazancı</span><b>${isaretli(um.unet.f1 - um.rf.f1, 3)}</b><span class="not">macro-F1 · mIoU ${isaretli(um.unet.iou - um.rf.iou, 3)}</span></div>`;
+  new Chart($("#unet-rf-grafik"), { type: "bar", data: { labels: SINIF.map(s => s[0]), datasets: [
+    { label: "Random Forest (piksel)", data: SINIF_KOD.map(k => um.rf.iou_sinif[k]), backgroundColor: "#bababa" },
+    { label: "U-Net (komşuluk)", data: SINIF_KOD.map(k => um.unet.iou_sinif[k]), backgroundColor: "#1b7837" }] },
+    options: { scales: { y: { min: 0, max: 1, title: { display: true, text: "IoU" } } }, plugins: { legend: { position: "bottom" },
+      tooltip: { callbacks: { label: c => `${c.dataset.label}: ${sayi(c.raw, 3)}` } } } } });
+  new Chart($("#loco-karsilastirma"), { type: "bar", data: { labels: I.map(k => OZET.iller[k].ad), datasets: [
+    { label: "Landsat 30 m · XGBoost (7 il)", data: I.map(k => +(L[k].ayni - L[k].baska).toFixed(3)), backgroundColor: "#f4a582" },
+    { label: "Sentinel-2 10 m · U-Net (14 alt bölge)", data: I.map(k => U.iller[k].loco.dusus), backgroundColor: "#1b7837" }] },
+    options: { scales: { y: { title: { display: true, text: "macro-F1 kaybı (aynı il − hiç görülmemiş il)" } } },
+      plugins: { legend: { position: "bottom" }, tooltip: { callbacks: { label: c => `${c.dataset.label}: ${isaretli(c.raw, 3)}` } } } } });
+  $("#loco-karsilastirma-not").textContent = `Ortalama kayıp: XGBoost ${sayi(OZET.loco_ort_dusus, 3)} · U-Net ${sayi(U.loco_ort_dusus, 3)}. `
+    + "İki analiz farklı veri, çözünürlük ve test alanlarıyla yapıldı; doğrudan karşılaştırma değil, eğilimdir. Negatif değer: model o ilde başka illerden öğrenerek daha iyi çıktı.";
+}
+
+// ---------------------------------------------------------------- U-Net bloğu (il bölümü)
+let unetGrafik;
+function unetCiz(kod) {
+  const U = OZET.unet;
+  if (!U) { $("#unet-blok").hidden = true; return; }
+  const o = U.iller[kod], il = OZET.iller[kod];
+  $("#unet-baslik").textContent = `${il.ad}: ${U.yil0} → ${U.yil1} değişimi 10 m'de`;
+  $("#unet-alt").textContent = `İlin konusunu temsil eden iki alt bölge (${U.kutu_km} × ${U.kutu_km} km), Sentinel-2 görüntüleri U-Net ile sınıflandırıldı. `
+    + "Sol: ilk yıl, orta: son yıl, sağ: değişen pikseller (yeni sınıfın rengiyle; gri = değişmedi).";
+  $("#kutu-secici").innerHTML = o.kutular.map((k, i) => `<button data-kutu="${i}" class="${i ? "" : "secili"}">${k.ad}</button>`).join("");
+  const goster = i => {
+    const k = o.kutular[i];
+    $("#unet-img").src = `data/unet/${k.kod}.jpg`;
+    $("#unet-not").textContent = `${k.ad} · merkez ${sayi(k.lat, 2)}° K, ${sayi(k.lon, 2)}° D · ${U.kutu_km * 100} × ${U.kutu_km * 100} piksel (10 m)`;
+    document.querySelectorAll("#kutu-secici button").forEach(b => b.classList.toggle("secili", +b.dataset.kutu === i));
+  };
+  document.querySelectorAll("#kutu-secici button").forEach(b => b.addEventListener("click", () => goster(+b.dataset.kutu)));
+  goster(0);
+  const sirali = SINIF_KOD.map((s, i) => [SINIF[i][0], o.degisim[s]?.fark ?? 0]).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+  $("#unet-kartlar").innerHTML = [
+    ["U-Net doğruluğu (bu il)", `F1 ${sayi(o.f1, 2)}`, `accuracy ${sayi(o.acc, 2)} · 14 bölgenin tamamında F1 ${sayi(U.test.f1, 2)}`],
+    ["Hiç görülmemiş ilde", `F1 ${sayi(o.loco.baska, 2)}`, `ili görmüş model ${sayi(o.loco.ayni, 2)} · fark ${isaretli(-o.loco.dusus, 2)}`],
+    ["En büyük değişim", `${isaretli(sirali[0][1], 1)} km²`, `${sirali[0][0]} · ${U.yil0} → ${U.yil1}`],
+  ].map(([a, b, n]) => `<div class="kart"><span class="ad">${a}</span><b>${b}</b><span class="not">${n}</span></div>`).join("");
+  $("#unet-degisim-baslik").textContent = `Sınıf alanı değişimi ${U.yil0} → ${U.yil1} (km², iki alt bölge)`;
+  const veri = { labels: SINIF.map(s => s[0]), datasets: [{ data: SINIF_KOD.map(s => o.degisim[s]?.fark ?? 0), backgroundColor: SINIF.map(s => s[1]) }] };
+  if (unetGrafik) { unetGrafik.data = veri; unetGrafik.update(); }
+  else unetGrafik = new Chart($("#unet-degisim-grafik"), { type: "bar", data: veri,
+    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${isaretli(c.raw, 1)} km²` } } },
+      scales: { y: { title: { display: true, text: "km²" } } } } });
 }
 
 // ---------------------------------------------------------------- ipucu kutusu

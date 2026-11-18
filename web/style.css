@@ -114,7 +114,7 @@ h3 { font-size: 0.95rem; font-weight: 700; }
 .hipotez .seridi-ad span { flex: 1; text-align: center; font-size: .58rem; color: #a9bdb4; }
 
 .iki-sutun { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-.akis { list-style: none; padding: 0; margin: 26px 0 34px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; counter-reset: adim; }
+.akis { list-style: none; padding: 0; margin: 26px 0 34px; display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; counter-reset: adim; }
 .akis li { background: var(--kart); border-radius: 12px; padding: 14px; box-shadow: var(--golge); position: relative; counter-increment: adim; }
 .akis li::before { content: counter(adim); position: absolute; top: -10px; left: 12px; background: var(--vurgu); color: #fff; width: 22px; height: 22px;
   border-radius: 50%; display: grid; place-items: center; font-size: .72rem; font-weight: 800; }
@@ -131,7 +131,7 @@ footer { text-align: center; padding: 28px; font-size: .8rem; color: var(--soluk
 @media (max-width: 1100px) {
   .hero-icerik, .il-duzen, .iki-sutun { grid-template-columns: 1fr; }
   .hipotez-izgara { grid-template-columns: 1fr 1fr; }
-  .akis { grid-template-columns: repeat(3, 1fr); }
+  .akis { grid-template-columns: repeat(4, 1fr); }
 }
 @media (max-width: 640px) {
   .istatistikler, .kartlar { grid-template-columns: 1fr 1fr; }
@@ -139,3 +139,16 @@ footer { text-align: center; padding: 28px; font-size: .8rem; color: var(--soluk
   .baglantilar { display: none; }
   .harita-kutu { min-height: 520px; }
 }
+
+/* ---------- U-Net bloğu (il bölümü) ---------- */
+.unet-blok { margin-top: 34px; padding-top: 28px; border-top: 1px dashed var(--cizgi); }
+.unet-blok[hidden] { display: none; }
+.unet-baslik { margin-bottom: 16px; }
+.unet-baslik .ust-etiket { color: var(--il-renk, var(--vurgu)); }
+.unet-baslik h3 { font-size: clamp(1.2rem, 2vw, 1.55rem); font-weight: 800; }
+.unet-gorsel { margin: 0; background: var(--kart); border-radius: var(--yaricap); box-shadow: var(--golge); padding: 14px; }
+.unet-gorsel img { width: 100%; height: auto; display: block; border-radius: 8px; background: #eee; min-height: 180px; }
+.kutu-secici { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.kutu-secici button { font: inherit; font-size: .8rem; font-weight: 600; border: 1px solid var(--cizgi); background: #fff; border-radius: 999px;
+  padding: 6px 12px; cursor: pointer; text-transform: capitalize; }
+.kutu-secici button.secili { background: var(--il-renk, var(--vurgu)); color: #fff; border-color: transparent; }
