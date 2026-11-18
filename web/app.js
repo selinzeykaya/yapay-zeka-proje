@@ -439,3 +439,15 @@ function ipucu(olay, html) {
   const x = Math.min(olay.clientX + 16, innerWidth - k.offsetWidth - 8), y = Math.min(olay.clientY + 16, innerHeight - k.offsetHeight - 8);
   k.style.left = x + "px"; k.style.top = y + "px";
 }
+
+// ---------------------------------------------------------------- sabit menü: bulunulan bölümü vurgula
+(() => {
+  const baglar = [...document.querySelectorAll("#ust-menu .baglantilar a")];
+  const bolumler = baglar.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+  const gozcu = new IntersectionObserver(girdiler => {
+    girdiler.forEach(g => {
+      if (g.isIntersecting) baglar.forEach(a => a.classList.toggle("etkin", a.getAttribute("href") === "#" + g.target.id));
+    });
+  }, { rootMargin: "-45% 0px -50% 0px" });
+  bolumler.forEach(b => gozcu.observe(b));
+})();
